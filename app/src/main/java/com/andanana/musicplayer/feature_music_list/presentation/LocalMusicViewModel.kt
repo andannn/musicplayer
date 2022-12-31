@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.feature_music_list.presentation
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.feature_music_list.domain.repository.LocalMusicRepository
@@ -10,7 +11,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LocalMusicViewModel @Inject constructor(
-    val localMusicRepository: LocalMusicRepository
+    private val localMusicRepository: LocalMusicRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     init {
