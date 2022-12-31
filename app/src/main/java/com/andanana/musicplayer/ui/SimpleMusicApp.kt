@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import com.andanana.musicplayer.navigation.SimpleMusicNavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,9 +26,12 @@ fun SimpleMusicApp() {
         },
         bottomBar = {
             NavigationBar(
-                content = {  Box(modifier = Modifier.size(10.dp).background(Color.Yellow)) }
+                content = { Box(modifier = Modifier.size(10.dp).background(Color.Yellow)) }
             )
         }
     ) {
+        SimpleMusicNavHost(
+            navHostController = rememberNavController(),
+        )
     }
 }
