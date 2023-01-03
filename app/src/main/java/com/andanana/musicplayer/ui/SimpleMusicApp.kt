@@ -31,7 +31,7 @@ fun SimpleMusicApp() {
         }
     ) {
         SimpleMusicNavHost(
-            navHostController = rememberNavController(),
+            navHostController = rememberNavController()
         )
     }
 }
