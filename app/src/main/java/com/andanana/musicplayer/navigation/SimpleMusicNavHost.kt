@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.andanana.musicplayer.feature.musiclist.navigation.musicListNavigation
+import com.andanana.musicplayer.feature.musiclist.navigation.musicListScreen
 
 @Composable
 fun SimpleMusicNavHost(

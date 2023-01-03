@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.navigation
+package com.andanana.musicplayer.feature.musiclist.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
