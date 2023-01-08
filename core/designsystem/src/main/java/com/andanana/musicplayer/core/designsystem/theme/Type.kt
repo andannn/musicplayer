@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.ui.theme
+package com.andanana.musicplayer.core.designsystem.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

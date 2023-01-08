@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.ui.theme
+package com.andanana.musicplayer.core.designsystem.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
