@@ -14,7 +14,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/musiclist" />
+            <option value="$PROJECT_DIR$/feature/home" />
           </set>
         </option>
       </GradleProjectSettings>

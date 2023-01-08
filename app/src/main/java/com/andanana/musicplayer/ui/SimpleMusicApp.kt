@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.rememberNavController
+import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.navigation.SimpleMusicNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
@@ -34,7 +35,7 @@ fun SimpleMusicApp(
         }
     ) {
         SimpleMusicNavHost(
-            navHostController = rememberNavController()
+            navHostController = appState.navController
         )
     }
 }
@@ -51,7 +52,7 @@ fun SimpleMusicNavigationBar(
     ) {
         destinations.forEach { destination ->
             val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
-            NavigationBarItem(
+            SmpNavigationBarItem(
                 selected = selected,
                 onClick = { onNavigateToDestination(destination) },
                 icon = {
