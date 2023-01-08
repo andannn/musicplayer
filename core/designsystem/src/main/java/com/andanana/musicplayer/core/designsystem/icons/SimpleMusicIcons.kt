@@ -14,8 +14,8 @@ object SimpleMusicIcons {
     val UnselectedHome = Icons.Outlined.Home
     val Settings = Icons.Filled.Settings
     val UnselectedSettings = Icons.Outlined.Settings
-    val Library = Icons.Outlined.Place
-    val UnselectedLibrary = Icons.Filled.Place
+    val Library = Icons.Filled.Place
+    val UnselectedLibrary = Icons.Outlined.Place
 }
 
 sealed class Icon {

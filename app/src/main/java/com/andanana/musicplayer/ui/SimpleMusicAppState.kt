@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
@@ -29,7 +30,7 @@ class SimpleMusicAppState(
     val topLevelDestinations = TopLevelDestination.values().toList()
 
     val currentNavDestination
-        @Composable get() = navController.currentDestination
+        @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {

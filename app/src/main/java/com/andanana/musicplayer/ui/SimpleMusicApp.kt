@@ -1,7 +1,6 @@
 package com.andanana.musicplayer.ui
 
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import android.util.Log
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,6 +12,8 @@ import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
+
+private const val TAG = "SimpleMusicApp"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,6 +52,7 @@ fun SimpleMusicNavigationBar(
     ) {
         destinations.forEach { destination ->
             val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
+            Log.d(TAG, "SimpleMusicNavigationBar: $destination $selected")
             SmpNavigationBarItem(
                 selected = selected,
                 onClick = { onNavigateToDestination(destination) },
