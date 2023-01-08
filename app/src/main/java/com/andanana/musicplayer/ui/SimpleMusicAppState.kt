@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
+import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
 
@@ -47,6 +48,7 @@ class SimpleMusicAppState(
 
         when (topLevelDestination) {
             TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
+            TopLevelDestination.LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
             else -> {}
         }
     }

@@ -16,7 +16,7 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
     this.navigate(homeRoute, navOptions)
 }
 
-fun NavGraphBuilder.musicListScreen() {
+fun NavGraphBuilder.homeScreen() {
     composable(route = homeRoute) {
         Box(modifier = Modifier.fillMaxSize().background(Color.Red))
     }

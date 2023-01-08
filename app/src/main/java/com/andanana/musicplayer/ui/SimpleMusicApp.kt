@@ -9,10 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.rememberNavController
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.navigation.SimpleMusicNavHost
+import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +33,7 @@ fun SimpleMusicApp(
             )
         }
     ) {
-        SimpleMusicNavHost(
+        SmpNavHost(
             navHostController = appState.navController
         )
     }

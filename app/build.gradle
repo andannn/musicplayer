@@ -51,6 +51,7 @@ android {
 dependencies {
     implementation project(":core:designsystem")
     implementation project(':feature:home')
+    implementation project(':feature:library')
 
     implementation 'androidx.core:core-ktx:1.9.0'
 

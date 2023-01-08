@@ -4,6 +4,7 @@ import com.andanana.musicplayer.R
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.icons.SimpleMusicIcons
 import com.andanana.musicplayer.feature.home.R as homeR
+import com.andanana.musicplayer.feature.library.R as libraryR
 
 enum class TopLevelDestination(
     val selectedIcon: Icon,
@@ -20,7 +21,7 @@ enum class TopLevelDestination(
     LIBRARY(
         selectedIcon = Icon.ImageVectorIcon(SimpleMusicIcons.Library),
         unSelectedIcon = Icon.ImageVectorIcon(SimpleMusicIcons.UnselectedLibrary),
-        iconTextId = R.string.app_name,
+        iconTextId = libraryR.string.library,
         titleTextId = R.string.app_name,
     ),
     SETTING(
