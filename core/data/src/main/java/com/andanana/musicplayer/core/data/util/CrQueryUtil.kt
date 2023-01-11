@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.feature_music_list.domain.util
+package com.andanana.musicplayer.core.data.util
 
 import android.content.ContentResolver
 import android.content.Context

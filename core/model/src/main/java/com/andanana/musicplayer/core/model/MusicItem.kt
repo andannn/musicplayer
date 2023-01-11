@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.feature_music_list.domain.model
+package com.andanana.musicplayer.core.model
 
 import android.net.Uri
 

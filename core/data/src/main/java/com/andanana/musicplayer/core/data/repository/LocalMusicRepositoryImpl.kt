@@ -1,17 +1,17 @@
-package com.andanana.musicplayer.feature_music_list.data.repository
+package com.andanana.musicplayer.core.data.repository
 
 import android.app.Application
 import android.content.ContentUris
 import android.provider.MediaStore
 import android.util.Log
-import com.andanana.musicplayer.feature_music_list.domain.model.MusicItem
-import com.andanana.musicplayer.feature_music_list.domain.repository.LocalMusicRepository
-import com.andanana.musicplayer.feature_music_list.domain.util.CrQueryParameter
-import com.andanana.musicplayer.feature_music_list.domain.util.CrQueryUtil
+import com.andanana.musicplayer.core.data.util.CrQueryParameter
+import com.andanana.musicplayer.core.data.util.CrQueryUtil
+import com.andanana.musicplayer.core.model.MusicItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LocalMusicRepositoryImpl(
+class LocalMusicRepositoryImpl @Inject constructor(
     private val app: Application
 ) : LocalMusicRepository {
 
