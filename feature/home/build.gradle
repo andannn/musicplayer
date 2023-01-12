@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation project(":core:data")
+    implementation project(":core:model")
 
     implementation 'androidx.core:core-ktx:1.9.0'
 
@@ -47,6 +48,9 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
     implementation "androidx.compose.material:material:$compose_ui_version"
     implementation 'androidx.compose.material3:material3:1.0.1'
+
+    // Compose pager
+    implementation "com.google.accompanist:accompanist-pager:$compose_pager_version"
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:$navigation_version"
