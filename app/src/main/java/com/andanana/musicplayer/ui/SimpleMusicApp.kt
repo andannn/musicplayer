@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.ui
 
 import android.util.Log
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,9 +23,12 @@ fun SimpleMusicApp(
 ) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "aaa", color = Color.Black) }
-            )
+            val titleRes = appState.currentTopLevelDestination?.titleTextId
+            if (titleRes != null) {
+                CenterAlignedTopAppBar(
+                    title = { Text(text = stringResource(id = titleRes), color = Color.Black) }
+                )
+            }
         },
         bottomBar = {
             SimpleMusicNavigationBar(
@@ -35,6 +39,7 @@ fun SimpleMusicApp(
         }
     ) {
         SmpNavHost(
+            modifier = Modifier.padding(it),
             navHostController = appState.navController
         )
     }

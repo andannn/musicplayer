@@ -8,7 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
+import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +33,13 @@ class SimpleMusicAppState(
 
     val currentNavDestination
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+
+    val currentTopLevelDestination
+        @Composable get() = when (currentNavDestination?.route) {
+            homeRoute -> TopLevelDestination.HOME
+            libraryRoute -> TopLevelDestination.LIBRARY
+            else -> null
+        }
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {
