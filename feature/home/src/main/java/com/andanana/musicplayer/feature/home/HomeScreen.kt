@@ -3,25 +3,26 @@ package com.andanana.musicplayer.feature.home
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 
 @Composable
 fun HomeRoute(
-    modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    modifier: Modifier = Modifier
 ) {
-    HomeScreen()
+    HomeScreen(modifier = modifier)
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun HomeScreen() {
-    val state = rememberPagerState(1)
+private fun HomeScreen(
+    modifier: Modifier = Modifier
+) {
+    val state = rememberPagerState()
 
     HorizontalPager(
+        modifier = modifier,
         count = HomePage.values().size,
         state = state
     ) { pageIndex ->
