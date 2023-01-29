@@ -6,6 +6,7 @@ buildscript {
         navigation_version = '2.5.3'
         lifecycle_version = '2.5.1'
         hilt_navigation_compose_version = '1.0.0'
+        coil_version = '2.2.2'
     }
 }// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
