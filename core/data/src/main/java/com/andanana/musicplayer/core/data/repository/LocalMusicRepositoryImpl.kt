@@ -143,7 +143,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     ),
                     title = cursor.getString(titleIndex),
                     duration = cursor.getInt(durationIndex),
-                    modifiedDate = cursor.getInt(dateModifiedIndex),
+                    modifiedDate = cursor.getLong(dateModifiedIndex),
                     size = cursor.getInt(sizeIndex),
                     mimeType = cursor.getString(mimeTypeIndex),
                     absolutePath = cursor.getString(dataIndex),

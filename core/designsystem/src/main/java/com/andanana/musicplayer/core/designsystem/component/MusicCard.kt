@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,17 +33,17 @@ private const val TAG = "MusicCard"
 @Composable
 fun MusicCard(
     modifier: Modifier = Modifier,
-    contentUri: Uri,
     albumArtUri: Uri,
     title: String,
     artist: String,
-    date: Int,
-    onClick: () -> Unit = {}
+    date: Long,
+    onMusicItemClick: () -> Unit = {},
+    onOptionButtonClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-        onClick = onClick
+        onClick = onMusicItemClick
     ) {
         Row(
             modifier = Modifier
@@ -61,7 +61,9 @@ fun MusicCard(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge
@@ -74,7 +76,7 @@ fun MusicCard(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
+                        text = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT)
                             .format(date),
                         style = MaterialTheme.typography.bodySmall
                     )
@@ -83,8 +85,11 @@ fun MusicCard(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            IconButton(onClick = { }) {
-                Icon(imageVector = Icons.Filled.Menu, contentDescription = "menu")
+            IconButton(
+                modifier = Modifier,
+                onClick = onOptionButtonClick
+            ) {
+                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "menu")
             }
         }
     }
@@ -94,7 +99,6 @@ fun MusicCard(
 @Composable
 private fun MusicCardPreview() {
     MusicCard(
-        contentUri = Uri.parse(""),
         albumArtUri = Uri.parse(""),
         title = "Title",
         artist = "artist",

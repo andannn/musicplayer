@@ -6,7 +6,7 @@ data class MusicInfo(
     val contentUri: Uri,
     val title: String = "",
     val duration: Int = 0,
-    val modifiedDate: Int = 0,
+    val modifiedDate: Long = 0,
     val size: Int = 0,
     val mimeType: String = "",
     val absolutePath: String = "",
