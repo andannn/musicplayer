@@ -7,6 +7,7 @@ import com.andanana.musicplayer.core.model.AlbumInfo
 import com.andanana.musicplayer.feature.home.usecase.GetAllAlbum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +21,7 @@ class AlbumPageViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _albumPageUiState = MutableStateFlow<AlbumPageUiState>(AlbumPageUiState.Loading)
+    val albumPageUiState = _albumPageUiState.asStateFlow()
 
     init {
         viewModelScope.launch {

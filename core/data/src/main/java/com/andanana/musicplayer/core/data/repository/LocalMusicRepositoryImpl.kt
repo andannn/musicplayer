@@ -150,7 +150,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     album = cursor.getString(albumIndex),
                     artist = cursor.getString(artistIndex),
                     albumUri = Uri.withAppendedPath(
-                        Uri.parse("content://media/external/audio/albums/"),
+                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                         cursor.getLong(albumIdIndex).toString()
                     )
                 ).also {
@@ -189,6 +189,10 @@ class LocalMusicRepositoryImpl @Inject constructor(
             itemList.add(
                 AlbumInfo(
                     albumId = cursor.getLong(idIndex),
+                    albumUri = Uri.withAppendedPath(
+                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                        cursor.getLong(idIndex).toString()
+                    ),
                     title = cursor.getString(albumIndex),
                     trackCount = cursor.getInt(numberOfSongsIndex)
                 )
