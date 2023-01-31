@@ -11,5 +11,6 @@ data class MusicInfo(
     val mimeType: String = "",
     val absolutePath: String = "",
     val album: String = "",
-    val artist: String = ""
+    val artist: String = "",
+    val albumUri: Uri = Uri.parse("")
 )

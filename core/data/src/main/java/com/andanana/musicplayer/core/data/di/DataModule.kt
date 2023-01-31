@@ -15,5 +15,4 @@ interface DataModule {
     fun bindsLocalMusicRepository(
         localMusicRepository: LocalMusicRepositoryImpl
     ): LocalMusicRepository
-
 }

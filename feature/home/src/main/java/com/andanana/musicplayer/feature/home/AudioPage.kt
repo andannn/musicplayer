@@ -55,6 +55,7 @@ private fun AudioPageContent(
                     MusicCard(
                         modifier = Modifier.padding(horizontal = 5.dp, vertical = 4.dp),
                         contentUri = info.contentUri,
+                        albumArtUri = info.albumUri,
                         title = info.title,
                         artist = info.artist,
                         date = info.modifiedDate

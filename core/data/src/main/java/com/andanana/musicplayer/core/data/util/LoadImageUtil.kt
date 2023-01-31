@@ -15,7 +15,6 @@ suspend fun loadImage(
     contentUri: Uri
 ): Bitmap {
     try {
-        delay(2000)
     } catch (e: CancellationException) {
         Log.d(TAG, "MusicCard: CancellationException loadImage")
     }

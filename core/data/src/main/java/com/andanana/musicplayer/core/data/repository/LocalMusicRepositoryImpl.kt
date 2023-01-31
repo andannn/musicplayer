@@ -4,6 +4,7 @@ import android.app.Application
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import com.andanana.musicplayer.core.data.util.CrQueryParameter
 import com.andanana.musicplayer.core.data.util.CrQueryUtil
 import com.andanana.musicplayer.core.model.AlbumInfo
@@ -12,6 +13,8 @@ import com.andanana.musicplayer.core.model.MusicInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+private const val TAG = "LocalMusicRepositoryImp"
 
 private val MusicInfoProjection = listOf(
     MediaStore.Audio.Media._ID,
@@ -22,7 +25,8 @@ private val MusicInfoProjection = listOf(
     MediaStore.Audio.Media.MIME_TYPE,
     MediaStore.Audio.Media.DATA,
     MediaStore.Audio.Media.ALBUM,
-    MediaStore.Audio.Media.ARTIST
+    MediaStore.Audio.Media.ARTIST,
+    MediaStore.Audio.Media.ALBUM_ID,
 ).toTypedArray()
 
 private val ArtistInfoProjection = listOf(
@@ -129,6 +133,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
         val dataIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
         val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
         val artistIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
+        val albumIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
         while (cursor.moveToNext()) {
             itemList.add(
                 MusicInfo(
@@ -143,8 +148,14 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     mimeType = cursor.getString(mimeTypeIndex),
                     absolutePath = cursor.getString(dataIndex),
                     album = cursor.getString(albumIndex),
-                    artist = cursor.getString(artistIndex)
-                )
+                    artist = cursor.getString(artistIndex),
+                    albumUri = Uri.withAppendedPath(
+                        Uri.parse("content://media/external/audio/albums/"),
+                        cursor.getLong(albumIdIndex).toString()
+                    )
+                ).also {
+                    Log.d(TAG, "parseMusicInfoCursor: $it")
+                }
             )
         }
         return itemList

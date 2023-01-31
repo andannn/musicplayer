@@ -1,36 +1,30 @@
 package com.andanana.musicplayer.core.designsystem.component
 
-import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andanana.musicplayer.core.data.util.loadImage
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import coil.compose.AsyncImage
 import java.text.SimpleDateFormat
 
 private const val TAG = "MusicCard"
@@ -40,6 +34,7 @@ private const val TAG = "MusicCard"
 fun MusicCard(
     modifier: Modifier = Modifier,
     contentUri: Uri,
+    albumArtUri: Uri,
     title: String,
     artist: String,
     date: Int,
@@ -51,39 +46,21 @@ fun MusicCard(
         onClick = onClick
     ) {
         Row(
-            modifier = Modifier.padding(10.dp).height(IntrinsicSize.Min)
+            modifier = Modifier
+                .padding(10.dp)
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            val context = LocalContext.current.applicationContext
-            val bitmapState by produceState<ImageResult>(initialValue = ImageResult.Loading) {
-                try {
-                    val bitmap = withContext(Dispatchers.IO) {
-                        loadImage(
-                            context,
-                            contentUri
-                        )
-                    }
+            AsyncImage(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(MaterialTheme.shapes.extraSmall),
+                model = albumArtUri,
+                contentDescription = ""
+            )
 
-                    value = ImageResult.Success(bitmap)
-                } catch (e: CancellationException) {
-                    Log.d(TAG, "MusicCard: CancellationException $title")
-                }
-            }
+            Spacer(modifier = Modifier.width(10.dp))
 
-            when (val state = bitmapState) {
-                ImageResult.Loading -> {
-                }
-                is ImageResult.Success -> {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxHeight().width(50.dp)
-                            .clip(MaterialTheme.shapes.extraSmall),
-                        bitmap = state.bitmap.asImageBitmap(),
-                        contentDescription = null
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(3.dp))
             Column {
                 Text(
                     text = title,
@@ -103,13 +80,14 @@ fun MusicCard(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            IconButton(onClick = { }) {
+                Icon(imageVector = Icons.Filled.Menu, contentDescription = "menu")
+            }
         }
     }
-}
-
-sealed interface ImageResult {
-    object Loading : ImageResult
-    data class Success(val bitmap: Bitmap) : ImageResult
 }
 
 @Preview
@@ -117,6 +95,7 @@ sealed interface ImageResult {
 private fun MusicCardPreview() {
     MusicCard(
         contentUri = Uri.parse(""),
+        albumArtUri = Uri.parse(""),
         title = "Title",
         artist = "artist",
         date = 0
