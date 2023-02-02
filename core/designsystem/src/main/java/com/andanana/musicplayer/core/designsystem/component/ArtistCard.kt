@@ -22,10 +22,10 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumCard(
+fun ArtistCard(
     modifier: Modifier = Modifier,
-    albumArtUri: Uri,
-    title: String,
+    artistUri: Uri,
+    name: String,
     trackCount: Int,
     onClick: () -> Unit = {}
 ) {
@@ -42,13 +42,13 @@ fun AlbumCard(
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(MaterialTheme.shapes.extraSmall),
-                model = albumArtUri,
+                model = artistUri,
                 contentDescription = ""
             )
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = title,
+                text = name,
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
@@ -61,10 +61,10 @@ fun AlbumCard(
 
 @Preview
 @Composable
-private fun AlbumCardPreview() {
+private fun ArtistCardPreview() {
     MusicPlayerTheme {
         Surface {
-            AlbumCard(albumArtUri = Uri.parse(""), title = "Title", trackCount = 3)
+            AlbumCard(albumArtUri = Uri.parse(""), title = "Name", trackCount = 3)
         }
     }
 }

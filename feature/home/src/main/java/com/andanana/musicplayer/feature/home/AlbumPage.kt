@@ -26,7 +26,10 @@ fun AlbumPage(
 ) {
     val state by albumPageViewModel.albumPageUiState.collectAsState()
 
-    AlbumPageContent(state = state)
+    AlbumPageContent(
+        modifier = modifier,
+        state = state
+    )
 }
 
 @Composable
@@ -45,7 +48,7 @@ private fun AlbumPageContent(
 
             LazyVerticalGrid(
                 modifier = modifier,
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Fixed(2)
             ) {
                 items(
                     items = musicInfoList,
