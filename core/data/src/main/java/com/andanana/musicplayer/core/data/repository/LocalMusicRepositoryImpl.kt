@@ -171,11 +171,8 @@ class LocalMusicRepositoryImpl @Inject constructor(
             itemList.add(
                 ArtistInfo(
                     artistId = cursor.getLong(idIndex),
-                    artistCoverUri = Uri.withAppendedPath(
-                        MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                        cursor.getLong(idIndex).toString()
-                    ),
                     name = cursor.getString(artistIndex),
+                    artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex)) ?: Uri.parse(""),
                     trackCount = cursor.getInt(numberOfTracksIndex)
                 )
             )
@@ -203,5 +200,28 @@ class LocalMusicRepositoryImpl @Inject constructor(
             )
         }
         return itemList
+    }
+
+    private fun getArtistCoverUriByName(name: String): Uri? {
+        val params = CrQueryParameter()
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        params.apply {
+            projection = listOf(MediaStore.Audio.Media.ALBUM_ID).toTypedArray()
+            where = "(${MediaStore.Audio.Media.ARTIST} like ?)"
+            selectionArgs = listOf(name).toTypedArray()
+            limit = 1
+        }
+        return CrQueryUtil.query(app, uri, params)?.use { cursor ->
+            if (cursor.count >= 1) {
+                cursor.moveToFirst()
+                val albumIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+                Uri.withAppendedPath(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    cursor.getLong(albumIdIndex).toString()
+                )
+            } else {
+                null
+            }
+        }
     }
 }
