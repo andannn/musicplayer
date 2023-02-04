@@ -1,12 +1,18 @@
 package com.andanana.musicplayer.ui
 
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
@@ -38,10 +44,13 @@ fun SimpleMusicApp(
             )
         }
     ) {
-        SmpNavHost(
-            modifier = Modifier.padding(it),
-            navHostController = appState.navController
-        )
+        Column(modifier = Modifier.padding(it)) {
+            SmpNavHost(
+                modifier = Modifier.weight(1f),
+                navHostController = appState.navController
+            )
+            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.Red))
+        }
     }
 }
 
