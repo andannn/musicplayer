@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.andanana.musicplayer"
-        minSdk 31
-        targetSdk 32
+        minSdk 24
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -50,6 +50,7 @@ android {
 
 dependencies {
     implementation project(":core:designsystem")
+    implementation project(":core:player")
     implementation project(':feature:home')
     implementation project(':feature:library')
 

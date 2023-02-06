@@ -32,6 +32,13 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+<!--        <service android:name="com.andanana.musicplayer.core.player.SimpleMediaPlaybackService"-->
+<!--            android:exported="true">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.media.browse.MediaBrowserService" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
     </application>
 
 </manifest>
