@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -31,7 +33,17 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.media3:media3-exoplayer:1.0.0-beta02'
+    // Dagger
+    implementation "com.google.dagger:hilt-android:$dagger_version"
+    kapt "com.google.dagger:hilt-compiler:$dagger_version"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+
+    // Media3
+    implementation 'androidx.media3:media3-exoplayer:1.0.0-beta03'
     implementation 'androidx.media:media:1.6.0'
 
     implementation 'androidx.core:core-ktx:1.7.0'
