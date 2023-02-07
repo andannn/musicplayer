@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,6 +21,7 @@ class PlayerRepositoryImpl @Inject constructor(
 ) : PlayerRepository {
 
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
+    private val playingMediaItemStateFlow = MutableStateFlow<MediaItem?>(null)
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -27,7 +29,11 @@ class PlayerRepositoryImpl @Inject constructor(
                 Player.STATE_IDLE -> PlayerState.Idle
                 Player.STATE_BUFFERING -> PlayerState.Buffering
                 Player.STATE_READY -> {
-                    if (player.isPlaying) PlayerState.Playing else PlayerState.Paused
+                    if (player.isPlaying) {
+                        PlayerState.Playing(player.currentPosition)
+                    } else {
+                        PlayerState.Paused(player.currentPosition)
+                    }
                 }
                 Player.STATE_ENDED -> PlayerState.PlayBackEnd
                 else -> error("Impossible")
@@ -42,43 +48,74 @@ class PlayerRepositoryImpl @Inject constructor(
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             if (isPlaying) {
-                playerStateFlow.value = PlayerState.Playing
+                playerStateFlow.value = PlayerState.Playing(player.currentPosition)
             } else {
                 val suppressed =
                     player.playbackSuppressionReason != Player.PLAYBACK_SUPPRESSION_REASON_NONE
                 val playerError = player.playerError != null
                 if (player.playbackState == Player.STATE_READY && !suppressed && !playerError) {
-                    playerStateFlow.value = PlayerState.Paused
+                    playerStateFlow.value = PlayerState.Paused(player.currentPosition)
                 }
             }
-        }
-
-        override fun onPlaybackSuppressionReasonChanged(playbackSuppressionReason: Int) {
-            Log.d(TAG, "onPlaybackSuppressionReasonChanged: $playbackSuppressionReason")
         }
 
         override fun onPlayerError(error: PlaybackException) {
 // TODO: Define exception type and send back.
             playerStateFlow.value = PlayerState.Error(error)
         }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            Log.d(TAG, "onMediaItemTransition: $mediaItem  reason $reason")
+            playingMediaItemStateFlow.value = mediaItem
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
+            playerStateFlow.getAndUpdate { state ->
+                when (state) {
+                    is PlayerState.Playing -> {
+                        state.copy(currentPositionMs = newPosition.contentPositionMs)
+                    }
+                    is PlayerState.Paused -> {
+                        state.copy(currentPositionMs = newPosition.contentPositionMs)
+                    }
+                    else -> state
+                }
+            }
+        }
     }
 
     init {
-        val mediaItem: MediaItem =
-            MediaItem.fromUri("content://media/external/audio/media/1000008204")
-        player.setMediaItem(mediaItem)
+        player.setMediaItems(
+            listOf(
+                MediaItem.fromUri("content://media/external/audio/media/1000008204"),
+                MediaItem.fromUri("content://media/external/audio/media/1000008273")
+            )
+        )
         player.addListener(playerListener)
         player.prepare()
         player.play()
 
         GlobalScope.launch(Dispatchers.Main) {
             player.play()
+
             delay(1000)
-            player.pause()
+            player.seekTo(10000)
             delay(1000)
-            player.playWhenReady = true
+            player.seekTo(20002)
+        }
+        GlobalScope.launch(Dispatchers.Main) {
+            while (true) {
+                delay(121)
+                Log.d(TAG, ": ${player.currentPosition}")
+            }
         }
     }
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
+
+    override fun observePlayingMediaItem(): Flow<MediaItem?> = playingMediaItemStateFlow
 }

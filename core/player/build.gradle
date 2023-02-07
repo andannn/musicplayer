@@ -33,6 +33,8 @@ android {
 }
 
 dependencies {
+    implementation project(":core:model")
+
     // Dagger
     implementation "com.google.dagger:hilt-android:$dagger_version"
     kapt "com.google.dagger:hilt-compiler:$dagger_version"

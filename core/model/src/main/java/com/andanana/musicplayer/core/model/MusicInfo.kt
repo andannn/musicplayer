@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.model
 
 import android.net.Uri
+import androidx.media3.common.MediaItem
 
 data class MusicInfo(
     val contentUri: Uri,
@@ -13,4 +14,6 @@ data class MusicInfo(
     val album: String = "",
     val artist: String = "",
     val albumUri: Uri = Uri.parse("")
-)
+) {
+    val mediaItem: MediaItem = MediaItem.fromUri(contentUri)
+}
