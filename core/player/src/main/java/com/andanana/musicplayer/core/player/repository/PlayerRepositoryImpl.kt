@@ -89,33 +89,31 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     init {
-        player.setMediaItems(
-            listOf(
-                MediaItem.fromUri("content://media/external/audio/media/1000008204"),
-                MediaItem.fromUri("content://media/external/audio/media/1000008273")
-            )
-        )
-        player.addListener(playerListener)
         player.prepare()
         player.play()
 
-        GlobalScope.launch(Dispatchers.Main) {
-            player.play()
+        player.addListener(playerListener)
 
-            delay(1000)
-            player.seekTo(10000)
-            delay(1000)
-            player.seekTo(20002)
-        }
-        GlobalScope.launch(Dispatchers.Main) {
-            while (true) {
-                delay(121)
-                Log.d(TAG, ": ${player.currentPosition}")
-            }
-        }
+//        GlobalScope.launch(Dispatchers.Main) {
+//            player.setMediaItems(
+//                listOf(
+//                    MediaItem.fromUri("content://media/external/audio/media/1000008273"),
+//                    MediaItem.fromUri("content://media/external/audio/media/1000008204")
+//                )
+//            )
+//            delay(5000)
+//            player.seekToDefaultPosition(2)
+//        }
     }
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 
     override fun observePlayingMediaItem(): Flow<MediaItem?> = playingMediaItemStateFlow
+    override fun setPlayList(mediaItems: List<MediaItem>) {
+        player.setMediaItems(mediaItems)
+    }
+
+    override fun seekToMediaIndex(index: Int) {
+        player.seekToDefaultPosition(index)
+    }
 }

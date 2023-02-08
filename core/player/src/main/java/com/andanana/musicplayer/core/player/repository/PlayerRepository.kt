@@ -15,4 +15,6 @@ sealed interface PlayerState {
 interface PlayerRepository {
     fun observePlayerState(): Flow<PlayerState>
     fun observePlayingMediaItem(): Flow<MediaItem?>
+    fun setPlayList(mediaItems: List<MediaItem>)
+    fun seekToMediaIndex(index: Int)
 }
