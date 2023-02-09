@@ -26,6 +26,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
+import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
 
@@ -63,7 +64,7 @@ fun SimpleMusicApp(
                 navHostController = appState.navController,
                 onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
             )
-            Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.Red))
+            MiniPlayerBox(rootViewModelStoreOwner = onGetRootViewModelStoreOwner.invoke())
         }
     }
 }

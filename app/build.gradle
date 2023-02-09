@@ -53,6 +53,7 @@ dependencies {
     implementation project(":core:player")
     implementation project(':feature:home')
     implementation project(':feature:library')
+    implementation project(':feature:player')
 
     implementation 'androidx.core:core-ktx:1.9.0'
 

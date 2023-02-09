@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/library" />
+            <option value="$PROJECT_DIR$/feature/player" />
           </set>
         </option>
       </GradleProjectSettings>
