@@ -1,16 +1,12 @@
 package com.andanana.musicplayer.feature.home
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,7 +14,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
-import com.andanana.musicplayer.core.player.repository.PlayerEvent
 
 private const val TAG = "AudioPage"
 
@@ -30,13 +25,11 @@ fun AudioPage(
 ) {
     val playerStateViewModel: PlayerStateViewModel = hiltViewModel(rootViewModelStoreOwner)
     val state by audioPageViewModel.audioPageUiState.collectAsState()
-    val onAudioItemClick by rememberUpdatedState<(List<MusicInfo>, Int) -> Unit> { list, index ->
-        playerStateViewModel.onEvent(PlayerEvent.OnPlayMusicInPlayList(list, index))
-    }
+
     AudioPageContent(
         modifier = modifier,
         state = state,
-        onAudioItemClick = onAudioItemClick
+        onAudioItemClick = playerStateViewModel::onAudioItemClick
     )
 }
 
@@ -48,9 +41,6 @@ private fun AudioPageContent(
 ) {
     when (state) {
         AudioPageUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
         }
         is AudioPageUiState.Ready -> {
             val musicInfoList = state.infoList

@@ -15,7 +15,7 @@ data class MusicInfo(
     val absolutePath: String = "",
     val album: String = "",
     val artist: String = "",
-    val albumUri: Uri = Uri.parse("")
+    val albumUri: String = ""
 ) : Parcelable {
 
     val mediaItem: MediaItem = MediaItem.fromUri(contentUri)
@@ -30,7 +30,7 @@ data class MusicInfo(
         absolutePath = parcel.readString() ?: "",
         album = parcel.readString() ?: "",
         artist = parcel.readString() ?: "",
-        albumUri = parcel.readParcelable(Uri::class.java.classLoader) ?: Uri.EMPTY
+        albumUri = parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -43,7 +43,7 @@ data class MusicInfo(
         parcel.writeString(absolutePath)
         parcel.writeString(album)
         parcel.writeString(artist)
-        parcel.writeParcelable(albumUri, flags)
+        parcel.writeString(albumUri)
     }
 
     override fun describeContents(): Int {

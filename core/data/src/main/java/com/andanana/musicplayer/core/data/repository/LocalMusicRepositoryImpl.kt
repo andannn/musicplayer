@@ -152,7 +152,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     albumUri = Uri.withAppendedPath(
                         MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                         cursor.getLong(albumIdIndex).toString()
-                    )
+                    ).toString()
                 ).also {
                     Log.d(TAG, "parseMusicInfoCursor: $it")
                 }

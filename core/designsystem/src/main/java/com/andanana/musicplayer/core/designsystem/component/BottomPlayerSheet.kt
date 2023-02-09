@@ -1,6 +1,6 @@
 package com.andanana.musicplayer.core.designsystem.component
 
-import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,11 +39,13 @@ import androidx.compose.ui.unit.max
 import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
+private const val TAG = "BottomPlayerSheet"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomPlayerSheet(
     modifier: Modifier = Modifier,
-    coverUri: Uri,
+    coverUri: String,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
     title: String = "",
@@ -69,6 +71,8 @@ fun BottomPlayerSheet(
                 modifier = Modifier.padding(5.dp).weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Log.d(TAG, "BottomPlayerSheet: ")
+
                 AsyncImage(
                     modifier = Modifier
                         .size(60.dp)
@@ -151,7 +155,7 @@ fun BottomPlayerSheet(
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme() {
         BottomPlayerSheet(
-            coverUri = Uri.parse(""),
+            coverUri = "",
             title = "Song name",
             artist = "Artist name",
             isFavorite = true,
@@ -165,7 +169,7 @@ fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
 fun DarkBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = true) {
         BottomPlayerSheet(
-            coverUri = Uri.parse(""),
+            coverUri = "",
             title = "Song name",
             artist = "Artist name"
         )
@@ -177,7 +181,7 @@ fun DarkBottomPlayerSheetPreview() {
 fun LightBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = false) {
         BottomPlayerSheet(
-            coverUri = Uri.parse(""),
+            coverUri = "",
             title = "Song name",
             artist = "Artist name"
         )

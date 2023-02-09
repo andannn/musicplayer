@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.core.designsystem.component
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -33,7 +32,7 @@ private const val TAG = "MusicCard"
 @Composable
 fun MusicCard(
     modifier: Modifier = Modifier,
-    albumArtUri: Uri,
+    albumArtUri: String,
     title: String,
     artist: String,
     date: Long,
@@ -99,7 +98,7 @@ fun MusicCard(
 @Composable
 private fun MusicCardPreview() {
     MusicCard(
-        albumArtUri = Uri.parse(""),
+        albumArtUri = "",
         title = "Title",
         artist = "artist",
         date = 0

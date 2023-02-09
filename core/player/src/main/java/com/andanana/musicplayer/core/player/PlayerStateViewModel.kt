@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.player.repository.PlayerEvent
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
@@ -127,20 +126,16 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: PlayerEvent) {
-        when (event) {
-            is PlayerEvent.OnPlayMusicInPlayList -> {
-                when {
-                    event.playList != this.playListFlow.value -> {
-                        // Play list changed.
-                        savedStateHandle[PLAY_LIST_KEY] = event.playList
-                        playerRepository.seekToMediaIndex(event.index)
-                    }
-                    event.index != playListFlow.value.indexOf(interactingMusicItem.value) -> {
-                        // Play list is same but play item changed.
-                        playerRepository.seekToMediaIndex(event.index)
-                    }
-                }
+    fun onAudioItemClick(playList: List<MusicInfo>, index: Int) {
+        when {
+            playList != this.playListFlow.value -> {
+                // Play list changed.
+                savedStateHandle[PLAY_LIST_KEY] = playList
+                playerRepository.seekToMediaIndex(index)
+            }
+            index != playListFlow.value.indexOf(interactingMusicItem.value) -> {
+                // Play list is same but play item changed.
+                playerRepository.seekToMediaIndex(index)
             }
         }
     }
@@ -150,14 +145,14 @@ class PlayerStateViewModel @Inject constructor(
     }
 }
 
-sealed interface PlayerUiState {
-    object Inactive : PlayerUiState
+sealed class PlayerUiState {
+    object Inactive : PlayerUiState()
 
     data class Active(
         val state: PlayState = PlayState.LOADING,
         val progress: Float = 0f,
         val musicInfo: MusicInfo
-    ) : PlayerUiState
+    ) : PlayerUiState()
 }
 
 enum class PlayState {
