@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -74,7 +73,7 @@ class PlayerStateViewModel @Inject constructor(
                 if (musicInfo == null) {
                     _playerUiStateFlow.value = PlayerUiState.Inactive
                 } else {
-                    _playerUiStateFlow.value = PlayerUiState.Active(musicInfo)
+                    _playerUiStateFlow.value = PlayerUiState.Active(musicInfo = musicInfo)
                 }
             }
         }
@@ -102,20 +101,25 @@ class PlayerStateViewModel @Inject constructor(
                     is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
                         _playerUiStateFlow.update { PlayerUiState.Inactive }
                     }
-                    else -> {}
+                    is PlayerState.Buffering -> {
+                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
+                            _playerUiStateFlow.update {
+                                playerState.copy(
+                                    state = PlayState.LOADING
+                                )
+                            }
+                        }
+                    }
                 }
-                Log.d(TAG, ": playerSState $state")
             }
         }
         viewModelScope.launch {
             playerRepository.observePlayerState().collect { state ->
                 when (state) {
                     is PlayerState.Playing -> {
-                        Log.d(TAG, ": start")
                         coroutineTicker.startTicker()
                     }
                     else -> {
-                        Log.d(TAG, ": stop")
                         coroutineTicker.stopTicker()
                     }
                 }
@@ -150,13 +154,14 @@ sealed interface PlayerUiState {
     object Inactive : PlayerUiState
 
     data class Active(
-        val musicInfo: MusicInfo,
-        val state: PlayState = PlayState.PAUSED,
-        val progress: Float = 0f
+        val state: PlayState = PlayState.LOADING,
+        val progress: Float = 0f,
+        val musicInfo: MusicInfo
     ) : PlayerUiState
 }
 
 enum class PlayState {
     PAUSED,
-    PLAYING
+    PLAYING,
+    LOADING
 }
