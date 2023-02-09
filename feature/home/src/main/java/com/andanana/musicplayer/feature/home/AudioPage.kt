@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
@@ -25,8 +26,9 @@ private const val TAG = "AudioPage"
 fun AudioPage(
     modifier: Modifier = Modifier,
     audioPageViewModel: AudioPageViewModel = hiltViewModel(),
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
+    rootViewModelStoreOwner: ViewModelStoreOwner
 ) {
+    val playerStateViewModel: PlayerStateViewModel = hiltViewModel(rootViewModelStoreOwner)
     val state by audioPageViewModel.audioPageUiState.collectAsState()
     val onAudioItemClick by rememberUpdatedState<(List<MusicInfo>, Int) -> Unit> { list, index ->
         playerStateViewModel.onEvent(PlayerEvent.OnPlayMusicInPlayList(list, index))

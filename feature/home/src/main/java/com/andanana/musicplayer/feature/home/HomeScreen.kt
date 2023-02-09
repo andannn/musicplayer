@@ -19,6 +19,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -28,15 +29,20 @@ private const val TAG = "HomeScreen"
 
 @Composable
 fun HomeRoute(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
 ) {
-    HomeScreen(modifier = modifier)
+    HomeScreen(
+        modifier = modifier,
+        onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
+    )
 }
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 private fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
 ) {
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
@@ -80,7 +86,12 @@ private fun HomeScreen(
             state = pageState
         ) { index ->
             when (HomePage.values()[index]) {
-                HomePage.AUDIO_PAGE -> AudioPage(Modifier.fillMaxSize())
+                HomePage.AUDIO_PAGE -> {
+                    AudioPage(
+                        Modifier.fillMaxSize(),
+                        rootViewModelStoreOwner = onGetRootViewModelStoreOwner.invoke()
+                    )
+                }
                 HomePage.ALBUM_PAGE -> AlbumPage(Modifier.fillMaxSize())
                 HomePage.ARTIST_PAGE -> ArtistPage(Modifier.fillMaxSize())
             }
