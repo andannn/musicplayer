@@ -90,21 +90,12 @@ class PlayerRepositoryImpl @Inject constructor(
 
     init {
         player.prepare()
-        player.play()
-
+        player.playWhenReady = true
         player.addListener(playerListener)
-
-//        GlobalScope.launch(Dispatchers.Main) {
-//            player.setMediaItems(
-//                listOf(
-//                    MediaItem.fromUri("content://media/external/audio/media/1000008273"),
-//                    MediaItem.fromUri("content://media/external/audio/media/1000008204")
-//                )
-//            )
-//            delay(5000)
-//            player.seekToDefaultPosition(2)
-//        }
     }
+
+    override val currentPositionMs: Long
+        get() = player.currentPosition
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 

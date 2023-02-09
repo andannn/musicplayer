@@ -7,16 +7,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
+import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
 
@@ -45,9 +54,14 @@ fun SimpleMusicApp(
         }
     ) {
         Column(modifier = Modifier.padding(it)) {
+            val onGetRootViewModelStoreOwner by rememberUpdatedState<() -> ViewModelStoreOwner> {
+                appState.navController.getBackStackEntry(homeRoute)
+            }
+
             SmpNavHost(
                 modifier = Modifier.weight(1f),
-                navHostController = appState.navController
+                navHostController = appState.navController,
+                onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
             )
             Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color.Red))
         }

@@ -7,11 +7,17 @@ import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.repository.PlayerEvent
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
+import com.andanana.musicplayer.core.player.repository.PlayerState
+import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,7 +42,25 @@ class PlayerStateViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    private val _playerUiStateFlow = MutableStateFlow<PlayerUiState>(PlayerUiState.Inactive)
+    val playerUiStateFlow = _playerUiStateFlow.asStateFlow()
+
+    private var coroutineTicker: CoroutineTicker = CoroutineTicker {
+        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
+            _playerUiStateFlow.update {
+                playerState.copy(
+                    progress = playerRepository.currentPositionMs.div(playerState.musicInfo.duration.toFloat())
+                )
+            }
+        }
+    }
+
     init {
+        viewModelScope.launch {
+            _playerUiStateFlow.collect {
+                Log.d(TAG, ": playerUiStateFlow state $it")
+            }
+        }
         viewModelScope.launch {
             playListFlow.collect { musicInfoList ->
                 if (musicInfoList.isNotEmpty()) {
@@ -45,13 +69,56 @@ class PlayerStateViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            interactingMusicItem.collect {
-                Log.d(TAG, ": player interactingMusicItem $it")
+            interactingMusicItem.collect { musicInfo ->
+                Log.d(TAG, "musicInfo11: $musicInfo")
+                if (musicInfo == null) {
+                    _playerUiStateFlow.value = PlayerUiState.Inactive
+                } else {
+                    _playerUiStateFlow.value = PlayerUiState.Active(musicInfo)
+                }
             }
         }
         viewModelScope.launch {
-            playerRepository.observePlayerState().collect {
-                Log.d(TAG, ": player state $it")
+            playerRepository.observePlayerState().collect { state ->
+                when (state) {
+                    is PlayerState.Playing -> {
+                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
+                            _playerUiStateFlow.update {
+                                playerState.copy(
+                                    state = PlayState.PLAYING
+                                )
+                            }
+                        }
+                    }
+                    is PlayerState.Paused, PlayerState.PlayBackEnd -> {
+                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
+                            _playerUiStateFlow.update {
+                                playerState.copy(
+                                    state = PlayState.PAUSED
+                                )
+                            }
+                        }
+                    }
+                    is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
+                        _playerUiStateFlow.update { PlayerUiState.Inactive }
+                    }
+                    else -> {}
+                }
+                Log.d(TAG, ": playerSState $state")
+            }
+        }
+        viewModelScope.launch {
+            playerRepository.observePlayerState().collect { state ->
+                when (state) {
+                    is PlayerState.Playing -> {
+                        Log.d(TAG, ": start")
+                        coroutineTicker.startTicker()
+                    }
+                    else -> {
+                        Log.d(TAG, ": stop")
+                        coroutineTicker.stopTicker()
+                    }
+                }
             }
         }
     }
@@ -77,4 +144,19 @@ class PlayerStateViewModel @Inject constructor(
     companion object {
         private const val PLAY_LIST_KEY = "play_list_key"
     }
+}
+
+sealed interface PlayerUiState {
+    object Inactive : PlayerUiState
+
+    data class Active(
+        val musicInfo: MusicInfo,
+        val state: PlayState = PlayState.PAUSED,
+        val progress: Float = 0f
+    ) : PlayerUiState
+}
+
+enum class PlayState {
+    PAUSED,
+    PLAYING
 }
