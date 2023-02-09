@@ -135,10 +135,12 @@ class PlayerStateViewModel @Inject constructor(
                 // Play list changed.
                 savedStateHandle[PLAY_LIST_KEY] = playList
                 playerRepository.seekToMediaIndex(index)
+                playerRepository.play()
             }
             index != playListFlow.value.indexOf(interactingMusicItem.value) -> {
                 // Play list is same but play item changed.
                 playerRepository.seekToMediaIndex(index)
+                playerRepository.play()
             }
         }
     }
