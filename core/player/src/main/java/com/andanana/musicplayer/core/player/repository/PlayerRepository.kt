@@ -18,4 +18,7 @@ interface PlayerRepository {
     fun observePlayingMediaItem(): Flow<MediaItem?>
     fun setPlayList(mediaItems: List<MediaItem>)
     fun seekToMediaIndex(index: Int)
+    fun play()
+    fun pause()
+    fun next()
 }

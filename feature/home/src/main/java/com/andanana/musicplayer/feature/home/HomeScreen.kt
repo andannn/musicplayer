@@ -2,13 +2,13 @@ package com.andanana.musicplayer.feature.home
 
 import android.util.Log
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelStoreOwner
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -74,8 +75,9 @@ private fun HomeScreen(
                         }
                     }
                 ) {
-                    Box(
-                        modifier = modifier.padding(vertical = 10.dp)
+                    Text(
+                        modifier = modifier.padding(vertical = 10.dp),
+                        text = stringResource(id = page.titleResId)
                     )
                 }
             }

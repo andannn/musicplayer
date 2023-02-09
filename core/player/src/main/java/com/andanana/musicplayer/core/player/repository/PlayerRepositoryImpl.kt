@@ -4,14 +4,10 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "PlayerRepositoryImpl"
@@ -106,5 +102,17 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun seekToMediaIndex(index: Int) {
         player.seekToDefaultPosition(index)
+    }
+
+    override fun play() {
+        player.play()
+    }
+
+    override fun pause() {
+        player.pause()
+    }
+
+    override fun next() {
+        player.seekToNextMediaItem()
     }
 }

@@ -53,6 +53,9 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
+    private val playStateNullable
+        get() = _playerUiStateFlow.value as? PlayerUiState.Active
+
     init {
         viewModelScope.launch {
             _playerUiStateFlow.collect {
@@ -140,6 +143,19 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
+    fun togglePlayState() {
+        playStateNullable?.let {
+            when (it.state) {
+                PlayState.PAUSED -> playerRepository.play()
+                PlayState.PLAYING -> playerRepository.pause()
+                else -> Unit
+            }
+        }
+    }
+
+    fun onPlayNextButtonClick() {
+        playerRepository.next()
+    }
     companion object {
         private const val PLAY_LIST_KEY = "play_list_key"
     }

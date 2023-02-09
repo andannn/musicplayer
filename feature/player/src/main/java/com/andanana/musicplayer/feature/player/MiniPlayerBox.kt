@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.player
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,17 +17,16 @@ private const val TAG = "MiniPlayerBox"
 fun MiniPlayerBox(
     onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
 ) {
-    val playerStateViewModel = hiltViewModel<PlayerStateViewModel>(onGetRootViewModelStoreOwner.invoke())
+    val playerStateViewModel =
+        hiltViewModel<PlayerStateViewModel>(onGetRootViewModelStoreOwner.invoke())
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
     MiniPlayerBoxContent(
         state = playerUiState,
-        onPlayerSheetClick = {
-        },
-        onPlayControlButtonClick = {
-        },
-        onFavoriteButtonClick = {
-        }
+        onPlayerSheetClick = {},
+        onPlayControlButtonClick = playerStateViewModel::togglePlayState,
+        onFavoriteButtonClick = {},
+        onPlayNextButtonClick = playerStateViewModel::onPlayNextButtonClick
     )
 }
 
@@ -38,17 +36,20 @@ private fun MiniPlayerBoxContent(
     state: PlayerUiState,
     onPlayerSheetClick: () -> Unit = {},
     onPlayControlButtonClick: () -> Unit = {},
-    onFavoriteButtonClick: () -> Unit = {}
+    onFavoriteButtonClick: () -> Unit = {},
+    onPlayNextButtonClick: () -> Unit = {}
 ) {
     if (state is PlayerUiState.Active) {
         BottomPlayerSheet(
             modifier = modifier,
             coverUri = state.musicInfo.albumUri,
             isPlaying = state.state == PlayState.PLAYING,
+            isLoading = state.state == PlayState.LOADING,
             title = state.musicInfo.title,
             artist = state.musicInfo.artist,
             progress = state.progress,
             onPlayerSheetClick = onPlayerSheetClick,
+            onPlayNextButtonClick = onPlayNextButtonClick,
             onPlayControlButtonClick = onPlayControlButtonClick,
             onFavoriteButtonClick = onFavoriteButtonClick
         )

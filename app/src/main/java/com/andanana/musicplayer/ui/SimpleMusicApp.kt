@@ -10,12 +10,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
@@ -37,7 +33,7 @@ fun SimpleMusicApp(
             val titleRes = appState.currentTopLevelDestination?.titleTextId
             if (titleRes != null) {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = stringResource(id = titleRes), color = Color.Black) }
+                    title = { Text(text = stringResource(id = titleRes)) }
                 )
             }
         },
@@ -59,7 +55,6 @@ fun SimpleMusicApp(
                 navHostController = appState.navController,
                 onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
             )
-            Log.d(TAG, "SimpleMusicApp: ")
             MiniPlayerBox(onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner)
         }
     }

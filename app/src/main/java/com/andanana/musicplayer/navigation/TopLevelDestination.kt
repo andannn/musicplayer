@@ -23,11 +23,5 @@ enum class TopLevelDestination(
         unSelectedIcon = Icon.ImageVectorIcon(SimpleMusicIcons.UnselectedLibrary),
         iconTextId = libraryR.string.title,
         titleTextId = libraryR.string.title
-    ),
-    SETTING(
-        selectedIcon = Icon.ImageVectorIcon(SimpleMusicIcons.Settings),
-        unSelectedIcon = Icon.ImageVectorIcon(SimpleMusicIcons.UnselectedSettings),
-        iconTextId = R.string.app_name,
-        titleTextId = R.string.app_name
-    ),
+    )
 }
