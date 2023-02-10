@@ -21,9 +21,9 @@ enum class RequestType(val externalContentUri: String) {
     ARTIST_REQUEST(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString());
 
     companion object {
-        fun getTypeByContentUri(uri: Uri): RequestType? {
+        fun Uri.getTypeByContentUri(): RequestType? {
             return RequestType.values().find {
-                uri.toString().contains(it.externalContentUri)
+                this.toString().contains(it.externalContentUri)
             }
         }
 
@@ -33,7 +33,7 @@ enum class RequestType(val externalContentUri: String) {
 }
 
 fun NavController.navigateToPlayList(uri: Uri) {
-    getTypeByContentUri(uri)?.let { type ->
+    uri.getTypeByContentUri()?.let { type ->
         this.navigate("$playListRoute/${uri.lastPathSegment}/$type")
     }
 }

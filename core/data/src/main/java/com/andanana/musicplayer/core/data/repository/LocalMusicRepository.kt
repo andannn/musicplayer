@@ -9,7 +9,7 @@ interface LocalMusicRepository {
 
     suspend fun getMusicInfoByAlbumId(id: Long): List<MusicInfo>
 
-    suspend fun getMusicInfoByArtistId(id: Int): List<MusicInfo>
+    suspend fun getMusicInfoByArtistId(id: Long): List<MusicInfo>
 
     suspend fun getAllAlbumInfo(): List<AlbumInfo>
 

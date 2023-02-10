@@ -51,7 +51,10 @@ private fun HomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
-    var selectedPageIndex by remember { mutableStateOf(0) }
+    val pageIndex = remember(key1 = pageState) {
+        pageState.currentPage
+    }
+    var selectedPageIndex by remember { mutableStateOf(pageIndex) }
     val homePage = remember(selectedPageIndex) { HomePage.values()[selectedPageIndex] }
 
     LaunchedEffect(Unit) {

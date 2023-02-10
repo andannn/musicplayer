@@ -71,7 +71,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMusicInfoByArtistId(id: Int) = withContext(Dispatchers.IO) {
+    override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {
         queryMusicInfo {
             val artistLimitation = "(${MediaStore.Audio.Media.ARTIST_ID} like ?)"
             val artistSelectArgs = listOf(id.toString())
@@ -173,7 +173,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     artistId = cursor.getLong(idIndex),
                     artistUri = Uri.withAppendedPath(
                         MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                        cursor.getInt(idIndex).toString()
+                        cursor.getLong(idIndex).toString()
                     ),
                     name = cursor.getString(artistIndex),
                     artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex)) ?: Uri.parse(""),
