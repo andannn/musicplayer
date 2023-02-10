@@ -15,21 +15,25 @@ import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
 import com.andanana.musicplayer.feature.playList.navigation.playListRoute
 import com.andanana.musicplayer.navigation.TopLevelDestination
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun rememberSimpleMusicAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    systemUiController: SystemUiController = rememberSystemUiController()
 ): SimpleMusicAppState {
-    return remember(navController, coroutineScope) {
-        SimpleMusicAppState(navController, coroutineScope)
+    return remember(navController, coroutineScope, systemUiController) {
+        SimpleMusicAppState(navController, coroutineScope, systemUiController)
     }
 }
 
 class SimpleMusicAppState(
     val navController: NavHostController,
-    coroutineScope: CoroutineScope
+    val coroutineScope: CoroutineScope,
+    val systemUiController: SystemUiController
 ) {
     val topLevelDestinations = TopLevelDestination.values().toList()
 
