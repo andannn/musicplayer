@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.home
 
+import android.net.Uri
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
@@ -31,11 +32,13 @@ private const val TAG = "HomeScreen"
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     HomeScreen(
         modifier = modifier,
-        onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
+        onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+        onNavigateToPlayList = onNavigateToPlayList
     )
 }
 
@@ -43,7 +46,8 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
@@ -94,7 +98,10 @@ private fun HomeScreen(
                         rootViewModelStoreOwner = onGetRootViewModelStoreOwner.invoke()
                     )
                 }
-                HomePage.ALBUM_PAGE -> AlbumPage(Modifier.fillMaxSize())
+                HomePage.ALBUM_PAGE -> AlbumPage(
+                    Modifier.fillMaxSize(),
+                    onNavigateToPlayList = onNavigateToPlayList
+                )
                 HomePage.ARTIST_PAGE -> ArtistPage(Modifier.fillMaxSize())
             }
         }

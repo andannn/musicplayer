@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
+import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 
 private const val TAG = "SmpNavHost"
 
@@ -23,7 +24,10 @@ fun SmpNavHost(
         modifier = modifier
     ) {
         homeScreen(
-            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
+            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+            onNavigateToPlayList = {
+                navHostController.navigateToPlayList(it)
+            }
         )
         libraryScreen()
     }

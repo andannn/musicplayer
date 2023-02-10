@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.home.navigation
 
+import android.net.Uri
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -14,9 +15,13 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     composable(route = homeRoute) {
-        HomeRoute(onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner)
+        HomeRoute(
+            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+            onNavigateToPlayList = onNavigateToPlayList
+        )
     }
 }

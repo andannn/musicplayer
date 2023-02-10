@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.home
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,20 +23,23 @@ private const val TAG = "AlbumPage"
 @Composable
 fun AlbumPage(
     modifier: Modifier = Modifier,
-    albumPageViewModel: AlbumPageViewModel = hiltViewModel()
+    albumPageViewModel: AlbumPageViewModel = hiltViewModel(),
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     val state by albumPageViewModel.albumPageUiState.collectAsState()
 
     AlbumPageContent(
         modifier = modifier,
-        state = state
+        state = state,
+        onNavigateToPlayList = onNavigateToPlayList
     )
 }
 
 @Composable
 private fun AlbumPageContent(
     modifier: Modifier = Modifier,
-    state: AlbumPageUiState
+    state: AlbumPageUiState,
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     when (state) {
         AlbumPageUiState.Loading -> {
@@ -58,7 +62,10 @@ private fun AlbumPageContent(
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
                         albumArtUri = info.albumUri,
                         title = info.title,
-                        trackCount = info.trackCount
+                        trackCount = info.trackCount,
+                        onClick = {
+                            onNavigateToPlayList.invoke(info.albumUri)
+                        }
                     )
                 }
             }

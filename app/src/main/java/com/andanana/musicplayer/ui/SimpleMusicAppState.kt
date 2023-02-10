@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,6 +34,12 @@ class SimpleMusicAppState(
 
     val currentNavDestination
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+
+    val isTopBarHide
+        @Composable get() = currentNavDestination?.route == libraryRoute
+
+    val isNavigationBarHide
+        @Composable get() = currentNavDestination?.route == libraryRoute
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {
