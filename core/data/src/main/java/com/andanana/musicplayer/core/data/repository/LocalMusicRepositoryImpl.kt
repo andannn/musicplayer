@@ -171,6 +171,10 @@ class LocalMusicRepositoryImpl @Inject constructor(
             itemList.add(
                 ArtistInfo(
                     artistId = cursor.getLong(idIndex),
+                    artistUri = Uri.withAppendedPath(
+                        MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                        cursor.getInt(idIndex).toString()
+                    ),
                     name = cursor.getString(artistIndex),
                     artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex)) ?: Uri.parse(""),
                     trackCount = cursor.getInt(numberOfTracksIndex)

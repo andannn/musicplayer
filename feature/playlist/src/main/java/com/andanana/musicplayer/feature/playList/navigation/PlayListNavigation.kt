@@ -12,6 +12,7 @@ import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companio
 
 private const val TAG = "PlayListNavigation"
 
+const val playListRoute = "play_list_route"
 const val requestUriTypeArg = "request_play_list_uri"
 const val requestUriLastSegmentArg = "request_play_list_lastSegment"
 
@@ -33,7 +34,7 @@ enum class RequestType(val externalContentUri: String) {
 
 fun NavController.navigateToPlayList(uri: Uri) {
     getTypeByContentUri(uri)?.let { type ->
-        this.navigate("play_list_route/${uri.lastPathSegment}/$type")
+        this.navigate("$playListRoute/${uri.lastPathSegment}/$type")
     }
 }
 
@@ -41,7 +42,7 @@ fun NavGraphBuilder.playListScreen(
     onBackPressed: () -> Unit
 ) {
     composable(
-        route = "play_list_route/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
+        route = "$playListRoute/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
         arguments = listOf(
             navArgument(name = requestUriLastSegmentArg) {
                 type = NavType.StringType

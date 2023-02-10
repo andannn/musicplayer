@@ -37,16 +37,15 @@ fun SimpleMusicApp(
     Scaffold(
         topBar = {
             val titleRes = appState.currentTopLevelDestination?.titleTextId
-            if (titleRes != null) {
-                val visible = !appState.isTopBarHide
-                SmpCenterAlignedTopAppBar(
-                    visible = visible,
-                    title = stringResource(id = titleRes)
-                )
-            }
+            val title = titleRes?.let { stringResource(id = it) } ?: ""
+            val visible = !appState.isTopBarHide
+            SmpCenterAlignedTopAppBar(
+                visible = visible,
+                title = title
+            )
         },
         bottomBar = {
-            val visible = !appState.isTopBarHide
+            val visible = !appState.isNavigationBarHide
             SimpleMusicNavigationBar(
                 visible = visible,
                 destinations = appState.topLevelDestinations,

@@ -13,6 +13,7 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
+import com.andanana.musicplayer.feature.playList.navigation.playListRoute
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import kotlinx.coroutines.CoroutineScope
 
@@ -36,10 +37,10 @@ class SimpleMusicAppState(
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     val isTopBarHide
-        @Composable get() = currentNavDestination?.route == libraryRoute
+        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
 
     val isNavigationBarHide
-        @Composable get() = currentNavDestination?.route == libraryRoute
+        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {

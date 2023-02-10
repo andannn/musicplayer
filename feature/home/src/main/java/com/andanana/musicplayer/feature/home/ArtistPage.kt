@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.home
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,20 +20,23 @@ import com.andanana.musicplayer.core.designsystem.component.ArtistCard
 @Composable
 fun ArtistPage(
     modifier: Modifier = Modifier,
-    artistPageViewModel: ArtistPageViewModel = hiltViewModel()
+    artistPageViewModel: ArtistPageViewModel = hiltViewModel(),
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     val state by artistPageViewModel.artistPageUiState.collectAsState()
 
     AlbumPageContent(
         modifier = modifier,
-        state = state
+        state = state,
+        onNavigateToPlayList = onNavigateToPlayList
     )
 }
 
 @Composable
 private fun AlbumPageContent(
     modifier: Modifier = Modifier,
-    state: ArtistPageUiState
+    state: ArtistPageUiState,
+    onNavigateToPlayList: (Uri) -> Unit
 ) {
     when (state) {
         ArtistPageUiState.Loading -> {
@@ -55,7 +59,10 @@ private fun AlbumPageContent(
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
                         artistUri = info.artistCoverUri,
                         name = info.name,
-                        trackCount = info.trackCount
+                        trackCount = info.trackCount,
+                        onClick = {
+                            onNavigateToPlayList.invoke(info.artistUri)
+                        }
                     )
                 }
             }

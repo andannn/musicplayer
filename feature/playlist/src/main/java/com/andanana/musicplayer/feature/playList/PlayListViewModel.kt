@@ -17,12 +17,10 @@ private const val TAG = "PlayListViewModel"
 
 @HiltViewModel
 class PlayListViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val requestTypeFlow =
-        savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
-    private val requestUriLastSegmentFlow =
-        savedStateHandle.getStateFlow(requestUriLastSegmentArg, "")
+    private val requestTypeFlow = savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
+    private val requestUriLastSegmentFlow = savedStateHandle.getStateFlow(requestUriLastSegmentArg, "")
 
     private val requestUri = combine(
         requestTypeFlow,
@@ -35,6 +33,16 @@ class PlayListViewModel @Inject constructor(
         viewModelScope.launch {
             requestUri.collect {
                 Log.d(TAG, ": $it")
+            }
+        }
+        viewModelScope.launch {
+            requestTypeFlow.collect {
+                Log.d(TAG, ":requestTypeFlow $it")
+            }
+        }
+        viewModelScope.launch {
+            requestUriLastSegmentFlow.collect {
+                Log.d(TAG, ":requestUriLastSegmentFlow $it")
             }
         }
     }

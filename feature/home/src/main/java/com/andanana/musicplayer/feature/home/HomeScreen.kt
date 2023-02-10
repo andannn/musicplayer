@@ -102,7 +102,10 @@ private fun HomeScreen(
                     Modifier.fillMaxSize(),
                     onNavigateToPlayList = onNavigateToPlayList
                 )
-                HomePage.ARTIST_PAGE -> ArtistPage(Modifier.fillMaxSize())
+                HomePage.ARTIST_PAGE -> ArtistPage(
+                    Modifier.fillMaxSize(),
+                    onNavigateToPlayList = onNavigateToPlayList
+                )
             }
         }
     }
