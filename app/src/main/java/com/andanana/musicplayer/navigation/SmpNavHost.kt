@@ -9,6 +9,7 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
+import com.andanana.musicplayer.feature.playList.navigation.playListScreen
 
 private const val TAG = "SmpNavHost"
 
@@ -16,7 +17,8 @@ private const val TAG = "SmpNavHost"
 fun SmpNavHost(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    onBackPressed: () -> Unit
 ) {
     NavHost(
         navController = navHostController,
@@ -30,5 +32,6 @@ fun SmpNavHost(
             }
         )
         libraryScreen()
+        playListScreen(onBackPressed = onBackPressed)
     }
 }

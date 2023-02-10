@@ -1,27 +1,53 @@
 package com.andanana.musicplayer.feature.playList.navigation
 
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.andanana.musicplayer.feature.playList.PlayListScreen
+import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.getTypeByContentUri
 
-val requestUriArg = "request_play_list_uri"
+private const val TAG = "PlayListNavigation"
+
+const val requestUriTypeArg = "request_play_list_uri"
+const val requestUriLastSegmentArg = "request_play_list_lastSegment"
+
+enum class RequestType(val externalContentUri: String) {
+    ALBUM_REQUEST(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString()),
+    ARTIST_REQUEST(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString());
+
+    companion object {
+        fun getTypeByContentUri(uri: Uri): RequestType? {
+            return RequestType.values().find {
+                uri.toString().contains(it.externalContentUri)
+            }
+        }
+
+        fun RequestType.toUri(lastPathSegment: String): Uri =
+            Uri.withAppendedPath(Uri.parse(externalContentUri), lastPathSegment)
+    }
+}
 
 fun NavController.navigateToPlayList(uri: Uri) {
-    this.navigate("play_list_route/$uri")
+    getTypeByContentUri(uri)?.let { type ->
+        this.navigate("play_list_route/${uri.lastPathSegment}/$type")
+    }
 }
 
 fun NavGraphBuilder.playListScreen(
     onBackPressed: () -> Unit
 ) {
     composable(
-        route = "play_list_route/{$requestUriArg}",
+        route = "play_list_route/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
         arguments = listOf(
-            navArgument(name = requestUriArg) {
+            navArgument(name = requestUriLastSegmentArg) {
                 type = NavType.StringType
+            },
+            navArgument(name = requestUriTypeArg) {
+                type = NavType.EnumType(RequestType::class.java)
             }
         )
     ) {

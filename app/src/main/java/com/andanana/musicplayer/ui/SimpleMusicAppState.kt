@@ -69,4 +69,8 @@ class SimpleMusicAppState(
             else -> {}
         }
     }
+
+    fun onBackPressed() {
+        navController.popBackStack()
+    }
 }

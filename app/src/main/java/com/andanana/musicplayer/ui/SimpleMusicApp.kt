@@ -63,7 +63,8 @@ fun SimpleMusicApp(
             SmpNavHost(
                 modifier = Modifier.weight(1f),
                 navHostController = appState.navController,
-                onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner
+                onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+                onBackPressed = appState::onBackPressed
             )
             MiniPlayerBox(onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner)
         }
