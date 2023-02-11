@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +28,6 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private const val TAG = "SimpleMusicApp"
 
@@ -60,13 +60,13 @@ fun SimpleMusicApp(
 
         Column(modifier = Modifier.padding(it)) {
             val onGetRootViewModelStoreOwner = {
+                Log.d(TAG, "SimpleMusicApp: onGetRootViewModelStoreOwner")
                 appState.navController.getBackStackEntry(homeRoute)
             }
 
             SmpNavHost(
                 modifier = Modifier.weight(1f),
                 navHostController = appState.navController,
-                onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
                 onBackPressed = appState::onBackPressed
             )
             MiniPlayerBox(onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner)

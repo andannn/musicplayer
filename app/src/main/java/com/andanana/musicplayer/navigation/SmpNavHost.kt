@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.navigation
 
+import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelStoreOwner
@@ -17,7 +18,6 @@ private const val TAG = "SmpNavHost"
 fun SmpNavHost(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
     onBackPressed: () -> Unit
 ) {
     NavHost(
@@ -26,14 +26,14 @@ fun SmpNavHost(
         modifier = modifier
     ) {
         homeScreen(
-            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+            navHostController = navHostController,
             onNavigateToPlayList = {
                 navHostController.navigateToPlayList(it)
             }
         )
         libraryScreen()
         playListScreen(
-            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+            navHostController = navHostController,
             onBackPressed = onBackPressed
         )
     }

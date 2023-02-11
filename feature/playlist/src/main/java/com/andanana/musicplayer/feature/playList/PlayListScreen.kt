@@ -36,10 +36,8 @@ private const val TAG = "PlayListScreen"
 @Composable
 fun PlayListScreen(
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    rootViewModelStoreOwner: ViewModelStoreOwner
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
 ) {
-    val playerStateViewModel: PlayerStateViewModel =
-        hiltViewModel(rootViewModelStoreOwner)
     val coverArtUri by playListViewModel.artCoverUri.collectAsState(initial = Uri.EMPTY)
     val musicItems by playListViewModel.musicItemsFlow.collectAsState(emptyList())
     val trackCount = remember(musicItems) { musicItems.count() }

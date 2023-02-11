@@ -15,10 +15,9 @@ private const val TAG = "MiniPlayerBox"
 
 @Composable
 fun MiniPlayerBox(
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(onGetRootViewModelStoreOwner.invoke())
 ) {
-    val playerStateViewModel =
-        hiltViewModel<PlayerStateViewModel>(onGetRootViewModelStoreOwner.invoke())
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
     MiniPlayerBoxContent(

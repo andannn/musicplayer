@@ -3,6 +3,7 @@ package com.andanana.musicplayer.feature.home
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,16 +21,16 @@ private const val TAG = "AudioPage"
 fun AudioPage(
     modifier: Modifier = Modifier,
     audioPageViewModel: AudioPageViewModel = hiltViewModel(),
-    rootViewModelStoreOwner: ViewModelStoreOwner
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
 ) {
-    val playerStateViewModel: PlayerStateViewModel = hiltViewModel(rootViewModelStoreOwner)
     val state by audioPageViewModel.audioPageUiState.collectAsState()
-
-    AudioPageContent(
-        modifier = modifier,
-        state = state,
-        onAudioItemClick = playerStateViewModel::onPlayMusic
-    )
+    Surface {
+        AudioPageContent(
+            modifier = modifier,
+            state = state,
+            onAudioItemClick = playerStateViewModel::onPlayMusic
+        )
+    }
 }
 
 @Composable

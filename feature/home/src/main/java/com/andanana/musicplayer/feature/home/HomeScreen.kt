@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -21,7 +22,8 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelStoreOwner
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.andanana.musicplayer.core.player.PlayerStateViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -32,12 +34,12 @@ private const val TAG = "HomeScreen"
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
     onNavigateToPlayList: (Uri) -> Unit
 ) {
     HomeScreen(
         modifier = modifier,
-        onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+        playerStateViewModel = playerStateViewModel,
         onNavigateToPlayList = onNavigateToPlayList
     )
 }
@@ -46,7 +48,7 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
+    playerStateViewModel: PlayerStateViewModel,
     onNavigateToPlayList: (Uri) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -94,11 +96,12 @@ private fun HomeScreen(
             count = HomePage.values().size,
             state = pageState
         ) { index ->
+            Log.d(TAG, "HomeScreen: ")
             when (HomePage.values()[index]) {
                 HomePage.AUDIO_PAGE -> {
                     AudioPage(
                         Modifier.fillMaxSize(),
-                        rootViewModelStoreOwner = onGetRootViewModelStoreOwner.invoke()
+                        playerStateViewModel = playerStateViewModel
                     )
                 }
                 HomePage.ALBUM_PAGE -> AlbumPage(
