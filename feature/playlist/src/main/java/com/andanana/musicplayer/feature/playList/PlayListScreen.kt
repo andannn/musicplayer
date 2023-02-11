@@ -155,7 +155,7 @@ private fun PlayListContent(
                     )
                 }
                 item {
-                    Spacer(modifier = Modifier.height(150.dp))
+                    Spacer(modifier = Modifier.height(250.dp))
                 }
             }
         }

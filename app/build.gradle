@@ -39,7 +39,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion "$kotlin_complier_exterion_version"
     }
     packagingOptions {
         resources {
@@ -59,6 +59,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
 
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
 
     // Hilt Navigation Compose
     implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"

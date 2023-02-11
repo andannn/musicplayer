@@ -20,7 +20,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion "$kotlin_complier_exterion_version"
     }
     buildTypes {
         release {

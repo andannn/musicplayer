@@ -1,7 +1,7 @@
 package com.andanana.musicplayer.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -14,6 +14,7 @@ import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
 import com.andanana.musicplayer.feature.playList.navigation.playListRoute
+import com.andanana.musicplayer.feature.player.navigation.playerRoute
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -41,17 +42,21 @@ class SimpleMusicAppState(
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
     val isHomeRoute
-        get() = navController.currentBackStackEntry?.destination?.route == homeRoute
+        @Composable get() = currentNavDestination?.route == homeRoute
+
     val isLibraryRoute
-        get() = navController.currentBackStackEntry?.destination?.route == libraryRoute
-    val isPlayListRoute
-        get() = navController.currentBackStackEntry?.destination?.route?.contains(playListRoute) == true
+        @Composable get() = currentNavDestination?.route == libraryRoute
+
+    val isPlayerRoute
+        @Composable get() = currentNavDestination?.route == playerRoute
+
+    private val isPlayListRoute
+        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
 
     val isTopBarHide
-        @Composable get() = isPlayListRoute
-
+        @Composable get() = isPlayListRoute || isPlayerRoute
     val isNavigationBarHide
-        @Composable get() = isPlayListRoute
+        @Composable get() = isPlayListRoute || isPlayerRoute
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {

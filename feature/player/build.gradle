@@ -27,7 +27,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion "$kotlin_complier_exterion_version"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -42,6 +42,8 @@ dependencies {
     implementation project(":core:designsystem")
     implementation project(":core:model")
     implementation project(":core:player")
+
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
 
     // Compose
     implementation "androidx.compose.ui:ui:$compose_ui_version"

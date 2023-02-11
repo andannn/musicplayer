@@ -15,13 +15,14 @@ private const val TAG = "MiniPlayerBox"
 
 @Composable
 fun MiniPlayerBox(
-    playerStateViewModel: PlayerStateViewModel
+    playerStateViewModel: PlayerStateViewModel,
+    onNavigateToPlayer: () -> Unit
 ) {
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
     MiniPlayerBoxContent(
         state = playerUiState,
-        onPlayerSheetClick = {},
+        onPlayerSheetClick = onNavigateToPlayer,
         onPlayControlButtonClick = playerStateViewModel::togglePlayState,
         onFavoriteButtonClick = {},
         onPlayNextButtonClick = playerStateViewModel::onPlayNextButtonClick

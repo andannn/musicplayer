@@ -3,6 +3,8 @@ package com.andanana.musicplayer.ui
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -29,6 +31,7 @@ import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
+import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
 
@@ -72,7 +75,18 @@ fun SimpleMusicApp(
             val parentBackEntry = remember(backStackEntry) {
                 appState.navController.getBackStackEntry(homeRoute)
             }
-            MiniPlayerBox(playerStateViewModel = hiltViewModel(parentBackEntry))
+            val visible = !appState.isPlayerRoute
+
+            AnimatedVisibility(
+                visible = visible,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                MiniPlayerBox(
+                    playerStateViewModel = hiltViewModel(parentBackEntry),
+                    onNavigateToPlayer = { appState.navController.navigateToPlayer() }
+                )
+            }
         }
     }
 }

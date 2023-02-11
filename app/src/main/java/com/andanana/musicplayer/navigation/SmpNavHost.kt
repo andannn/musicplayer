@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.navigation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,6 +10,7 @@ import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
+import com.andanana.musicplayer.feature.player.navigation.playerScreen
 
 private const val TAG = "SmpNavHost"
 
@@ -33,6 +35,9 @@ fun SmpNavHost(
         playListScreen(
             navHostController = navHostController,
             onBackPressed = onBackPressed
+        )
+        playerScreen(
+            navHostController = navHostController
         )
     }
 }
