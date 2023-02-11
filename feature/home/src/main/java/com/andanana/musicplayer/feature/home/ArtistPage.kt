@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,14 +24,11 @@ fun ArtistPage(
     onNavigateToPlayList: (Uri) -> Unit
 ) {
     val state by artistPageViewModel.artistPageUiState.collectAsState()
-    Surface {
-        AlbumPageContent(
-            modifier = modifier,
-            state = state,
-            onNavigateToPlayList = onNavigateToPlayList
-        )
-    }
-
+    AlbumPageContent(
+        modifier = modifier,
+        state = state,
+        onNavigateToPlayList = onNavigateToPlayList
+    )
 }
 
 @Composable

@@ -60,6 +60,14 @@ class LocalMusicRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAlbumInfoById(id: Long) = withContext(Dispatchers.IO) {
+        queryAlbumInfo {
+            projection = AlbumInfoProjection
+            where = "(${MediaStore.Audio.Albums._ID} like ?)"
+            selectionArgs = listOf(id.toString()).toTypedArray()
+        }.getOrNull(0) ?: error("invalid album id")
+    }
+
     override suspend fun getMusicInfoByAlbumId(id: Long) = withContext(Dispatchers.IO) {
         queryMusicInfo {
             val albumLimitation = "(${MediaStore.Audio.Media.ALBUM_ID} like ?)"
@@ -69,6 +77,14 @@ class LocalMusicRepositoryImpl @Inject constructor(
             where = "$MimeTypeLimitation AND $albumLimitation"
             selectionArgs = MimeTypeSelectionArg + albumSelectArgs
         }
+    }
+
+    override suspend fun getArtistInfoById(id: Long) = withContext(Dispatchers.IO) {
+        queryArtistInfo {
+            projection = ArtistInfoProjection
+            where = "(${MediaStore.Audio.Artists._ID} like ?)"
+            selectionArgs = listOf(id.toString()).toTypedArray()
+        }.getOrNull(0) ?: error("invalid artist id")
     }
 
     override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {

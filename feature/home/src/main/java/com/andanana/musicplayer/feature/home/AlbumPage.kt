@@ -29,13 +29,11 @@ fun AlbumPage(
 ) {
     val state by albumPageViewModel.albumPageUiState.collectAsState()
 
-    Surface {
-        AlbumPageContent(
-            modifier = modifier,
-            state = state,
-            onNavigateToPlayList = onNavigateToPlayList
-        )
-    }
+    AlbumPageContent(
+        modifier = modifier,
+        state = state,
+        onNavigateToPlayList = onNavigateToPlayList
+    )
 }
 
 @Composable

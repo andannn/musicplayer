@@ -129,6 +129,10 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
+    fun onPlayMusic(playList: List<MusicInfo>) {
+        onPlayMusic(playList, 0)
+    }
+
     fun onPlayMusic(playList: List<MusicInfo>, index: Int) {
         when {
             playList != this.playListFlow.value -> {

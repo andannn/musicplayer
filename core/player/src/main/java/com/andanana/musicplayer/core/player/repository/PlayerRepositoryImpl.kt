@@ -114,5 +114,6 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun next() {
         player.seekToNextMediaItem()
+        player.play()
     }
 }

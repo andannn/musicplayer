@@ -5,12 +5,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.feature.playList.navigation.RequestType
 import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toUri
 import com.andanana.musicplayer.feature.playList.navigation.requestUriLastSegmentArg
 import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -35,33 +39,49 @@ class PlayListViewModel @Inject constructor(
         type.toUri(lastSegment)
     }
 
-    val artCoverUri = requestUri.map {
-        when (it.toRequestType()) {
-            RequestType.ALBUM_REQUEST -> it
-            RequestType.ARTIST_REQUEST -> it
-            null -> null
-        }
-    }
+    private val _playListUiStateFlow = MutableStateFlow<PlayListUiState>(PlayListUiState.Loading)
+    val playListUiStateFlow = _playListUiStateFlow.asStateFlow()
 
-    val title = requestUri.map {
-        when (it.toRequestType()) {
-            RequestType.ALBUM_REQUEST -> it.toString()
-            RequestType.ARTIST_REQUEST -> it.toString()
-            null -> null
-        }
-    }
-
-    val musicItemsFlow = requestUri.map {
-        it.toRequestType()?.let { type ->
-            when (type) {
-                RequestType.ALBUM_REQUEST -> {
-                    repository.getMusicInfoByAlbumId(it.lastPathSegment?.toLong() ?: 0L)
+    init {
+        viewModelScope.launch {
+            requestUri.collect { uri ->
+                val title: String
+                val artCoverUri: String
+                val trackCount: Int
+                val musicItems: List<MusicInfo>
+                when (uri.toRequestType()) {
+                    RequestType.ALBUM_REQUEST -> {
+                        val info = repository.getAlbumInfoById(
+                            id = uri.lastPathSegment?.toLong() ?: 0L
+                        )
+                        title = info.title
+                        artCoverUri = info.albumUri.toString()
+                        trackCount = info.trackCount
+                        musicItems = repository.getMusicInfoByAlbumId(
+                            id = uri.lastPathSegment?.toLong() ?: 0L
+                        )
+                    }
+                    RequestType.ARTIST_REQUEST -> {
+                        val info = repository.getArtistInfoById(
+                            id = uri.lastPathSegment?.toLong() ?: 0L
+                        )
+                        title = info.name
+                        artCoverUri = info.artistCoverUri.toString()
+                        trackCount = info.trackCount
+                        musicItems = repository.getMusicInfoByArtistId(
+                            id = uri.lastPathSegment?.toLong() ?: 0L
+                        )
+                    }
+                    else -> error("Invalid type")
                 }
-                RequestType.ARTIST_REQUEST -> {
-                    repository.getMusicInfoByArtistId(it.lastPathSegment?.toLong() ?: 0L)
-                }
+                _playListUiStateFlow.value = PlayListUiState.Ready(
+                    title = title,
+                    artCoverUri = artCoverUri,
+                    trackCount = trackCount,
+                    musicItems = musicItems
+                )
             }
-        } ?: emptyList()
+        }
     }
 
     init {
@@ -71,9 +91,19 @@ class PlayListViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            musicItemsFlow.collect {
-                Log.d(TAG, ":musicItemsFlow $it")
+            _playListUiStateFlow.collect {
+                Log.d(TAG, ":_playListUiStateFlow $it")
             }
         }
     }
+}
+
+sealed interface PlayListUiState {
+    object Loading : PlayListUiState
+    data class Ready(
+        val title: String,
+        val artCoverUri: String,
+        val trackCount: Int,
+        val musicItems: List<MusicInfo>
+    ) : PlayListUiState
 }

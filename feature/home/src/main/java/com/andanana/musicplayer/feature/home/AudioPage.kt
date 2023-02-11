@@ -3,14 +3,12 @@ package com.andanana.musicplayer.feature.home
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
@@ -24,13 +22,11 @@ fun AudioPage(
     playerStateViewModel: PlayerStateViewModel = hiltViewModel()
 ) {
     val state by audioPageViewModel.audioPageUiState.collectAsState()
-    Surface {
-        AudioPageContent(
-            modifier = modifier,
-            state = state,
-            onAudioItemClick = playerStateViewModel::onPlayMusic
-        )
-    }
+    AudioPageContent(
+        modifier = modifier,
+        state = state,
+        onAudioItemClick = playerStateViewModel::onPlayMusic
+    )
 }
 
 @Composable
