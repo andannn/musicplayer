@@ -82,8 +82,6 @@ fun MusicCard(
                 }
             }
 
-            Spacer(modifier = Modifier.width(10.dp))
-
             IconButton(
                 modifier = Modifier,
                 onClick = onOptionButtonClick
@@ -101,6 +99,6 @@ private fun MusicCardPreview() {
         albumArtUri = "",
         title = "Title",
         artist = "artist",
-        date = 0
+        date = 1543121980333L
     )
 }

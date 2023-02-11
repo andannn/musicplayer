@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.andanana.musicplayer.feature.playList.PlayListScreen
-import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.getTypeByContentUri
+import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toRequestType
 
 private const val TAG = "PlayListNavigation"
 
@@ -21,7 +21,7 @@ enum class RequestType(val externalContentUri: String) {
     ARTIST_REQUEST(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString());
 
     companion object {
-        fun Uri.getTypeByContentUri(): RequestType? {
+        fun Uri.toRequestType(): RequestType? {
             return RequestType.values().find {
                 this.toString().contains(it.externalContentUri)
             }
@@ -33,7 +33,7 @@ enum class RequestType(val externalContentUri: String) {
 }
 
 fun NavController.navigateToPlayList(uri: Uri) {
-    uri.getTypeByContentUri()?.let { type ->
+    uri.toRequestType()?.let { type ->
         this.navigate("$playListRoute/${uri.lastPathSegment}/$type")
     }
 }

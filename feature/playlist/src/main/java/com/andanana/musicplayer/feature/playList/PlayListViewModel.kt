@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.feature.playList.navigation.RequestType
-import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.getTypeByContentUri
+import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toUri
 import com.andanana.musicplayer.feature.playList.navigation.requestUriLastSegmentArg
 import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
@@ -35,8 +35,24 @@ class PlayListViewModel @Inject constructor(
         type.toUri(lastSegment)
     }
 
-    private val musicItemsFlow = requestUri.map {
-        it.getTypeByContentUri()?.let { type ->
+    val artCoverUri = requestUri.map {
+        when (it.toRequestType()) {
+            RequestType.ALBUM_REQUEST -> it
+            RequestType.ARTIST_REQUEST -> it
+            null -> null
+        }
+    }
+
+    val title = requestUri.map {
+        when (it.toRequestType()) {
+            RequestType.ALBUM_REQUEST -> it.toString()
+            RequestType.ARTIST_REQUEST -> it.toString()
+            null -> null
+        }
+    }
+
+    val musicItemsFlow = requestUri.map {
+        it.toRequestType()?.let { type ->
             when (type) {
                 RequestType.ALBUM_REQUEST -> {
                     repository.getMusicInfoByAlbumId(it.lastPathSegment?.toLong() ?: 0L)
@@ -45,7 +61,7 @@ class PlayListViewModel @Inject constructor(
                     repository.getMusicInfoByArtistId(it.lastPathSegment?.toLong() ?: 0L)
                 }
             }
-        }
+        } ?: emptyList()
     }
 
     init {

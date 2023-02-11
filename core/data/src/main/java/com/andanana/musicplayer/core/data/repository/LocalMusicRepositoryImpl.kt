@@ -26,7 +26,7 @@ private val MusicInfoProjection = listOf(
     MediaStore.Audio.Media.DATA,
     MediaStore.Audio.Media.ALBUM,
     MediaStore.Audio.Media.ARTIST,
-    MediaStore.Audio.Media.ALBUM_ID,
+    MediaStore.Audio.Media.ALBUM_ID
 ).toTypedArray()
 
 private val ArtistInfoProjection = listOf(
@@ -176,7 +176,8 @@ class LocalMusicRepositoryImpl @Inject constructor(
                         cursor.getLong(idIndex).toString()
                     ),
                     name = cursor.getString(artistIndex),
-                    artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex)) ?: Uri.parse(""),
+                    artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex))
+                        ?: Uri.parse(""),
                     trackCount = cursor.getInt(numberOfTracksIndex)
                 )
             )
