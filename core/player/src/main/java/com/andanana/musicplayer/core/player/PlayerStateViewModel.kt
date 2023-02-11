@@ -162,6 +162,9 @@ class PlayerStateViewModel @Inject constructor(
     fun onPlayNextButtonClick() {
         playerRepository.next()
     }
+    fun onSeekToTime(time: Int) {
+        playerRepository.seekTo(time)
+    }
     companion object {
         private const val PLAY_LIST_KEY = "play_list_key"
     }

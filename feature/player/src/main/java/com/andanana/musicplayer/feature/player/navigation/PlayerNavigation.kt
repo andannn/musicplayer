@@ -5,7 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.andanana.musicplayer.feature.player.PlayerScreen
+import com.andanana.musicplayer.feature.player.PlayerRoute
 
 const val playerRoute = "player_route"
 
@@ -22,7 +22,7 @@ fun NavGraphBuilder.playerScreen(
         val parentBackEntry = remember(it) {
             navHostController.getBackStackEntry("home_route")
         }
-        PlayerScreen(
+        PlayerRoute(
             playerStateViewModel = hiltViewModel(parentBackEntry)
         )
     }

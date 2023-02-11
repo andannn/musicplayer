@@ -116,4 +116,8 @@ class PlayerRepositoryImpl @Inject constructor(
         player.seekToNextMediaItem()
         player.play()
     }
+
+    override fun seekTo(time: Int) {
+        player.seekTo(time.toLong())
+    }
 }
