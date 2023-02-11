@@ -22,16 +22,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
-private val PlayBoxMaxHeight = 240.dp
-private val PlayBoxMinHeight = 170.dp
+val PlayBoxMaxHeight = 240.dp
+val PlayBoxMinHeight = 180.dp
 
 @Composable
 fun PlayListControlBox(
     modifier: Modifier = Modifier,
+    height: Dp,
     coverArtUri: String,
     title: String,
     trackCount: Int,
@@ -39,9 +41,7 @@ fun PlayListControlBox(
     onAddToPlayListButtonClick: () -> Unit = {}
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth()
-            .heightIn(min = PlayBoxMinHeight, max = PlayBoxMaxHeight)
-            .padding(20.dp).then(modifier),
+        modifier = modifier.height(height).fillMaxWidth().padding(20.dp),
         shape = MaterialTheme.shapes.medium
     ) {
         Row(modifier = Modifier.padding(15.dp)) {
@@ -93,7 +93,7 @@ fun PlayListControlBoxPreview() {
     MusicPlayerTheme {
         Surface {
             PlayListControlBox(
-                modifier = Modifier.height(500.dp),
+                height = PlayBoxMinHeight,
                 coverArtUri = "",
                 title = "Title",
                 trackCount = 10
