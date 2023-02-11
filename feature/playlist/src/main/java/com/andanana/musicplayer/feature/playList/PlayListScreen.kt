@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -92,17 +93,17 @@ fun PlayListContent(
             .nestedScroll(nestedScrollConnection)
     ) {
         Column {
-            PlayListControlBox(
-                modifier = Modifier.padding(20.dp),
-                height = with(LocalDensity.current) {
-                    playListControlBoxHeight.toDp()
-                },
-                coverArtUri = coverArtUri,
-                title = title,
-                trackCount = trackCount,
-                onPlayAllButtonClick = onPlayAllButtonClick,
-                onAddToPlayListButtonClick = onAddToPlayListButtonClick
-            )
+            Surface {
+                PlayListControlBox(
+                    modifier = Modifier.padding(20.dp),
+                    height = with(LocalDensity.current) { playListControlBoxHeight.toDp() },
+                    coverArtUri = coverArtUri,
+                    title = title,
+                    trackCount = trackCount,
+                    onPlayAllButtonClick = onPlayAllButtonClick,
+                    onAddToPlayListButtonClick = onAddToPlayListButtonClick
+                )
+            }
 
             LazyColumn(
                 modifier = modifier.nestedScroll(nestedScrollConnection),
