@@ -2,6 +2,7 @@ package com.andanana.musicplayer.feature.playList.navigation
 
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -39,7 +40,8 @@ fun NavController.navigateToPlayList(uri: Uri) {
 }
 
 fun NavGraphBuilder.playListScreen(
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner
 ) {
     composable(
         route = "$playListRoute/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
@@ -52,6 +54,8 @@ fun NavGraphBuilder.playListScreen(
             }
         )
     ) {
-        PlayListScreen()
+        PlayListScreen(
+            rootViewModelStoreOwner = onGetRootViewModelStoreOwner.invoke()
+        )
     }
 }

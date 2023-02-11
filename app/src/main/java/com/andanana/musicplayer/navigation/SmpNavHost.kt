@@ -32,6 +32,9 @@ fun SmpNavHost(
             }
         )
         libraryScreen()
-        playListScreen(onBackPressed = onBackPressed)
+        playListScreen(
+            onGetRootViewModelStoreOwner = onGetRootViewModelStoreOwner,
+            onBackPressed = onBackPressed
+        )
     }
 }

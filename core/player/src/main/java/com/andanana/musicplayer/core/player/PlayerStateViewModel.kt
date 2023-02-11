@@ -129,7 +129,7 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
-    fun onAudioItemClick(playList: List<MusicInfo>, index: Int) {
+    fun onPlayMusic(playList: List<MusicInfo>, index: Int) {
         when {
             playList != this.playListFlow.value -> {
                 // Play list changed.

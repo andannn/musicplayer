@@ -1,12 +1,10 @@
 package com.andanana.musicplayer.feature.playList
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,18 +22,23 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
 import com.andanana.musicplayer.core.model.MusicInfo
+import com.andanana.musicplayer.core.player.PlayerStateViewModel
 
 private const val TAG = "PlayListScreen"
 
 @Composable
 fun PlayListScreen(
-    playListViewModel: PlayListViewModel = hiltViewModel()
+    playListViewModel: PlayListViewModel = hiltViewModel(),
+    rootViewModelStoreOwner: ViewModelStoreOwner
 ) {
+    val playerStateViewModel: PlayerStateViewModel =
+        hiltViewModel(rootViewModelStoreOwner)
     val coverArtUri by playListViewModel.artCoverUri.collectAsState(initial = Uri.EMPTY)
     val musicItems by playListViewModel.musicItemsFlow.collectAsState(emptyList())
     val trackCount = remember(musicItems) { musicItems.count() }
@@ -43,7 +46,11 @@ fun PlayListScreen(
         coverArtUri = coverArtUri.toString(),
         title = "Title",
         trackCount = trackCount,
-        musicItems = musicItems
+        musicItems = musicItems,
+        onPlayAllButtonClick = {
+            playerStateViewModel.onPlayMusic(musicItems, 0)
+        },
+        onAudioItemClick = playerStateViewModel::onPlayMusic
     )
 }
 
@@ -55,7 +62,8 @@ fun PlayListContent(
     musicItems: List<MusicInfo>,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddToPlayListButtonClick: () -> Unit = {}
+    onAddToPlayListButtonClick: () -> Unit = {},
+    onAudioItemClick: (List<MusicInfo>, Int) -> Unit
 ) {
     val playListControlBoxMaxHeightPx = with(LocalDensity.current) {
         PlayBoxMaxHeight.toPx()
@@ -71,7 +79,8 @@ fun PlayListContent(
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val newOffset = playListControlBoxHeight + available.y.div(3f)
-                playListControlBoxHeight = newOffset.coerceIn(playListControlBoxMinHeightPx, playListControlBoxMaxHeightPx)
+                playListControlBoxHeight =
+                    newOffset.coerceIn(playListControlBoxMinHeightPx, playListControlBoxMaxHeightPx)
                 return super.onPreScroll(available, source)
             }
         }
@@ -101,7 +110,7 @@ fun PlayListContent(
             ) {
                 items(
                     items = musicItems,
-                    key = { it.contentUri }
+                    key = { it.hashCode() }
                 ) { info ->
                     MusicCard(
                         modifier = Modifier.padding(vertical = 4.dp),
@@ -110,6 +119,7 @@ fun PlayListContent(
                         artist = info.artist,
                         date = info.modifiedDate,
                         onMusicItemClick = {
+                            onAudioItemClick(musicItems, musicItems.indexOf(info))
                         }
                     )
                 }

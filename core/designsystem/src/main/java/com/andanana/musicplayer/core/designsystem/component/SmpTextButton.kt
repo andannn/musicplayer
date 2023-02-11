@@ -22,7 +22,7 @@ fun SmpTextButton(
     onClick: () -> Unit,
     imageVector: ImageVector? = null,
     text: String,
-    alpha: Float = 1f
+    textAlpha: Float = 1f
 ) {
     TextButton(
         modifier = modifier,
@@ -34,7 +34,7 @@ fun SmpTextButton(
         }
         Spacer(modifier = Modifier.width(5.dp))
         Text(
-            modifier = Modifier.alpha(alpha),
+            modifier = Modifier.alpha(textAlpha),
             text = text,
             style = MaterialTheme.typography.bodySmall,
             maxLines = 1

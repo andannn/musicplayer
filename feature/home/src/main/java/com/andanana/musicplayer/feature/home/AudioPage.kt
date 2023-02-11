@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,7 +28,7 @@ fun AudioPage(
     AudioPageContent(
         modifier = modifier,
         state = state,
-        onAudioItemClick = playerStateViewModel::onAudioItemClick
+        onAudioItemClick = playerStateViewModel::onPlayMusic
     )
 }
 

@@ -103,7 +103,7 @@ fun PlayListControlBox(
                         SmpTextButton(
                             imageVector = Icons.Rounded.AddCircle,
                             text = "Add to..",
-                            alpha = (1f - scaleRatio),
+                            textAlpha = (1f - scaleRatio),
                             onClick = onAddToPlayListButtonClick
                         )
                     }
