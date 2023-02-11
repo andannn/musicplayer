@@ -3,8 +3,10 @@ package com.andanana.musicplayer.feature.playList
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +33,7 @@ import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
+import com.andanana.musicplayer.feature.playList.navigation.RequestType
 
 private const val TAG = "PlayListScreen"
 
@@ -68,6 +71,7 @@ private fun PlayListScreenContent(
         is PlayListUiState.Ready -> {
             PlayListContent(
                 coverArtUri = uiState.artCoverUri,
+                type = uiState.type,
                 title = uiState.title,
                 trackCount = uiState.trackCount,
                 musicItems = uiState.musicItems,
@@ -82,6 +86,7 @@ private fun PlayListScreenContent(
 private fun PlayListContent(
     modifier: Modifier = Modifier,
     coverArtUri: String,
+    type: RequestType,
     title: String,
     musicItems: List<MusicInfo>,
     trackCount: Int,
@@ -102,7 +107,7 @@ private fun PlayListContent(
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val newOffset = playListControlBoxHeight + available.y.div(3f)
+                val newOffset = playListControlBoxHeight + available.y.div(6f)
                 playListControlBoxHeight =
                     newOffset.coerceIn(playListControlBoxMinHeightPx, playListControlBoxMaxHeightPx)
                 return super.onPreScroll(available, source)
@@ -140,12 +145,17 @@ private fun PlayListContent(
                         modifier = Modifier.padding(vertical = 4.dp),
                         albumArtUri = info.albumUri,
                         title = info.title,
+                        showTrackNum = type == RequestType.ALBUM_REQUEST,
                         artist = info.artist,
+                        trackNum = info.cdTrackNumber,
                         date = info.modifiedDate,
                         onMusicItemClick = {
                             onAudioItemClick(musicItems, musicItems.indexOf(info))
                         }
                     )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(150.dp))
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.andanana.musicplayer.core.designsystem.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -36,6 +38,8 @@ fun MusicCard(
     title: String,
     artist: String,
     date: Long,
+    trackNum: Int = 0,
+    showTrackNum: Boolean = false,
     onMusicItemClick: () -> Unit = {},
     onOptionButtonClick: () -> Unit = {}
 ) {
@@ -50,13 +54,29 @@ fun MusicCard(
                 .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(MaterialTheme.shapes.extraSmall),
-                model = albumArtUri,
-                contentDescription = ""
-            )
+            Box(modifier = Modifier) {
+                if (showTrackNum) {
+                    Text(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.inverseOnSurface,
+                                shape = MaterialTheme.shapes.extraSmall
+                            )
+                            .align(Alignment.Center)
+                            .padding(horizontal = 10.dp),
+                        text = trackNum.toString(),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                } else {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(MaterialTheme.shapes.extraSmall),
+                        model = albumArtUri,
+                        contentDescription = ""
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.width(10.dp))
 
@@ -68,18 +88,10 @@ fun MusicCard(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Row {
-                    Text(
-                        text = artist,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT)
-                            .format(date),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+                Text(
+                    text = artist,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
 
             IconButton(
@@ -99,6 +111,7 @@ private fun MusicCardPreview() {
         albumArtUri = "",
         title = "Title",
         artist = "artist",
-        date = 1543121980333L
+        date = 1543121980333L,
+        showTrackNum = true
     )
 }

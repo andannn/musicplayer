@@ -25,7 +25,7 @@ class AudioPageViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val musics = getAllMusicItem.invoke()
+            val musics = getAllMusicItem.invoke().sortedBy { it.album }
             _audioPageUiState.update {
                 AudioPageUiState.Ready(musics)
             }

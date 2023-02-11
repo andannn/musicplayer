@@ -59,7 +59,7 @@ class PlayListViewModel @Inject constructor(
                         trackCount = info.trackCount
                         musicItems = repository.getMusicInfoByAlbumId(
                             id = uri.lastPathSegment?.toLong() ?: 0L
-                        )
+                        ).sortedBy { it.cdTrackNumber }
                     }
                     RequestType.ARTIST_REQUEST -> {
                         val info = repository.getArtistInfoById(
@@ -76,6 +76,7 @@ class PlayListViewModel @Inject constructor(
                 }
                 _playListUiStateFlow.value = PlayListUiState.Ready(
                     title = title,
+                    type = uri.toRequestType()!!,
                     artCoverUri = artCoverUri,
                     trackCount = trackCount,
                     musicItems = musicItems
@@ -102,6 +103,7 @@ sealed interface PlayListUiState {
     object Loading : PlayListUiState
     data class Ready(
         val title: String,
+        val type: RequestType,
         val artCoverUri: String,
         val trackCount: Int,
         val musicItems: List<MusicInfo>

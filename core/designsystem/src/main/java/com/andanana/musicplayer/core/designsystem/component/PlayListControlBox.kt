@@ -36,7 +36,7 @@ import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
 val PlayBoxMaxHeight = 195.dp
-val PlayBoxMinHeight = 120.dp
+val PlayBoxMinHeight = 110.dp
 
 private const val TAG = "PlayListControlBox"
 
@@ -80,7 +80,7 @@ fun PlayListControlBox(
                         text = title,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Box(
@@ -89,7 +89,7 @@ fun PlayListControlBox(
                         Text(
                             modifier = Modifier.align(Alignment.CenterStart),
                             text = "$trackCount tracks",
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                     Spacer(modifier = Modifier.height(5.dp))

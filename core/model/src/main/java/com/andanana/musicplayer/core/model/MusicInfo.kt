@@ -15,7 +15,8 @@ data class MusicInfo(
     val absolutePath: String = "",
     val album: String = "",
     val artist: String = "",
-    val albumUri: String = ""
+    val albumUri: String = "",
+    val cdTrackNumber: Int = 0
 ) : Parcelable {
 
     val mediaItem: MediaItem = MediaItem.fromUri(contentUri)

@@ -26,7 +26,8 @@ private val MusicInfoProjection = listOf(
     MediaStore.Audio.Media.DATA,
     MediaStore.Audio.Media.ALBUM,
     MediaStore.Audio.Media.ARTIST,
-    MediaStore.Audio.Media.ALBUM_ID
+    MediaStore.Audio.Media.ALBUM_ID,
+    MediaStore.Audio.Media.CD_TRACK_NUMBER
 ).toTypedArray()
 
 private val ArtistInfoProjection = listOf(
@@ -150,6 +151,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
         val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
         val artistIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
         val albumIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+        val cdTrackNumberIndex = cursor.getColumnIndex(MediaStore.Audio.Media.CD_TRACK_NUMBER)
         while (cursor.moveToNext()) {
             itemList.add(
                 MusicInfo(
@@ -168,7 +170,8 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     albumUri = Uri.withAppendedPath(
                         MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                         cursor.getLong(albumIdIndex).toString()
-                    ).toString()
+                    ).toString(),
+                    cdTrackNumber = cursor.getInt(cdTrackNumberIndex)
                 ).also {
                     Log.d(TAG, "parseMusicInfoCursor: $it")
                 }
