@@ -40,11 +40,18 @@ class SimpleMusicAppState(
     val currentNavDestination
         @Composable get() = navController.currentBackStackEntryAsState().value?.destination
 
+    val isHomeRoute
+        get() = navController.currentBackStackEntry?.destination?.route == homeRoute
+    val isLibraryRoute
+        get() = navController.currentBackStackEntry?.destination?.route == libraryRoute
+    val isPlayListRoute
+        get() = navController.currentBackStackEntry?.destination?.route?.contains(playListRoute) == true
+
     val isTopBarHide
-        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
+        @Composable get() = isPlayListRoute
 
     val isNavigationBarHide
-        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
+        @Composable get() = isPlayListRoute
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {

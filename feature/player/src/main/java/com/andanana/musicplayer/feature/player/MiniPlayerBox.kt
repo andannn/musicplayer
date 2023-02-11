@@ -1,11 +1,11 @@
 package com.andanana.musicplayer.feature.player
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import com.andanana.musicplayer.core.designsystem.component.BottomPlayerSheet
 import com.andanana.musicplayer.core.player.PlayState
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
@@ -15,8 +15,7 @@ private const val TAG = "MiniPlayerBox"
 
 @Composable
 fun MiniPlayerBox(
-    onGetRootViewModelStoreOwner: () -> ViewModelStoreOwner,
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel(onGetRootViewModelStoreOwner.invoke())
+    playerStateViewModel: PlayerStateViewModel
 ) {
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
@@ -38,6 +37,7 @@ private fun MiniPlayerBoxContent(
     onFavoriteButtonClick: () -> Unit = {},
     onPlayNextButtonClick: () -> Unit = {}
 ) {
+    Log.d(TAG, "MiniPlayerBoxContent:$state")
     if (state is PlayerUiState.Active) {
         BottomPlayerSheet(
             modifier = modifier,
