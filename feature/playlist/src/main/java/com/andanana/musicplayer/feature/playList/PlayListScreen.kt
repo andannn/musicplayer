@@ -84,7 +84,7 @@ fun PlayListContent(
     ) {
         Column {
             PlayListControlBox(
-                modifier = Modifier,
+                modifier = Modifier.padding(20.dp),
                 height = with(LocalDensity.current) {
                     playListControlBoxHeight.toDp()
                 },

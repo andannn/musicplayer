@@ -11,17 +11,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 
 @Composable
 fun SmpTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     imageVector: ImageVector? = null,
-    text: String
+    text: String,
+    alpha: Float = 1f
 ) {
     TextButton(
         modifier = modifier,
@@ -32,7 +33,12 @@ fun SmpTextButton(
             Icon(imageVector = imageVector, contentDescription = null)
         }
         Spacer(modifier = Modifier.width(5.dp))
-        Text(text = text, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+        Text(
+            modifier = Modifier.alpha(alpha),
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            maxLines = 1
+        )
     }
 }
 
