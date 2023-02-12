@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,9 +45,11 @@ fun PlayListScreen(
     playerStateViewModel: PlayerStateViewModel = hiltViewModel()
 ) {
     val uiState by playListViewModel.playListUiStateFlow.collectAsState()
+    val interactingMusic by playerStateViewModel.interactingMusicItem.collectAsState()
 
     PlayListScreenContent(
         uiState = uiState,
+        interactingMusic = interactingMusic,
         onPlayAllButtonClick = {
             (uiState as? PlayListUiState.Ready)?.let {
                 playerStateViewModel.onPlayMusic(it.musicItems)
@@ -58,6 +62,7 @@ fun PlayListScreen(
 @Composable
 private fun PlayListScreenContent(
     uiState: PlayListUiState,
+    interactingMusic: MusicInfo?,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MusicInfo>, Int) -> Unit
@@ -71,6 +76,7 @@ private fun PlayListScreenContent(
         is PlayListUiState.Ready -> {
             PlayListContent(
                 coverArtUri = uiState.artCoverUri,
+                activeMusic = interactingMusic,
                 type = uiState.type,
                 title = uiState.title,
                 trackCount = uiState.trackCount,
@@ -88,6 +94,7 @@ private fun PlayListContent(
     coverArtUri: String,
     type: RequestType,
     title: String,
+    activeMusic: MusicInfo?,
     musicItems: List<MusicInfo>,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
@@ -143,6 +150,11 @@ private fun PlayListContent(
                 ) { info ->
                     MusicCard(
                         modifier = Modifier.padding(vertical = 4.dp),
+                        colors = if (activeMusic == info) {
+                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
+                        } else {
+                            CardDefaults.cardColors()
+                        },
                         albumArtUri = info.albumUri,
                         title = info.title,
                         showTrackNum = type == RequestType.ALBUM_REQUEST,

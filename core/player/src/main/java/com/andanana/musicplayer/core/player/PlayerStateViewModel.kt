@@ -30,7 +30,7 @@ class PlayerStateViewModel @Inject constructor(
     private val playListFlow =
         savedStateHandle.getStateFlow<List<MusicInfo>>(PLAY_LIST_KEY, emptyList())
 
-    private val interactingMusicItem: StateFlow<MusicInfo?> =
+    val interactingMusicItem: StateFlow<MusicInfo?> =
         combine(
             playerRepository.observePlayingMediaItem(),
             playListFlow

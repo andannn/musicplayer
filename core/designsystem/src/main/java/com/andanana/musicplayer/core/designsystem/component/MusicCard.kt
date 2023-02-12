@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +36,7 @@ private const val TAG = "MusicCard"
 @Composable
 fun MusicCard(
     modifier: Modifier = Modifier,
+    colors: CardColors = CardDefaults.cardColors(),
     albumArtUri: String,
     title: String,
     artist: String,
@@ -45,6 +48,7 @@ fun MusicCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
+        colors = colors,
         shape = MaterialTheme.shapes.medium,
         onClick = onMusicItemClick
     ) {
