@@ -22,4 +22,5 @@ interface PlayerRepository {
     fun pause()
     fun next()
     fun seekTo(time: Int)
+    fun previous()
 }

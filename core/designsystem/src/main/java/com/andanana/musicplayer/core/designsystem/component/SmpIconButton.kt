@@ -9,6 +9,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -23,7 +25,7 @@ fun SmpMainIconButton(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors()
     ) {
-        Icon(imageVector = imageVector, contentDescription = null)
+        Icon(modifier = Modifier.scale(1.5f), imageVector = imageVector, contentDescription = null)
     }
 }
 
@@ -37,7 +39,21 @@ fun SmpSubIconButton(
         modifier = modifier,
         onClick = onClick
     ) {
-        Icon(imageVector = imageVector, contentDescription = null)
+        Icon(modifier = Modifier.scale(1.5f), imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+fun SmpSubIconButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    painter: Painter
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(painter = painter, contentDescription = null)
     }
 }
 

@@ -43,7 +43,7 @@ class PlayerStateViewModel @Inject constructor(
     private val _playerUiStateFlow = MutableStateFlow<PlayerUiState>(PlayerUiState.Inactive)
     val playerUiStateFlow = _playerUiStateFlow.asStateFlow()
 
-    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 15L) {
+    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 5L) {
         (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
             _playerUiStateFlow.update {
                 playerState.copy(
@@ -159,9 +159,14 @@ class PlayerStateViewModel @Inject constructor(
         }
     }
 
-    fun onPlayNextButtonClick() {
+    fun next() {
         playerRepository.next()
     }
+
+    fun previous() {
+        playerRepository.previous()
+    }
+
     fun onSeekToTime(time: Int) {
         playerRepository.seekTo(time)
     }

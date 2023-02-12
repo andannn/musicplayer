@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.BottomPlayerSheet
 import com.andanana.musicplayer.core.player.PlayState
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
@@ -25,7 +24,7 @@ fun MiniPlayerBox(
         onPlayerSheetClick = onNavigateToPlayer,
         onPlayControlButtonClick = playerStateViewModel::togglePlayState,
         onFavoriteButtonClick = {},
-        onPlayNextButtonClick = playerStateViewModel::onPlayNextButtonClick
+        onPlayNextButtonClick = playerStateViewModel::next
     )
 }
 
