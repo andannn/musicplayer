@@ -14,6 +14,7 @@ sealed interface PlayerState {
 
 interface PlayerRepository {
     val currentPositionMs: Long
+    val playerState: PlayerState
     fun observePlayerState(): Flow<PlayerState>
     fun observePlayingMediaItem(): Flow<MediaItem?>
     fun setPlayList(mediaItems: List<MediaItem>)

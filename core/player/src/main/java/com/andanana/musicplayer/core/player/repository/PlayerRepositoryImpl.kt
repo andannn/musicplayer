@@ -93,6 +93,9 @@ class PlayerRepositoryImpl @Inject constructor(
     override val currentPositionMs: Long
         get() = player.currentPosition
 
+    override val playerState: PlayerState
+        get() = playerStateFlow.value
+
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 
     override fun observePlayingMediaItem(): Flow<MediaItem?> = playingMediaItemStateFlow

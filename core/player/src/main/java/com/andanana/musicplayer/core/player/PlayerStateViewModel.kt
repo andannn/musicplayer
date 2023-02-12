@@ -43,7 +43,7 @@ class PlayerStateViewModel @Inject constructor(
     private val _playerUiStateFlow = MutableStateFlow<PlayerUiState>(PlayerUiState.Inactive)
     val playerUiStateFlow = _playerUiStateFlow.asStateFlow()
 
-    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 5L) {
+    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 2L) {
         (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
             _playerUiStateFlow.update {
                 playerState.copy(
@@ -75,12 +75,20 @@ class PlayerStateViewModel @Inject constructor(
                 if (musicInfo == null) {
                     _playerUiStateFlow.value = PlayerUiState.Inactive
                 } else {
-                    _playerUiStateFlow.value = PlayerUiState.Active(musicInfo = musicInfo)
+                    _playerUiStateFlow.value = PlayerUiState.Active(
+                        musicInfo = musicInfo,
+                        state = when (playerRepository.playerState) {
+                            is PlayerState.Paused -> PlayState.PAUSED
+                            is PlayerState.Playing -> PlayState.PLAYING
+                            else -> PlayState.LOADING
+                        }
+                    )
                 }
             }
         }
         viewModelScope.launch {
             playerRepository.observePlayerState().collect { state ->
+                Log.d(TAG, "observePlayerState : $state")
                 when (state) {
                     is PlayerState.Playing -> {
                         (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
@@ -103,7 +111,8 @@ class PlayerStateViewModel @Inject constructor(
                     is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
                         _playerUiStateFlow.update { PlayerUiState.Inactive }
                     }
-                    is PlayerState.Buffering -> {
+                    PlayerState.Buffering -> {
+                        Log.d(TAG, "EEEEEEEEEEEEEEEE: ")
                         (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
                             _playerUiStateFlow.update {
                                 playerState.copy(
@@ -170,6 +179,7 @@ class PlayerStateViewModel @Inject constructor(
     fun onSeekToTime(time: Int) {
         playerRepository.seekTo(time)
     }
+
     companion object {
         private const val PLAY_LIST_KEY = "play_list_key"
     }
