@@ -42,12 +42,12 @@ private val AlbumInfoProjection = listOf(
     MediaStore.Audio.Albums.NUMBER_OF_SONGS
 ).toTypedArray()
 
-private const val MimeTypeLimitation = "(${MediaStore.Audio.Media.MIME_TYPE} in (?,?,?))"
-private val MimeTypeSelectionArg = listOf(
-    "audio/x-wav",
-    "audio/mp4",
-    "audio/flac"
-).toTypedArray()
+// private const val MimeTypeLimitation = "(${MediaStore.Audio.Media.MIME_TYPE} in (?,?,?))"
+// private val MimeTypeSelectionArg = listOf(
+//    "audio/x-wav",
+//    "audio/mpeg",
+//    "audio/flac"
+// ).toTypedArray()
 
 class LocalMusicRepositoryImpl @Inject constructor(
     private val app: Application
@@ -56,8 +56,8 @@ class LocalMusicRepositoryImpl @Inject constructor(
     override suspend fun getAllMusicInfo() = withContext(Dispatchers.IO) {
         queryMusicInfo {
             projection = MusicInfoProjection
-            where = MimeTypeLimitation
-            selectionArgs = MimeTypeSelectionArg
+//            where = MimeTypeLimitation
+//            selectionArgs = MimeTypeSelectionArg
         }
     }
 
@@ -72,11 +72,11 @@ class LocalMusicRepositoryImpl @Inject constructor(
     override suspend fun getMusicInfoByAlbumId(id: Long) = withContext(Dispatchers.IO) {
         queryMusicInfo {
             val albumLimitation = "(${MediaStore.Audio.Media.ALBUM_ID} like ?)"
-            val albumSelectArgs = listOf(id.toString())
+            val albumSelectArgs = listOf(id.toString()).toTypedArray()
 
             projection = MusicInfoProjection
-            where = "$MimeTypeLimitation AND $albumLimitation"
-            selectionArgs = MimeTypeSelectionArg + albumSelectArgs
+            where = albumLimitation
+            selectionArgs = albumSelectArgs
         }
     }
 
@@ -91,11 +91,11 @@ class LocalMusicRepositoryImpl @Inject constructor(
     override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {
         queryMusicInfo {
             val artistLimitation = "(${MediaStore.Audio.Media.ARTIST_ID} like ?)"
-            val artistSelectArgs = listOf(id.toString())
+            val artistSelectArgs = listOf(id.toString()).toTypedArray()
 
             projection = MusicInfoProjection
-            where = "$MimeTypeLimitation AND $artistLimitation"
-            selectionArgs = MimeTypeSelectionArg + artistSelectArgs
+            where = artistLimitation
+            selectionArgs = artistSelectArgs
         }
     }
 
