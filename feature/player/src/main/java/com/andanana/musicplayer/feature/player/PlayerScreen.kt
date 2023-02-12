@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.ModeStandby
 import androidx.compose.material.icons.rounded.NavigateBefore
 import androidx.compose.material.icons.rounded.Pause
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -45,6 +47,7 @@ import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.player.PlayState
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
 import com.andanana.musicplayer.core.player.PlayerUiState
+import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
 @Composable
@@ -59,7 +62,7 @@ internal fun PlayerRoute(
         onPlayButtonClick = playerStateViewModel::togglePlayState,
         onPreviousButtonClick = playerStateViewModel::previous,
         onNextButtonClick = playerStateViewModel::next,
-        onPlayModeButtonClick = {},
+        onPlayModeButtonClick = playerStateViewModel::next,
         onPlayListButtonClick = {},
         onBackButtonClick = {}
     )
@@ -173,6 +176,17 @@ private fun PlayerScreenContent(
                 }
             )
             Spacer(modifier = Modifier.height(10.dp))
+            Row(modifier= Modifier.padding(horizontal = 10.dp)) {
+                val formatter = remember {
+                    SimpleDateFormat("mm:ss")
+                }
+                val durationString = formatter.format(duration)
+                val currentString = formatter.format(duration.times(progress).roundToInt())
+                Text(text = currentString)
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = durationString)
+            }
+            Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -209,6 +223,7 @@ private fun PlayerScreenContent(
                 SmpSubIconButton(
                     modifier = Modifier.weight(1f).rotate(180f).aspectRatio(1f),
                     onClick = onNextButtonClick,
+//                    imageVector = Icons.Rounded.Favorite
                     painter = painterResource(id = R.drawable.music_music_player_player_previous_icon)
                 )
                 SmpSubIconButton(
