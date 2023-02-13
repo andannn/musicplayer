@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.playList
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,15 +35,16 @@ import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
 import com.andanana.musicplayer.core.model.MusicInfo
+import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
-import com.andanana.musicplayer.feature.playList.navigation.RequestType
 
 private const val TAG = "PlayListScreen"
 
 @Composable
 fun PlayListScreen(
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     val uiState by playListViewModel.playListUiStateFlow.collectAsState()
     val interactingMusic by playerStateViewModel.interactingMusicItem.collectAsState()
@@ -55,7 +57,8 @@ fun PlayListScreen(
                 playerStateViewModel.onPlayMusic(it.musicItems)
             }
         },
-        onAudioItemClick = playerStateViewModel::onPlayMusic
+        onAudioItemClick = playerStateViewModel::onPlayMusic,
+        onShowMusicItemOption = onShowMusicItemOption
     )
 }
 
@@ -64,8 +67,9 @@ private fun PlayListScreenContent(
     uiState: PlayListUiState,
     interactingMusic: MusicInfo?,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddToPlayListButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit
+    onAddButtonClick: () -> Unit = {},
+    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     when (uiState) {
         PlayListUiState.Loading -> {
@@ -82,7 +86,8 @@ private fun PlayListScreenContent(
                 trackCount = uiState.trackCount,
                 musicItems = uiState.musicItems,
                 onPlayAllButtonClick = onPlayAllButtonClick,
-                onAudioItemClick = onAudioItemClick
+                onAudioItemClick = onAudioItemClick,
+                onShowMusicItemOption = onShowMusicItemOption
             )
         }
     }
@@ -99,7 +104,8 @@ private fun PlayListContent(
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit
+    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     val playListControlBoxMaxHeightPx = with(LocalDensity.current) {
         PlayBoxMaxHeight.toPx()
@@ -163,6 +169,9 @@ private fun PlayListContent(
                         date = info.modifiedDate,
                         onMusicItemClick = {
                             onAudioItemClick(musicItems, musicItems.indexOf(info))
+                        },
+                        onOptionButtonClick = {
+                            onShowMusicItemOption(info.contentUri)
                         }
                     )
                 }

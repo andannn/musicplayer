@@ -6,8 +6,10 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.andanana.musicplayer.core.designsystem.component.ItemListBottomDrawer
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
@@ -37,7 +40,7 @@ import com.andanana.musicplayer.navigation.TopLevelDestination
 
 private const val TAG = "SimpleMusicApp"
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SimpleMusicApp(
     appState: SimpleMusicAppState = rememberSimpleMusicAppState()
@@ -51,45 +54,54 @@ fun SimpleMusicApp(
                 visible = visible,
                 title = title
             )
-        },
-        bottomBar = {
-            val visible = !appState.isNavigationBarHide
-            SimpleMusicNavigationBar(
-                visible = visible,
-                destinations = appState.topLevelDestinations,
-                onNavigateToDestination = appState::navigateToTopLevelDestination,
-                currentDestination = appState.currentNavDestination
-            )
         }
     ) {
         appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
-        Column(modifier = Modifier.padding(it)) {
-            SmpNavHost(
-                modifier = Modifier.weight(1f),
-                navHostController = appState.navController,
-                onBackPressed = appState::onBackPressed
-            )
+        ItemListBottomDrawer(
+            state = appState.drawerState,
+            items = appState.drawer.value?.itemList ?: emptyList(),
+            gesturesEnabled = appState.drawerGestureEnabled,
+            onItemClick = {},
+            content = {
+                Box(modifier = Modifier.padding(it)) {
+                    Column {
+                        SmpNavHost(
+                            navHostController = appState.navController,
+                            modifier = Modifier.weight(1f),
+                            onBackPressed = appState::onBackPressed,
+                            onShowMusicItemOption = appState::onShowMusicItemOption
+                        )
 
-            val backStackEntry by appState.navController.currentBackStackEntryAsState()
-            val parentBackEntry = remember(backStackEntry) {
-                appState.navController.getBackStackEntry(homeRoute)
-            }
-            val visible = !appState.isPlayerRoute
+                        val backStackEntry by appState.navController.currentBackStackEntryAsState()
+                        val parentBackEntry = remember(backStackEntry) {
+                            appState.navController.getBackStackEntry(homeRoute)
+                        }
+                        val visible = !appState.isPlayerRoute
 
-            AnimatedVisibility(
-                visible = visible,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                MiniPlayerBox(
-                    playerStateViewModel = hiltViewModel(parentBackEntry),
-                    onNavigateToPlayer = { appState.navController.navigateToPlayer() }
-                )
+                        AnimatedVisibility(
+                            visible = visible,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            MiniPlayerBox(
+                                playerStateViewModel = hiltViewModel(parentBackEntry),
+                                onNavigateToPlayer = { appState.navController.navigateToPlayer() }
+                            )
+                        }
+                        SimpleMusicNavigationBar(
+                            visible = !appState.isNavigationBarHide,
+                            destinations = appState.topLevelDestinations,
+                            onNavigateToDestination = appState::navigateToTopLevelDestination,
+                            currentDestination = appState.currentNavDestination
+                        )
+                    }
+                }
             }
-        }
+        )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

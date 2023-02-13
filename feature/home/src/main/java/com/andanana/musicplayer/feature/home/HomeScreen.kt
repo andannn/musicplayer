@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Surface
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -69,7 +69,7 @@ private fun HomeScreen(
     }
 
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxSize()
     ) {
         TabRow(
             modifier = Modifier.fillMaxWidth(),

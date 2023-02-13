@@ -1,7 +1,13 @@
 package com.andanana.musicplayer.ui
 
-import androidx.compose.animation.ExperimentalAnimationApi
+import android.net.Uri
+import androidx.compose.material.BottomDrawerState
+import androidx.compose.material.BottomDrawerValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -9,6 +15,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.andanana.musicplayer.core.designsystem.Drawer
+import com.andanana.musicplayer.core.model.RequestType
+import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.model.toDrawer
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
@@ -19,22 +29,26 @@ import com.andanana.musicplayer.navigation.TopLevelDestination
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun rememberSimpleMusicAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    drawerState: BottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed),
     navController: NavHostController = rememberNavController(),
     systemUiController: SystemUiController = rememberSystemUiController()
 ): SimpleMusicAppState {
-    return remember(navController, coroutineScope, systemUiController) {
-        SimpleMusicAppState(navController, coroutineScope, systemUiController)
+    return remember(navController, coroutineScope, systemUiController, drawerState) {
+        SimpleMusicAppState(navController, coroutineScope, systemUiController, drawerState)
     }
 }
 
-class SimpleMusicAppState(
+class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
-    val systemUiController: SystemUiController
+    val systemUiController: SystemUiController,
+    val drawerState: BottomDrawerState
 ) {
     val topLevelDestinations = TopLevelDestination.values().toList()
 
@@ -65,6 +79,10 @@ class SimpleMusicAppState(
             else -> null
         }
 
+    val drawer: MutableState<Drawer?> = mutableStateOf(null)
+    @OptIn(ExperimentalMaterialApi::class)
+    val drawerGestureEnabled
+        @Composable get() = drawerState.isOpen
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {
             // Pop up to the start destination of the graph to
@@ -84,6 +102,21 @@ class SimpleMusicAppState(
             TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
             TopLevelDestination.LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
             else -> {}
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun onShowMusicItemOption(uri: Uri) {
+        drawer.value = when (val type = uri.toRequestType()) {
+            RequestType.MUSIC_REQUEST -> {
+                type.toDrawer()
+            }
+            RequestType.ALBUM_REQUEST -> TODO()
+            RequestType.ARTIST_REQUEST -> TODO()
+            else -> error("Invalid Type")
+        }
+        coroutineScope.launch {
+            drawerState.open()
         }
     }
 

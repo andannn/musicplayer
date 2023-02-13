@@ -1,6 +1,6 @@
 package com.andanana.musicplayer.navigation
 
-import androidx.compose.animation.ExperimentalAnimationApi
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,6 +11,7 @@ import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
 import com.andanana.musicplayer.feature.player.navigation.playerScreen
+import kotlin.reflect.KFunction0
 
 private const val TAG = "SmpNavHost"
 
@@ -18,7 +19,8 @@ private const val TAG = "SmpNavHost"
 fun SmpNavHost(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit,
 ) {
     NavHost(
         navController = navHostController,
@@ -34,7 +36,8 @@ fun SmpNavHost(
         libraryScreen()
         playListScreen(
             navHostController = navHostController,
-            onBackPressed = onBackPressed
+            onBackPressed = onBackPressed,
+            onShowMusicItemOption = onShowMusicItemOption
         )
         playerScreen(
             navHostController = navHostController

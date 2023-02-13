@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.feature.playList.navigation.RequestType
-import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toRequestType
-import com.andanana.musicplayer.feature.playList.navigation.RequestType.Companion.toUri
+import com.andanana.musicplayer.core.model.RequestType
+import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
 import com.andanana.musicplayer.feature.playList.navigation.requestUriLastSegmentArg
 import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel

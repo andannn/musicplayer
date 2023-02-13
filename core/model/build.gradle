@@ -31,6 +31,8 @@ android {
 }
 
 dependencies {
+    implementation project(":core:designsystem")
+
     // Media3
     implementation 'androidx.media3:media3-exoplayer:1.0.0-beta03'
 
