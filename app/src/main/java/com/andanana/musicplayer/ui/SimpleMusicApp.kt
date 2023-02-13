@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.andanana.musicplayer.core.designsystem.component.ItemListBottomDrawer
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
@@ -65,7 +64,10 @@ fun SimpleMusicApp(
             items = appState.drawer.value?.itemList ?: emptyList(),
             scope = appState.coroutineScope,
             gesturesEnabled = appState.drawerState.isOpen,
-            onItemClick = {},
+            onItemClick = {
+                val drawerItem = appState.drawer.value?.itemList?.get(it)!!
+                appState.onDrawerItemClick(drawerItem)
+            },
             content = {
                 Box(modifier = Modifier.padding(it)) {
                     Column {
@@ -76,7 +78,7 @@ fun SimpleMusicApp(
                             onShowMusicItemOption = appState::onShowMusicItemOption
                         )
 
-                        val backStackEntry by appState.navController.currentBackStackEntryAsState()
+                        val backStackEntry by appState.currentBackStackEntry
                         val parentBackEntry = remember(backStackEntry) {
                             appState.navController.getBackStackEntry(homeRoute)
                         }
@@ -104,7 +106,6 @@ fun SimpleMusicApp(
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

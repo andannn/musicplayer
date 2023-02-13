@@ -11,7 +11,6 @@ import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
 import com.andanana.musicplayer.feature.player.navigation.playerScreen
-import kotlin.reflect.KFunction0
 
 private const val TAG = "SmpNavHost"
 
@@ -31,7 +30,8 @@ fun SmpNavHost(
             navHostController = navHostController,
             onNavigateToPlayList = {
                 navHostController.navigateToPlayList(it)
-            }
+            },
+            onShowMusicItemOption = onShowMusicItemOption
         )
         libraryScreen()
         playListScreen(

@@ -68,7 +68,7 @@ fun ItemListBottomDrawer(
                     )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            items.forEachIndexed() { index, item ->
+            items.forEachIndexed { index, item ->
                 val imageVector = when (val icon = item.icon) {
                     is Icon.ImageVectorIcon -> {
                         icon.imageVector
@@ -80,7 +80,9 @@ fun ItemListBottomDrawer(
                     text = item.text,
                     onClick = { onItemClick(index) }
                 )
-                Divider()
+                if (index != items.lastIndex) {
+                    Divider()
+                }
             }
         },
         content = content

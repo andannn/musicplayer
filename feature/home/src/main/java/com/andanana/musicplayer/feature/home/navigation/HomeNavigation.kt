@@ -8,7 +8,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.andanana.musicplayer.feature.home.HomeRoute
 
 const val homeRoute = "home_route"
@@ -19,7 +18,8 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.homeScreen(
     navHostController: NavHostController,
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (Uri) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     composable(route = homeRoute) {
         val parentBackEntry = remember(it) {
@@ -27,7 +27,8 @@ fun NavGraphBuilder.homeScreen(
         }
         HomeRoute(
             playerStateViewModel = hiltViewModel(parentBackEntry),
-            onNavigateToPlayList = onNavigateToPlayList
+            onNavigateToPlayList = onNavigateToPlayList,
+            onShowMusicItemOption = onShowMusicItemOption
         )
     }
 }

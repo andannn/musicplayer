@@ -11,13 +11,25 @@ enum class DrawerItem(
         icon = SimpleMusicIcons.AddFavorite,
         text = "Save to Favorite"
     ),
+    PLAY_NEXT(
+        icon = SimpleMusicIcons.PlayNext,
+        text = "Play next"
+    ),
     ADD_TO_PLAY_LIST(
         icon = SimpleMusicIcons.AddPlayList,
         text = "Save to PlayList"
     ),
-    Share(
+    SHARE(
         icon = SimpleMusicIcons.Share,
         text = "Share"
+    ),
+    INFORMATION(
+        icon = SimpleMusicIcons.Information,
+        text = "Information"
+    ),
+    DELETE(
+        icon = SimpleMusicIcons.Delete,
+        text = "Delete"
     ),
 }
 
@@ -28,7 +40,10 @@ sealed class Drawer(
         listOf(
             DrawerItem.ADD_TO_FAVORITE,
             DrawerItem.ADD_TO_PLAY_LIST,
-            DrawerItem.Share,
+            DrawerItem.PLAY_NEXT,
+            DrawerItem.SHARE,
+            DrawerItem.INFORMATION,
+            DrawerItem.DELETE,
         )
     )
 }

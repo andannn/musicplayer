@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material.BottomDrawerState
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -16,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.andanana.musicplayer.core.designsystem.Drawer
+import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.core.model.toDrawer
@@ -30,6 +32,8 @@ import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+private const val TAG = "SimpleMusicAppState"
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,8 +56,11 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
 ) {
     val topLevelDestinations = TopLevelDestination.values().toList()
 
+    val currentBackStackEntry
+        @Composable get() = navController.currentBackStackEntryAsState()
+
     val currentNavDestination
-        @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+        @Composable get() = currentBackStackEntry.value?.destination
 
     val isHomeRoute
         @Composable get() = currentNavDestination?.route == homeRoute
@@ -80,6 +87,7 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
         }
 
     val drawer: MutableState<Drawer?> = mutableStateOf(null)
+    val interactingUri: MutableState<Uri?> = mutableStateOf(null)
 
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {
@@ -105,6 +113,7 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
 
     @OptIn(ExperimentalMaterialApi::class)
     fun onShowMusicItemOption(uri: Uri) {
+        interactingUri.value = uri
         drawer.value = when (val type = uri.toRequestType()) {
             RequestType.MUSIC_REQUEST -> {
                 type.toDrawer()
@@ -115,6 +124,14 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
         }
         coroutineScope.launch {
             drawerState.open()
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun onDrawerItemClick(item: DrawerItem) {
+        Log.d(TAG, "onDrawerItemClick: $item with uri ${interactingUri.value}")
+        coroutineScope.launch {
+            drawerState.close()
         }
     }
 

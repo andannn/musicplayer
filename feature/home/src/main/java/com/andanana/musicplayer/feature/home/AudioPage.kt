@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.home
 
+import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,13 +20,15 @@ private const val TAG = "AudioPage"
 fun AudioPage(
     modifier: Modifier = Modifier,
     audioPageViewModel: AudioPageViewModel = hiltViewModel(),
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     val state by audioPageViewModel.audioPageUiState.collectAsState()
     AudioPageContent(
         modifier = modifier,
         state = state,
-        onAudioItemClick = playerStateViewModel::onPlayMusic
+        onAudioItemClick = playerStateViewModel::onPlayMusic,
+        onShowMusicItemOption = onShowMusicItemOption
     )
 }
 
@@ -33,7 +36,8 @@ fun AudioPage(
 private fun AudioPageContent(
     modifier: Modifier = Modifier,
     state: AudioPageUiState,
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit
+    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     when (state) {
         AudioPageUiState.Loading -> {
@@ -56,6 +60,9 @@ private fun AudioPageContent(
                         date = info.modifiedDate,
                         onMusicItemClick = {
                             onAudioItemClick(musicInfoList, musicInfoList.indexOf(info))
+                        },
+                        onOptionButtonClick = {
+                            onShowMusicItemOption(info.contentUri)
                         }
                     )
                 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -35,12 +34,14 @@ private const val TAG = "HomeScreen"
 fun HomeRoute(
     modifier: Modifier = Modifier,
     playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (Uri) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     HomeScreen(
         modifier = modifier,
         playerStateViewModel = playerStateViewModel,
-        onNavigateToPlayList = onNavigateToPlayList
+        onNavigateToPlayList = onNavigateToPlayList,
+        onShowMusicItemOption = onShowMusicItemOption
     )
 }
 
@@ -49,7 +50,8 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     playerStateViewModel: PlayerStateViewModel,
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (Uri) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pageState = rememberPagerState()
@@ -101,7 +103,8 @@ private fun HomeScreen(
                 HomePage.AUDIO_PAGE -> {
                     AudioPage(
                         Modifier.fillMaxSize(),
-                        playerStateViewModel = playerStateViewModel
+                        playerStateViewModel = playerStateViewModel,
+                        onShowMusicItemOption = onShowMusicItemOption
                     )
                 }
                 HomePage.ALBUM_PAGE -> AlbumPage(

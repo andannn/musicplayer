@@ -48,7 +48,7 @@ private const val TAG = "BottomPlayerSheet"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomPlayerSheet(
+fun MiniPlayerBox(
     modifier: Modifier = Modifier,
     coverUri: String,
     isPlaying: Boolean = false,
@@ -175,7 +175,7 @@ fun BottomPlayerSheet(
 @Composable
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme() {
-        BottomPlayerSheet(
+        MiniPlayerBox(
             coverUri = "",
             title = "Song name",
             artist = "Artist name",
@@ -189,7 +189,7 @@ fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
 @Composable
 fun DarkBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = true) {
-        BottomPlayerSheet(
+        MiniPlayerBox(
             coverUri = "",
             title = "Song name",
             artist = "Artist name"
@@ -201,7 +201,7 @@ fun DarkBottomPlayerSheetPreview() {
 @Composable
 fun LightBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = false) {
-        BottomPlayerSheet(
+        MiniPlayerBox(
             coverUri = "",
             title = "Song name",
             artist = "Artist name"

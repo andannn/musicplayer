@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.andanana.musicplayer.core.designsystem.component.BottomPlayerSheet
+import com.andanana.musicplayer.core.designsystem.component.MiniPlayerBox
 import com.andanana.musicplayer.core.player.PlayState
 import com.andanana.musicplayer.core.player.PlayerStateViewModel
 import com.andanana.musicplayer.core.player.PlayerUiState
@@ -39,7 +39,7 @@ private fun MiniPlayerBoxContent(
 ) {
     Log.d(TAG, "MiniPlayerBoxContent:$state")
     if (state is PlayerUiState.Active) {
-        BottomPlayerSheet(
+        MiniPlayerBox(
             modifier = modifier,
             coverUri = state.musicInfo.albumUri,
             isPlaying = state.state == PlayState.PLAYING,
