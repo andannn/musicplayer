@@ -80,9 +80,7 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
         }
 
     val drawer: MutableState<Drawer?> = mutableStateOf(null)
-    @OptIn(ExperimentalMaterialApi::class)
-    val drawerGestureEnabled
-        @Composable get() = drawerState.isOpen
+
     fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         val topLevelNavOptions = navOptions {
             // Pop up to the start destination of the graph to

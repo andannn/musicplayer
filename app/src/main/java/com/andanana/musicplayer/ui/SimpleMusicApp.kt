@@ -58,10 +58,13 @@ fun SimpleMusicApp(
     ) {
         appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
+        appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
+
         ItemListBottomDrawer(
             state = appState.drawerState,
             items = appState.drawer.value?.itemList ?: emptyList(),
-            gesturesEnabled = appState.drawerGestureEnabled,
+            scope = appState.coroutineScope,
+            gesturesEnabled = appState.drawerState.isOpen,
             onItemClick = {},
             content = {
                 Box(modifier = Modifier.padding(it)) {

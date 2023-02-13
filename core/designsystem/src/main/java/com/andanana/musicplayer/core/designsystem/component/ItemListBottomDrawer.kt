@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.core.designsystem.component
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -28,17 +30,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ItemListBottomDrawer(
     modifier: Modifier = Modifier,
     state: BottomDrawerState = rememberBottomDrawerState(BottomDrawerValue.Closed),
+    scope: CoroutineScope = rememberCoroutineScope(),
     gesturesEnabled: Boolean,
     items: List<DrawerItem>,
     onItemClick: (Int) -> Unit,
     content: @Composable () -> Unit
 ) {
+    BackHandler(enabled = state.isOpen) {
+        scope.launch {
+            state.close()
+        }
+    }
     BottomDrawer(
         modifier = modifier,
         drawerState = state,
@@ -49,7 +59,9 @@ fun ItemListBottomDrawer(
             Spacer(modifier = Modifier.height(10.dp))
             Spacer(
                 modifier = Modifier
-                    .align(CenterHorizontally).height(3.dp).width(20.dp)
+                    .align(CenterHorizontally)
+                    .height(3.dp)
+                    .width(20.dp)
                     .background(
                         color = MaterialTheme.colorScheme.inversePrimary,
                         shape = MaterialTheme.shapes.medium
