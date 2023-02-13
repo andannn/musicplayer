@@ -46,7 +46,8 @@ fun NavGraphBuilder.playListScreen(
         }
         PlayListScreen(
             playerStateViewModel = hiltViewModel(parentEntry),
-            onShowMusicItemOption = onShowMusicItemOption
+            onShowMusicItemOption = onShowMusicItemOption,
+            onShowPlayListItemOption = onShowMusicItemOption
         )
     }
 }

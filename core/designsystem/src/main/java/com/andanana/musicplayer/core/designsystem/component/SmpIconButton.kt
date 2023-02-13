@@ -33,13 +33,14 @@ fun SmpMainIconButton(
 fun SmpSubIconButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    imageVector: ImageVector
+    imageVector: ImageVector,
+    scale: Float = 1.5f
 ) {
     IconButton(
         modifier = modifier,
         onClick = onClick
     ) {
-        Icon(modifier = Modifier.scale(1.5f), imageVector = imageVector, contentDescription = null)
+        Icon(modifier = Modifier.scale(scale), imageVector = imageVector, contentDescription = null)
     }
 }
 

@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.playList
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -14,9 +15,7 @@ import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -76,6 +75,7 @@ class PlayListViewModel @Inject constructor(
                 }
                 _playListUiStateFlow.value = PlayListUiState.Ready(
                     title = title,
+                    contentUri = uri,
                     type = uri.toRequestType()!!,
                     artCoverUri = artCoverUri,
                     trackCount = trackCount,
@@ -106,6 +106,7 @@ sealed interface PlayListUiState {
         val type: RequestType,
         val artCoverUri: String,
         val trackCount: Int,
-        val musicItems: List<MusicInfo>
+        val musicItems: List<MusicInfo>,
+        val contentUri: Uri
     ) : PlayListUiState
 }

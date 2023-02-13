@@ -115,11 +115,9 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     fun onShowMusicItemOption(uri: Uri) {
         interactingUri.value = uri
         drawer.value = when (val type = uri.toRequestType()) {
-            RequestType.MUSIC_REQUEST -> {
-                type.toDrawer()
-            }
-            RequestType.ALBUM_REQUEST -> TODO()
-            RequestType.ARTIST_REQUEST -> TODO()
+            RequestType.MUSIC_REQUEST,
+            RequestType.ALBUM_REQUEST,
+            RequestType.ARTIST_REQUEST -> type.toDrawer()
             else -> error("Invalid Type")
         }
         coroutineScope.launch {

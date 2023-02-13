@@ -44,7 +44,8 @@ private const val TAG = "PlayListScreen"
 fun PlayListScreen(
     playListViewModel: PlayListViewModel = hiltViewModel(),
     playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
-    onShowMusicItemOption: (Uri) -> Unit
+    onShowMusicItemOption: (Uri) -> Unit,
+    onShowPlayListItemOption: (Uri) -> Unit
 ) {
     val uiState by playListViewModel.playListUiStateFlow.collectAsState()
     val interactingMusic by playerStateViewModel.interactingMusicItem.collectAsState()
@@ -58,7 +59,8 @@ fun PlayListScreen(
             }
         },
         onAudioItemClick = playerStateViewModel::onPlayMusic,
-        onShowMusicItemOption = onShowMusicItemOption
+        onShowMusicItemOption = onShowMusicItemOption,
+        onShowPlayListItemOption = onShowPlayListItemOption
     )
 }
 
@@ -69,7 +71,8 @@ private fun PlayListScreenContent(
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit
+    onShowMusicItemOption: (Uri) -> Unit,
+    onShowPlayListItemOption: (Uri) -> Unit
 ) {
     when (uiState) {
         PlayListUiState.Loading -> {
@@ -80,14 +83,15 @@ private fun PlayListScreenContent(
         is PlayListUiState.Ready -> {
             PlayListContent(
                 coverArtUri = uiState.artCoverUri,
-                activeMusic = interactingMusic,
                 type = uiState.type,
                 title = uiState.title,
-                trackCount = uiState.trackCount,
+                activeMusic = interactingMusic,
                 musicItems = uiState.musicItems,
+                trackCount = uiState.trackCount,
                 onPlayAllButtonClick = onPlayAllButtonClick,
                 onAudioItemClick = onAudioItemClick,
-                onShowMusicItemOption = onShowMusicItemOption
+                onShowMusicItemOption = onShowMusicItemOption,
+                onOptionButtonClick = { onShowPlayListItemOption(uiState.contentUri) }
             )
         }
     }
@@ -105,7 +109,8 @@ private fun PlayListContent(
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit
+    onShowMusicItemOption: (Uri) -> Unit,
+    onOptionButtonClick: () -> Unit
 ) {
     val playListControlBoxMaxHeightPx = with(LocalDensity.current) {
         PlayBoxMaxHeight.toPx()
@@ -142,7 +147,8 @@ private fun PlayListContent(
                     title = title,
                     trackCount = trackCount,
                     onPlayAllButtonClick = onPlayAllButtonClick,
-                    onAddToPlayListButtonClick = onAddToPlayListButtonClick
+                    onAddToPlayListButtonClick = onAddToPlayListButtonClick,
+                    onOptionButtonClick = onOptionButtonClick
                 )
             }
 

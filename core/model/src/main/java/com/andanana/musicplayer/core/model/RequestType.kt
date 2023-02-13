@@ -24,8 +24,8 @@ enum class RequestType(val externalContentUri: String) {
 fun RequestType.toDrawer(): Drawer {
     return when (this) {
         RequestType.MUSIC_REQUEST -> Drawer.MusicDrawer
-        RequestType.ALBUM_REQUEST -> TODO()
-        RequestType.ARTIST_REQUEST -> TODO()
+        RequestType.ALBUM_REQUEST -> Drawer.AlbumDrawer
+        RequestType.ARTIST_REQUEST -> Drawer.ArtistDrawer
         else -> error("Invalid Type")
     }
 }

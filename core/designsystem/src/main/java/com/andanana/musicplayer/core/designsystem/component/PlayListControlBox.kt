@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.core.designsystem.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -9,12 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -48,20 +49,26 @@ fun PlayListControlBox(
     title: String,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddToPlayListButtonClick: () -> Unit = {}
+    onAddToPlayListButtonClick: () -> Unit = {},
+    onOptionButtonClick: () -> Unit = {}
 ) {
     Card(
         modifier = modifier.height(height).fillMaxWidth(),
         shape = MaterialTheme.shapes.medium
     ) {
-        BoxWithConstraints(modifier = Modifier) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val heightDp by rememberUpdatedState(newValue = maxHeight)
             val scaleRatio = remember(heightDp) {
                 ((heightDp - PlayBoxMinHeight) / (PlayBoxMaxHeight - PlayBoxMinHeight)).let {
                     it.coerceIn(0f, 1f)
                 }
             }
-            Log.d(TAG, "PlayListControlBox: scaleRatio $scaleRatio")
+            SmpSubIconButton(
+                modifier = Modifier.align(Alignment.TopEnd).padding(10.dp),
+                scale = 1.0f,
+                onClick = onOptionButtonClick,
+                imageVector = Icons.Rounded.MoreVert
+            )
             Row(modifier = Modifier.padding(15.dp)) {
                 AsyncImage(
                     modifier = Modifier

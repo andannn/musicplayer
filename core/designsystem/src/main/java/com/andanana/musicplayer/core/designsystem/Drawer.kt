@@ -46,4 +46,20 @@ sealed class Drawer(
             DrawerItem.DELETE,
         )
     )
+    object AlbumDrawer : Drawer(
+        listOf(
+            DrawerItem.ADD_TO_PLAY_LIST,
+            DrawerItem.PLAY_NEXT,
+            DrawerItem.INFORMATION,
+            DrawerItem.DELETE
+        )
+    )
+    object ArtistDrawer : Drawer(
+        listOf(
+            DrawerItem.ADD_TO_PLAY_LIST,
+            DrawerItem.PLAY_NEXT,
+            DrawerItem.INFORMATION,
+            DrawerItem.DELETE
+        )
+    )
 }
