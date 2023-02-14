@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.database.dao.MusicDao
+import com.andanana.musicplayer.core.database.entity.Music
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
@@ -24,7 +26,8 @@ private const val TAG = "PlayListViewModel"
 @HiltViewModel
 class PlayListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: LocalMusicRepository
+    private val repository: LocalMusicRepository,
+    private val musicDao: MusicDao,
 ) : ViewModel() {
     private val requestTypeFlow =
         savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
@@ -42,6 +45,11 @@ class PlayListViewModel @Inject constructor(
     val playListUiStateFlow = _playListUiStateFlow.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            musicDao.insertOrIgnoreMusicEntities(
+                listOf(Music(123, 11111))
+            )
+        }
         viewModelScope.launch {
             requestUri.collect { uri ->
                 val title: String
