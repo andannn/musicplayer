@@ -50,6 +50,7 @@ android {
 
 dependencies {
     implementation project(":core:designsystem")
+    implementation project(":core:data")
     implementation project(":core:player")
     implementation project(":core:model")
     implementation project(":core:database")
@@ -59,6 +60,7 @@ dependencies {
     implementation project(':feature:playlist')
 
     implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-splashscreen:1.0.0'
 
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
     implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"

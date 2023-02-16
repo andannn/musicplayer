@@ -5,6 +5,8 @@ import com.andanana.musicplayer.core.model.ArtistInfo
 import com.andanana.musicplayer.core.model.MusicInfo
 
 interface LocalMusicRepository {
+    suspend fun getAllMusicMediaId(): List<Long>
+
     suspend fun getAllMusicInfo(): List<MusicInfo>
 
     suspend fun getAlbumInfoById(id: Long): AlbumInfo

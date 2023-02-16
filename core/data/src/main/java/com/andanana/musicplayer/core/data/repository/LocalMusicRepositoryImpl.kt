@@ -54,6 +54,24 @@ class LocalMusicRepositoryImpl @Inject constructor(
     private val app: Application
 ) : LocalMusicRepository {
 
+    override suspend fun getAllMusicMediaId(): List<Long> {
+        val params = CrQueryParameter()
+        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        params.apply {
+            projection = listOf(
+                MediaStore.Audio.Albums._ID
+            ).toTypedArray()
+        }
+        return CrQueryUtil.query(app, uri, params)?.use { cursor ->
+            val idList = mutableListOf<Long>()
+            val idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+            while (cursor.moveToNext()) {
+                idList.add(cursor.getLong(idIndex))
+            }
+            idList
+        } ?: emptyList()
+    }
+
     override suspend fun getAllMusicInfo() = withContext(Dispatchers.IO) {
         queryMusicInfo {
             projection = MusicInfoProjection
