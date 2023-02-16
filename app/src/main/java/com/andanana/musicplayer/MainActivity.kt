@@ -9,7 +9,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,10 +16,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.ui.MainActivityViewModel
+import com.andanana.musicplayer.ui.MainUiState
 import com.andanana.musicplayer.ui.SimpleMusicApp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
@@ -38,39 +44,57 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        splashScreen.setKeepOnScreenCondition {
-            true
+
+        var mainUiState by mutableStateOf<MainUiState>(MainUiState.Loading)
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.mainUiState
+                    .onEach { state ->
+                        mainUiState = state
+                    }
+                    .collect()
+            }
         }
+
+        splashScreen.setKeepOnScreenCondition {
+            when (mainUiState) {
+                MainUiState.Loading -> true
+                MainUiState.Ready -> false
+            }
+        }
+
         setContent {
+            var permissionGranted by remember {
+                mutableStateOf(isPermissionGranted())
+            }
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestMultiplePermissions(),
+                onResult = {
+                    it.forEach { (permission, granted) ->
+                        if (!granted) {
+                            finish()
+                        }
+                    }
+                    mainViewModel.syncMediaStore()
+                    permissionGranted = true
+                }
+            )
+
+            if (!permissionGranted) {
+                SideEffect {
+                    runTimePermissions.filter {
+                        ContextCompat.checkSelfPermission(
+                            /* context = */ this,
+                            /* permission = */ it
+                        ) == PackageManager.PERMISSION_DENIED
+                    }.let {
+                        launcher.launch(it.toTypedArray())
+                    }
+                }
+            }
+
             MusicPlayerTheme {
-                var permissionGranted by remember {
-                    mutableStateOf(isPermissionGranted())
-                }
-
-                val launcher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.RequestMultiplePermissions(),
-                    onResult = {
-                        it.forEach { (permission, granted) ->
-                            if (!granted) {
-                                finish()
-                            }
-                        }
-                        permissionGranted = true
-                    }
-                )
-                if (!permissionGranted) {
-                    SideEffect {
-                        runTimePermissions.filter {
-                            ContextCompat.checkSelfPermission(
-                                /* context = */ this,
-                                /* permission = */ it
-                            ) == PackageManager.PERMISSION_DENIED
-                        }.let {
-                            launcher.launch(it.toTypedArray())
-                        }
-                    }
-                }
-
                 if (permissionGranted) {
                     SimpleMusicApp()
                 }
