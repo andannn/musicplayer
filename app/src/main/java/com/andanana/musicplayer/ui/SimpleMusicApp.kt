@@ -16,14 +16,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -48,6 +51,12 @@ fun SimpleMusicApp(
     appState: SimpleMusicAppState = rememberSimpleMusicAppState()
 ) {
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                modifier = Modifier.padding(bottom = 150.dp),
+                hostState = appState.snackbarHostState
+            )
+        },
         topBar = {
             val titleRes = appState.currentTopLevelDestination?.titleTextId
             val title = titleRes?.let { stringResource(id = it) } ?: ""
@@ -67,6 +76,14 @@ fun SimpleMusicApp(
         }
         val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
             ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
+        }
+
+        LaunchedEffect(key1 = Unit) {
+            mainViewModel.snackbarEvent.collect { event ->
+                event.let {
+                    appState.snackbarHostState.showSnackbar(it.message, it.actionLabel)
+                }
+            }
         }
         ItemListBottomDrawer(
             state = appState.drawerState,
@@ -104,7 +121,8 @@ fun SimpleMusicApp(
                     ) {
                         MiniPlayerBox(
                             playerStateViewModel = hiltViewModel(parentBackEntry),
-                            onNavigateToPlayer = { appState.navController.navigateToPlayer() }
+                            onNavigateToPlayer = { appState.navController.navigateToPlayer() },
+                            onToggleFavorite = mainViewModel::onToggleFavorite
                         )
                     }
                     SimpleMusicNavigationBar(

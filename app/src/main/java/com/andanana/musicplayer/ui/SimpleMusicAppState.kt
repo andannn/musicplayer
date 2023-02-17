@@ -5,6 +5,7 @@ import androidx.compose.material.BottomDrawerState
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomDrawerState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +38,25 @@ private const val TAG = "SimpleMusicAppState"
 @Composable
 fun rememberSimpleMusicAppState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     drawerState: BottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed),
     navController: NavHostController = rememberNavController(),
     systemUiController: SystemUiController = rememberSystemUiController()
 ): SimpleMusicAppState {
-    return remember(navController, coroutineScope, systemUiController, drawerState) {
-        SimpleMusicAppState(navController, coroutineScope, systemUiController, drawerState)
+    return remember(
+        navController,
+        coroutineScope,
+        systemUiController,
+        drawerState,
+        snackbarHostState
+    ) {
+        SimpleMusicAppState(
+            navController,
+            coroutineScope,
+            systemUiController,
+            drawerState,
+            snackbarHostState
+        )
     }
 }
 
@@ -50,7 +64,8 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
     val systemUiController: SystemUiController,
-    val drawerState: BottomDrawerState
+    val drawerState: BottomDrawerState,
+    val snackbarHostState: SnackbarHostState
 ) {
     val topLevelDestinations = TopLevelDestination.values().toList()
 

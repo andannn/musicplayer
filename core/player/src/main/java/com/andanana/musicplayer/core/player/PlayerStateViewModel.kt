@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.core.player.repository.PlayerState
@@ -24,7 +25,8 @@ private const val TAG = "PlayerStateViewModel"
 @HiltViewModel
 class PlayerStateViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val playerRepository: PlayerRepository
+    private val playerRepository: PlayerRepository,
+    private val useCases: PlayListUseCases
 ) : ViewModel() {
 
     private val playListFlow =
@@ -42,6 +44,9 @@ class PlayerStateViewModel @Inject constructor(
 
     private val _playerUiStateFlow = MutableStateFlow<PlayerUiState>(PlayerUiState.Inactive)
     val playerUiStateFlow = _playerUiStateFlow.asStateFlow()
+
+    private val musicInFavorite = useCases.getMusicInFavorite.invoke()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 10L) {
         (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
@@ -81,7 +86,8 @@ class PlayerStateViewModel @Inject constructor(
                             is PlayerState.Paused -> PlayState.PAUSED
                             is PlayerState.Playing -> PlayState.PLAYING
                             else -> PlayState.LOADING
-                        }
+                        },
+                        isFavorite = musicInFavorite.value.contains(musicInfo.contentUri.lastPathSegment!!.toLong())
                     )
                 }
             }
@@ -191,6 +197,7 @@ sealed class PlayerUiState {
     data class Active(
         val state: PlayState = PlayState.LOADING,
         val progress: Float = 0f,
+        val isFavorite: Boolean,
         val musicInfo: MusicInfo
     ) : PlayerUiState()
 }

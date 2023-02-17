@@ -4,14 +4,16 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
-import com.andanana.musicplayer.core.database.usecases.WriteDataBaseCases
+import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -23,7 +25,7 @@ private const val TAG = "MainActivityViewModel"
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val localMusicRepository: LocalMusicRepository,
-    private val useCases: WriteDataBaseCases
+    private val useCases: PlayListUseCases
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
@@ -36,6 +38,12 @@ class MainActivityViewModel @Inject constructor(
         it?.toRequestType()
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private val _snackbarEvent = MutableSharedFlow<SnackBarEvent>()
+    val snackbarEvent = _snackbarEvent.asSharedFlow()
+
+    private val musicInFavorite = useCases.getMusicInFavorite.invoke()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         syncMediaStore()
@@ -63,7 +71,9 @@ class MainActivityViewModel @Inject constructor(
             RequestType.MUSIC_REQUEST -> {
                 when (item) {
                     DrawerItem.ADD_TO_FAVORITE -> {
-                        addMusicToFavorite(uri = interactingUri.value!!)
+                        interactingUri.value?.lastPathSegment?.toLong()?.let {
+                            addMusicToFavorite(it)
+                        }
                     }
                     else -> {}
                 }
@@ -74,11 +84,27 @@ class MainActivityViewModel @Inject constructor(
         clearInteractingUri()
     }
 
-    private fun addMusicToFavorite(uri: Uri) {
-        viewModelScope.launch {
-            uri.lastPathSegment?.toLong()?.let { mediaId ->
-                useCases.addMusicToFavorite(mediaId)
+    fun onToggleFavorite(uri: Uri) {
+        uri.lastPathSegment?.toLong()?.let { mediaId ->
+            if (musicInFavorite.value.contains(mediaId)) {
+                deleteMusicInFavorite(mediaId)
+            } else {
+                addMusicToFavorite(mediaId)
             }
+        }
+    }
+
+    private fun deleteMusicInFavorite(mediaId: Long) {
+        viewModelScope.launch {
+            useCases.deleteMusicInFavorite(mediaId)
+            _snackbarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
+        }
+    }
+
+    private fun addMusicToFavorite(mediaId: Long) {
+        viewModelScope.launch {
+            useCases.addMusicToFavorite(mediaId)
+            _snackbarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
         }
     }
 

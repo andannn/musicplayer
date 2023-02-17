@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.database.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -29,4 +30,7 @@ interface PlayListDao {
 
     @Query("SELECT * FROM play_list")
     fun getAllPlaylist(): Flow<List<PlayList>>
+
+    @Delete
+    suspend fun deleteMusicInPlaylist(playListMusicCrossRefReferences: List<PlayListMusicCrossRef>)
 }

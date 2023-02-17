@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.player
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,7 +16,8 @@ private const val TAG = "MiniPlayerBox"
 @Composable
 fun MiniPlayerBox(
     playerStateViewModel: PlayerStateViewModel,
-    onNavigateToPlayer: () -> Unit
+    onNavigateToPlayer: () -> Unit,
+    onToggleFavorite: (Uri) -> Unit,
 ) {
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
@@ -23,7 +25,11 @@ fun MiniPlayerBox(
         state = playerUiState,
         onPlayerSheetClick = onNavigateToPlayer,
         onPlayControlButtonClick = playerStateViewModel::togglePlayState,
-        onFavoriteButtonClick = {},
+        onFavoriteButtonClick = {
+            (playerUiState as? PlayerUiState.Active)?.let {
+                onToggleFavorite(it.musicInfo.contentUri)
+            }
+        },
         onPlayNextButtonClick = playerStateViewModel::next
     )
 }
@@ -47,6 +53,7 @@ private fun MiniPlayerBoxContent(
             title = state.musicInfo.title,
             artist = state.musicInfo.artist,
             progress = state.progress,
+            isFavorite = state.isFavorite,
             onPlayerSheetClick = onPlayerSheetClick,
             onPlayNextButtonClick = onPlayNextButtonClick,
             onPlayControlButtonClick = onPlayControlButtonClick,
