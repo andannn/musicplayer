@@ -18,6 +18,11 @@ interface PlayListDao {
     ): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertPlayListEntities(
+        entities: PlayList
+    ): Long
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOrIgnorePlayListMusicCrossRefEntities(
         playListMusicCrossRefReferences: List<PlayListMusicCrossRef>
     )

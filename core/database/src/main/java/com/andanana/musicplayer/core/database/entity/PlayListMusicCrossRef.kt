@@ -29,9 +29,9 @@ import androidx.room.Index
 )
 data class PlayListMusicCrossRef(
     @ColumnInfo(name = "play_list_id")
-    val playListId: Int,
+    val playListId: Long,
     @ColumnInfo(name = "media_store_id")
-    val musicId: Int
+    val musicId: Long
 )
 
 

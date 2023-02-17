@@ -10,10 +10,10 @@ data class PlayList(
     @ColumnInfo(name = "play_list_id")
     val playListId: Long,
     val name: String,
-    val cratedDate: Int
+    val createdDate: Long
 )
 
 data class PlayListWithoutId(
     val name: String,
-    val cratedDate: Int
+    val createdDate: Long
 )

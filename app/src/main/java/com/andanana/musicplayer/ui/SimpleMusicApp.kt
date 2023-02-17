@@ -25,8 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.component.ItemListBottomDrawer
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
@@ -59,6 +62,12 @@ fun SimpleMusicApp(
 
         appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
 
+        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No view model store owner"
+        }
+        val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
+            ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
+        }
         ItemListBottomDrawer(
             state = appState.drawerState,
             items = appState.drawer.value?.itemList ?: emptyList(),
@@ -66,44 +75,47 @@ fun SimpleMusicApp(
             gesturesEnabled = appState.drawerState.isOpen,
             onItemClick = {
                 val drawerItem = appState.drawer.value?.itemList?.get(it)!!
-                appState.onDrawerItemClick(drawerItem)
-            },
-            content = {
-                Box(modifier = Modifier.padding(it)) {
-                    Column {
-                        SmpNavHost(
-                            navHostController = appState.navController,
-                            modifier = Modifier.weight(1f),
-                            onBackPressed = appState::onBackPressed,
-                            onShowMusicItemOption = appState::onShowMusicItemOption
-                        )
-
-                        val backStackEntry by appState.currentBackStackEntry
-                        val parentBackEntry = remember(backStackEntry) {
-                            appState.navController.getBackStackEntry(homeRoute)
+                mainViewModel.onDrawerItemClick(drawerItem)
+                appState.closeDrawer()
+            }
+        ) {
+            Box(modifier = Modifier.padding(it)) {
+                Column {
+                    SmpNavHost(
+                        navHostController = appState.navController,
+                        modifier = Modifier.weight(1f),
+                        onBackPressed = appState::onBackPressed,
+                        onShowMusicItemOption = {
+                            mainViewModel.setCurrentInteractingUri(it)
+                            appState.showDrawerByUri(it)
                         }
-                        val visible = !appState.isPlayerRoute
+                    )
 
-                        AnimatedVisibility(
-                            visible = visible,
-                            enter = expandVertically() + fadeIn(),
-                            exit = shrinkVertically() + fadeOut()
-                        ) {
-                            MiniPlayerBox(
-                                playerStateViewModel = hiltViewModel(parentBackEntry),
-                                onNavigateToPlayer = { appState.navController.navigateToPlayer() }
-                            )
-                        }
-                        SimpleMusicNavigationBar(
-                            visible = !appState.isNavigationBarHide,
-                            destinations = appState.topLevelDestinations,
-                            onNavigateToDestination = appState::navigateToTopLevelDestination,
-                            currentDestination = appState.currentNavDestination
+                    val backStackEntry by appState.currentBackStackEntry
+                    val parentBackEntry = remember(backStackEntry) {
+                        appState.navController.getBackStackEntry(homeRoute)
+                    }
+                    val visible = !appState.isPlayerRoute
+
+                    AnimatedVisibility(
+                        visible = visible,
+                        enter = expandVertically() + fadeIn(),
+                        exit = shrinkVertically() + fadeOut()
+                    ) {
+                        MiniPlayerBox(
+                            playerStateViewModel = hiltViewModel(parentBackEntry),
+                            onNavigateToPlayer = { appState.navController.navigateToPlayer() }
                         )
                     }
+                    SimpleMusicNavigationBar(
+                        visible = !appState.isNavigationBarHide,
+                        destinations = appState.topLevelDestinations,
+                        onNavigateToDestination = appState::navigateToTopLevelDestination,
+                        currentDestination = appState.currentNavDestination
+                    )
                 }
             }
-        )
+        }
     }
 }
 
