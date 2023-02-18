@@ -15,6 +15,7 @@ import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
+import com.andanana.musicplayer.feature.library.navigation.addPlayListDialog
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
@@ -59,5 +60,6 @@ fun SmpNavHost(
         playerScreen(
             navHostController = navHostController
         )
+        addPlayListDialog()
     }
 }

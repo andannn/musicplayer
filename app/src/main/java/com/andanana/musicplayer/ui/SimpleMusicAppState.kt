@@ -84,7 +84,7 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val isPlayerRoute
         @Composable get() = currentNavDestination?.route == playerRoute
 
-    private val isPlayListRoute
+    val isPlayListRoute
         @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
 
     val isTopBarHide

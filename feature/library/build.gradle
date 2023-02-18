@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -37,6 +39,14 @@ android {
 }
 
 dependencies {
+    implementation project(":core:database")
+    implementation project(":core:designsystem")
+
+    implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
+
+    // Acitvity
+    implementation 'androidx.core:core-ktx:1.9.0'
+
     // Compose
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
@@ -45,6 +55,13 @@ dependencies {
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:$navigation_version"
+
+    // Dagger
+    implementation "com.google.dagger:hilt-android:$dagger_version"
+    kapt "com.google.dagger:hilt-compiler:$dagger_version"
+
+    // Hilt Navigation Compose
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'

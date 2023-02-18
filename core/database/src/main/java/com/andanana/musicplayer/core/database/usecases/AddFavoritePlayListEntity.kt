@@ -9,12 +9,12 @@ const val FAVORITE_PLAY_LIST_ID = Long.MAX_VALUE
 class AddFavoritePlayListEntity @Inject constructor(
     private val playListDao: PlayListDao
 ) {
-    suspend operator fun invoke() {
+    suspend operator fun invoke(date: Long) {
         playListDao.insertPlayListEntities(
             PlayList(
                 playListId = FAVORITE_PLAY_LIST_ID,
                 name = "Favorite",
-                createdDate = 0L
+                createdDate = date
             )
         )
     }

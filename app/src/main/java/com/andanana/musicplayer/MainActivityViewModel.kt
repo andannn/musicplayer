@@ -85,7 +85,7 @@ class MainActivityViewModel @Inject constructor(
             useCases.addMusicEntities(idList)
 
             // Add favorite play list entity, ignore if exist.
-            useCases.addFavoritePlayListEntity()
+            useCases.addFavoritePlayListEntity(System.currentTimeMillis())
 
             _mainUiState.value = MainUiState.Ready
         }
@@ -99,14 +99,15 @@ class MainActivityViewModel @Inject constructor(
                         interactingUri.value?.lastPathSegment?.toLong()?.let {
                             addMusicToFavorite(it)
                         }
+
+                        clearInteractingUri()
                     }
+
                     else -> {}
                 }
             }
             else -> error("not impl")
         }
-
-        clearInteractingUri()
     }
 
     fun onToggleFavorite(uri: Uri) {

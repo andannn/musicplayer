@@ -33,11 +33,13 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.MainActivityViewModel
+import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.ItemListBottomDrawer
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
+import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
@@ -59,6 +61,9 @@ fun SimpleMusicApp(
         },
         topBar = {
             val titleRes = appState.currentTopLevelDestination?.titleTextId
+            Log.d(TAG, "SimpleMusicApp: ${appState.currentNavDestination}")
+            Log.d(TAG, "SimpleMusicApp:isPlayerRoute ${appState.isPlayerRoute}")
+            Log.d(TAG, "SimpleMusicApp: isPlayListRoute ${appState.isPlayListRoute}")
             val title = titleRes?.let { stringResource(id = it) } ?: ""
             val visible = !appState.isTopBarHide
             SmpCenterAlignedTopAppBar(
@@ -93,6 +98,12 @@ fun SimpleMusicApp(
             onItemClick = {
                 val drawerItem = appState.drawer.value?.itemList?.get(it)!!
                 mainViewModel.onDrawerItemClick(drawerItem)
+                when (drawerItem) {
+                    DrawerItem.ADD_TO_PLAY_LIST -> {
+                        appState.navController.navigateToAddPlayListDialog()
+                    }
+                    else -> Unit
+                }
                 appState.closeDrawer()
             }
         ) {
