@@ -10,13 +10,14 @@ import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
+import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.feature.playList.navigation.requestUriLastSegmentArg
 import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,7 +26,8 @@ private const val TAG = "PlayListViewModel"
 @HiltViewModel
 class PlayListViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: LocalMusicRepository
+    private val repository: LocalMusicRepository,
+    private val playerRepository: PlayerRepository
 ) : ViewModel() {
     private val requestTypeFlow =
         savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
@@ -88,8 +90,15 @@ class PlayListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            requestUri.collect {
-                Log.d(TAG, ": $it")
+            playerRepository.observePlayingUri().collect { uri ->
+                _playListUiStateFlow.update {
+                    (_playListUiStateFlow.value as? PlayListUiState.Ready)?.let {
+                        it.copy(
+                            interactingUri = uri
+                        )
+                    }
+                        ?: return@collect
+                }
             }
         }
         viewModelScope.launch {
@@ -108,6 +117,7 @@ sealed interface PlayListUiState {
         val artCoverUri: String,
         val trackCount: Int,
         val musicItems: List<MusicInfo>,
+        val interactingUri: Uri? = null,
         val contentUri: Uri
     ) : PlayListUiState
 }

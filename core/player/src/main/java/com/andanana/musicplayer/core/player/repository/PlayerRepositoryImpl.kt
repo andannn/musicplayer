@@ -100,7 +100,7 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 
-    override fun observePlayingMediaItem(): Flow<Uri?> =
+    override fun observePlayingUri(): Flow<Uri?> =
         playingMediaItemStateFlow.map {
             it?.localConfiguration?.uri
         }

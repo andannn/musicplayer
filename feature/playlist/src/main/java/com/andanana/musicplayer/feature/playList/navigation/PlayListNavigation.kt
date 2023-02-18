@@ -24,7 +24,6 @@ fun NavController.navigateToPlayList(uri: Uri) {
 }
 
 fun NavGraphBuilder.playListScreen(
-    interactingMusic: MusicInfo?,
     onShowMusicItemOption: (Uri) -> Unit,
     onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onBackPressed: () -> Unit
@@ -41,7 +40,6 @@ fun NavGraphBuilder.playListScreen(
         )
     ) {
         PlayListScreen(
-            interactingMusic = interactingMusic,
             onPlayMusicInList = onPlayMusicInList,
             onShowMusicItemOption = onShowMusicItemOption,
             onShowPlayListItemOption = onShowMusicItemOption

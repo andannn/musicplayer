@@ -31,7 +31,7 @@ class PlayerStateViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val interactingMusicItem: StateFlow<MusicInfo?> =
-        playerRepository.observePlayingMediaItem()
+        playerRepository.observePlayingUri()
             .map { uri ->
                 uri?.lastPathSegment?.toLong()?.let {
                     localMusicRepository.getMusicInfoById(it)

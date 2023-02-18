@@ -41,7 +41,6 @@ private const val TAG = "PlayListScreen"
 
 @Composable
 fun PlayListScreen(
-    interactingMusic: MusicInfo?,
     playListViewModel: PlayListViewModel = hiltViewModel(),
     onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
@@ -51,7 +50,6 @@ fun PlayListScreen(
 
     PlayListScreenContent(
         uiState = uiState,
-        interactingMusic = interactingMusic,
         onPlayAllButtonClick = {
             (uiState as? PlayListUiState.Ready)?.let {
                 onPlayMusicInList(it.musicItems, 0)
@@ -66,7 +64,6 @@ fun PlayListScreen(
 @Composable
 private fun PlayListScreenContent(
     uiState: PlayListUiState,
-    interactingMusic: MusicInfo?,
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
@@ -84,7 +81,7 @@ private fun PlayListScreenContent(
                 coverArtUri = uiState.artCoverUri,
                 type = uiState.type,
                 title = uiState.title,
-                activeMusic = interactingMusic,
+                activeMusic = uiState.interactingUri,
                 musicItems = uiState.musicItems,
                 trackCount = uiState.trackCount,
                 onPlayAllButtonClick = onPlayAllButtonClick,
@@ -102,7 +99,7 @@ private fun PlayListContent(
     coverArtUri: String,
     type: RequestType,
     title: String,
-    activeMusic: MusicInfo?,
+    activeMusic: Uri?,
     musicItems: List<MusicInfo>,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
@@ -161,7 +158,7 @@ private fun PlayListContent(
                 ) { info ->
                     MusicCard(
                         modifier = Modifier.padding(vertical = 4.dp),
-                        colors = if (activeMusic == info) {
+                        colors = if (activeMusic == info.contentUri) {
                             CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
                         } else {
                             CardDefaults.cardColors()
