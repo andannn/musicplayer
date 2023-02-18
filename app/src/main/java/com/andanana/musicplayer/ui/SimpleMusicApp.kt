@@ -22,7 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +46,7 @@ import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
+import kotlinx.coroutines.flow.collect
 
 private const val TAG = "SimpleMusicApp"
 
@@ -61,11 +64,11 @@ fun SimpleMusicApp(
         },
         topBar = {
             val titleRes = appState.currentTopLevelDestination?.titleTextId
-            Log.d(TAG, "SimpleMusicApp: ${appState.currentNavDestination}")
-            Log.d(TAG, "SimpleMusicApp:isPlayerRoute ${appState.isPlayerRoute}")
-            Log.d(TAG, "SimpleMusicApp: isPlayListRoute ${appState.isPlayListRoute}")
             val title = titleRes?.let { stringResource(id = it) } ?: ""
-            val visible = !appState.isTopBarHide
+
+            val visible = remember(appState.currentNavDestination) {
+                !appState.isTopBarHide
+            }
             SmpCenterAlignedTopAppBar(
                 visible = visible,
                 title = title
@@ -139,8 +142,11 @@ fun SimpleMusicApp(
                             onToggleFavorite = mainViewModel::onToggleFavorite
                         )
                     }
+                    val isNavigationBarVisible = remember(appState.currentNavDestination) {
+                        !appState.isNavigationBarHide
+                    }
                     SimpleMusicNavigationBar(
-                        visible = !appState.isNavigationBarHide,
+                        visible = isNavigationBarVisible,
                         destinations = appState.topLevelDestinations,
                         onNavigateToDestination = appState::navigateToTopLevelDestination,
                         currentDestination = appState.currentNavDestination
@@ -192,7 +198,6 @@ fun SimpleMusicNavigationBar(
         ) {
             destinations.forEach { destination ->
                 val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
-                Log.d(TAG, "SimpleMusicNavigationBar: $destination $selected")
                 SmpNavigationBarItem(
                     selected = selected,
                     onClick = { onNavigateToDestination(destination) },

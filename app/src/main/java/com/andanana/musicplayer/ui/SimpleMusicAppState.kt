@@ -75,22 +75,28 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val currentNavDestination
         @Composable get() = currentBackStackEntry.value?.destination
 
+    private val currentDestinationWithoutDialog
+        get() = navController.backQueue.lastOrNull {
+            it.destination.route?.contains("dialog") == false
+        }?.destination
+
     val isHomeRoute
-        @Composable get() = currentNavDestination?.route == homeRoute
+        get() = currentDestinationWithoutDialog?.route == homeRoute
 
     val isLibraryRoute
-        @Composable get() = currentNavDestination?.route == libraryRoute
+        get() = currentDestinationWithoutDialog?.route == libraryRoute
 
     val isPlayerRoute
-        @Composable get() = currentNavDestination?.route == playerRoute
+        get() = currentDestinationWithoutDialog?.route == playerRoute
 
-    val isPlayListRoute
-        @Composable get() = currentNavDestination?.route?.contains(playListRoute) == true
+    private val isPlayListRoute
+        get() = currentDestinationWithoutDialog?.route?.contains(playListRoute) == true
 
     val isTopBarHide
-        @Composable get() = isPlayListRoute || isPlayerRoute
+        get() = (isPlayListRoute) || isPlayerRoute
+
     val isNavigationBarHide
-        @Composable get() = isPlayListRoute || isPlayerRoute
+        get() = isPlayListRoute || isPlayerRoute
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {
