@@ -1,11 +1,18 @@
 package com.andanana.musicplayer.navigation
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.dialog
+import com.andanana.musicplayer.MainActivityViewModel
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
@@ -21,7 +28,16 @@ fun SmpNavHost(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit
 ) {
+    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No view model store owner"
+    }
+    val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
+        ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
+    }
+    val interactingMusic by mainViewModel.interactingMusicItem.collectAsState(null)
+    Log.d(TAG, "SmpNavHost: $")
     NavHost(
         navController = navHostController,
         startDestination = homeRoute,
@@ -32,13 +48,16 @@ fun SmpNavHost(
             onNavigateToPlayList = {
                 navHostController.navigateToPlayList(it)
             },
-            onShowMusicItemOption = onShowMusicItemOption
+            onShowMusicItemOption = onShowMusicItemOption,
+            onPlayMusicInList = onPlayMusicInList
         )
         libraryScreen()
         playListScreen(
+            interactingMusic = interactingMusic,
             navHostController = navHostController,
-            onBackPressed = onBackPressed,
-            onShowMusicItemOption = onShowMusicItemOption
+            onShowMusicItemOption = onShowMusicItemOption,
+            onPlayMusicInList = onPlayMusicInList,
+            onBackPressed = onBackPressed
         )
         playerScreen(
             navHostController = navHostController

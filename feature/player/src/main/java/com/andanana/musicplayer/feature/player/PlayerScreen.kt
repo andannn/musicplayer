@@ -44,9 +44,6 @@ import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
-import com.andanana.musicplayer.core.player.PlayState
-import com.andanana.musicplayer.core.player.PlayerStateViewModel
-import com.andanana.musicplayer.core.player.PlayerUiState
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 

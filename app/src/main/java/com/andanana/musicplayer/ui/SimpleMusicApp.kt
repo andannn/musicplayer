@@ -105,7 +105,8 @@ fun SimpleMusicApp(
                         onShowMusicItemOption = {
                             mainViewModel.setCurrentInteractingUri(it)
                             appState.showDrawerByUri(it)
-                        }
+                        },
+                        onPlayMusicInList = mainViewModel::onPlayMusic
                     )
 
                     val backStackEntry by appState.currentBackStackEntry

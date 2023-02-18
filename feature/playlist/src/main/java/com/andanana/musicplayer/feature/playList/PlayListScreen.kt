@@ -36,29 +36,28 @@ import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.player.PlayerStateViewModel
 
 private const val TAG = "PlayListScreen"
 
 @Composable
 fun PlayListScreen(
+    interactingMusic: MusicInfo?,
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onShowPlayListItemOption: (Uri) -> Unit
 ) {
     val uiState by playListViewModel.playListUiStateFlow.collectAsState()
-    val interactingMusic by playerStateViewModel.interactingMusicItem.collectAsState()
 
     PlayListScreenContent(
         uiState = uiState,
         interactingMusic = interactingMusic,
         onPlayAllButtonClick = {
             (uiState as? PlayListUiState.Ready)?.let {
-                playerStateViewModel.onPlayMusic(it.musicItems)
+                onPlayMusicInList(it.musicItems, 0)
             }
         },
-        onAudioItemClick = playerStateViewModel::onPlayMusic,
+        onAudioItemClick = onPlayMusicInList,
         onShowMusicItemOption = onShowMusicItemOption,
         onShowPlayListItemOption = onShowPlayListItemOption
     )

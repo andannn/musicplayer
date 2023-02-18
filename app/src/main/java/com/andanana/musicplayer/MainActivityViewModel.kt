@@ -1,18 +1,22 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -24,6 +28,8 @@ private const val TAG = "MainActivityViewModel"
 
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val playerRepository: PlayerRepository,
     private val localMusicRepository: LocalMusicRepository,
     private val useCases: PlayListUseCases
 ) : ViewModel() {
@@ -44,6 +50,18 @@ class MainActivityViewModel @Inject constructor(
 
     private val musicInFavorite = useCases.getMusicInFavorite.invoke()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val interactingMusicItem: StateFlow<MusicInfo?> =
+        playerRepository.observePlayingMediaItem()
+            .map { uri ->
+                uri?.lastPathSegment?.toLong()?.let {
+                    localMusicRepository.getMusicInfoById(it)
+                }
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    private val playListFlow =
+        savedStateHandle.getStateFlow<List<MusicInfo>>(PLAY_LIST_KEY, emptyList())
 
     init {
         syncMediaStore()
@@ -114,6 +132,27 @@ class MainActivityViewModel @Inject constructor(
 
     private fun clearInteractingUri() {
         interactingUri.value = null
+    }
+
+    fun onPlayMusic(playList: List<MusicInfo>, index: Int) {
+        when {
+            playList != this.playListFlow.value -> {
+                // Play list changed.
+                savedStateHandle[PLAY_LIST_KEY] = playList
+                playerRepository.setPlayList(playList.map { it.mediaItem })
+                playerRepository.seekToMediaIndex(index)
+                playerRepository.play()
+            }
+            index != playListFlow.value.indexOf(interactingMusicItem.value) -> {
+                // Play list is same but play item changed.
+                playerRepository.seekToMediaIndex(index)
+                playerRepository.play()
+            }
+        }
+    }
+
+    companion object {
+        private const val PLAY_LIST_KEY = "play_list_key"
     }
 }
 

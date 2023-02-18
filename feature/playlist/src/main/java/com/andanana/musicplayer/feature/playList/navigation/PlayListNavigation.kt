@@ -2,13 +2,13 @@ package com.andanana.musicplayer.feature.playList.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.feature.playList.PlayListScreen
@@ -27,7 +27,9 @@ fun NavController.navigateToPlayList(uri: Uri) {
 
 fun NavGraphBuilder.playListScreen(
     navHostController: NavHostController,
+    interactingMusic: MusicInfo?,
     onShowMusicItemOption: (Uri) -> Unit,
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onBackPressed: () -> Unit
 ) {
     composable(
@@ -41,11 +43,9 @@ fun NavGraphBuilder.playListScreen(
             }
         )
     ) {
-        val parentEntry = remember(it) {
-            navHostController.getBackStackEntry("home_route")
-        }
         PlayListScreen(
-            playerStateViewModel = hiltViewModel(parentEntry),
+            interactingMusic = interactingMusic,
+            onPlayMusicInList = onPlayMusicInList,
             onShowMusicItemOption = onShowMusicItemOption,
             onShowPlayListItemOption = onShowMusicItemOption
         )

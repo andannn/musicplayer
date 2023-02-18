@@ -99,6 +99,18 @@ class LocalMusicRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getMusicInfoById(id: Long) = withContext(Dispatchers.IO) {
+        queryMusicInfo {
+            val albumLimitation = "(${MediaStore.Audio.Media._ID} like ?)"
+            val albumSelectArgs = listOf(id.toString()).toTypedArray()
+
+            projection = MusicInfoProjection
+            limit = 1
+            where = albumLimitation
+            selectionArgs = albumSelectArgs
+        }.getOrNull(0)
+    }
+
     override suspend fun getArtistInfoById(id: Long) = withContext(Dispatchers.IO) {
         queryArtistInfo {
             projection = ArtistInfoProjection

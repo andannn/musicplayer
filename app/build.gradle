@@ -65,6 +65,10 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
     implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
 
+    // Media3
+    implementation 'androidx.media3:media3-exoplayer:1.0.0-beta03'
+    implementation 'androidx.media:media:1.6.0'
+
     // Hilt Navigation Compose
     implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
 

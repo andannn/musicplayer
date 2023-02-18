@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.core.player.repository
 
+import android.net.Uri
 import androidx.media3.common.MediaItem
 import kotlinx.coroutines.flow.Flow
 
@@ -16,7 +17,7 @@ interface PlayerRepository {
     val currentPositionMs: Long
     val playerState: PlayerState
     fun observePlayerState(): Flow<PlayerState>
-    fun observePlayingMediaItem(): Flow<MediaItem?>
+    fun observePlayingMediaItem(): Flow<Uri?>
     fun setPlayList(mediaItems: List<MediaItem>)
     fun seekToMediaIndex(index: Int)
     fun play()

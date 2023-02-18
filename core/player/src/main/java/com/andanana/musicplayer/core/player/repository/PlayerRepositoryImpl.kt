@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.core.player.repository
 
+import android.net.Uri
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -7,6 +8,7 @@ import androidx.media3.common.Player
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -98,7 +100,11 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 
-    override fun observePlayingMediaItem(): Flow<MediaItem?> = playingMediaItemStateFlow
+    override fun observePlayingMediaItem(): Flow<Uri?> =
+        playingMediaItemStateFlow.map {
+            it?.localConfiguration?.uri
+        }
+
     override fun setPlayList(mediaItems: List<MediaItem>) {
         player.setMediaItems(mediaItems)
     }

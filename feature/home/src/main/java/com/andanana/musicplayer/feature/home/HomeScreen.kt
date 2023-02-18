@@ -21,8 +21,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.andanana.musicplayer.core.player.PlayerStateViewModel
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -33,13 +32,13 @@ private const val TAG = "HomeScreen"
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onNavigateToPlayList: (Uri) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     HomeScreen(
         modifier = modifier,
-        playerStateViewModel = playerStateViewModel,
+        onPlayMusicInList = onPlayMusicInList,
         onNavigateToPlayList = onNavigateToPlayList,
         onShowMusicItemOption = onShowMusicItemOption
     )
@@ -49,7 +48,7 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    playerStateViewModel: PlayerStateViewModel,
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onNavigateToPlayList: (Uri) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
@@ -103,7 +102,7 @@ private fun HomeScreen(
                 HomePage.AUDIO_PAGE -> {
                     AudioPage(
                         Modifier.fillMaxSize(),
-                        playerStateViewModel = playerStateViewModel,
+                        onPlayMusicInList = onPlayMusicInList,
                         onShowMusicItemOption = onShowMusicItemOption
                     )
                 }
