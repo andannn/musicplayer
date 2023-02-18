@@ -26,7 +26,6 @@ fun NavController.navigateToPlayList(uri: Uri) {
 }
 
 fun NavGraphBuilder.playListScreen(
-    navHostController: NavHostController,
     interactingMusic: MusicInfo?,
     onShowMusicItemOption: (Uri) -> Unit,
     onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,

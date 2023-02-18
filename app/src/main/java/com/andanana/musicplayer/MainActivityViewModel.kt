@@ -1,6 +1,7 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -64,6 +66,11 @@ class MainActivityViewModel @Inject constructor(
         savedStateHandle.getStateFlow<List<MusicInfo>>(PLAY_LIST_KEY, emptyList())
 
     init {
+        viewModelScope.launch {
+            interactingMusicItem.collect {
+                Log.d(TAG, "$it: ")
+            }
+        }
         syncMediaStore()
     }
 

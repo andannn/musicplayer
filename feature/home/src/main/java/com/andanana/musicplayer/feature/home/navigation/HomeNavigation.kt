@@ -18,15 +18,11 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-    navHostController: NavHostController,
     onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onNavigateToPlayList: (Uri) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     composable(route = homeRoute) {
-        val parentBackEntry = remember(it) {
-            navHostController.getBackStackEntry(homeRoute)
-        }
         HomeRoute(
             onPlayMusicInList = onPlayMusicInList,
             onNavigateToPlayList = onNavigateToPlayList,

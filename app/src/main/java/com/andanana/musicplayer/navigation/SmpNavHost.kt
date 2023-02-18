@@ -37,14 +37,12 @@ fun SmpNavHost(
         ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
     }
     val interactingMusic by mainViewModel.interactingMusicItem.collectAsState(null)
-    Log.d(TAG, "SmpNavHost: $")
     NavHost(
         navController = navHostController,
         startDestination = homeRoute,
         modifier = modifier
     ) {
         homeScreen(
-            navHostController = navHostController,
             onNavigateToPlayList = {
                 navHostController.navigateToPlayList(it)
             },
@@ -54,7 +52,6 @@ fun SmpNavHost(
         libraryScreen()
         playListScreen(
             interactingMusic = interactingMusic,
-            navHostController = navHostController,
             onShowMusicItemOption = onShowMusicItemOption,
             onPlayMusicInList = onPlayMusicInList,
             onBackPressed = onBackPressed

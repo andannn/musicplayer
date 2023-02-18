@@ -97,7 +97,6 @@ private fun HomeScreen(
             count = HomePage.values().size,
             state = pageState
         ) { index ->
-            Log.d(TAG, "HomeScreen: ")
             when (HomePage.values()[index]) {
                 HomePage.AUDIO_PAGE -> {
                     AudioPage(
