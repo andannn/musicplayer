@@ -2,13 +2,13 @@ package com.andanana.musicplayer.feature.library
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -16,7 +16,6 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Approval
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,9 +87,13 @@ fun PlayListDialogContent(
                 targetState = isReadyState
             ) { isReady ->
                 if (!isReady) {
-                    CircularProgressIndicator(
-                        modifier = modifier.padding(10.dp).size(50.dp)
-                    )
+                    Box(modifier = Modifier.padding(10.dp).fillMaxWidth().height(50.dp)) {
+                        Text(
+                            modifier = Modifier.align(Center),
+                            text = "Loading ...",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 } else {
                     val state = uiState as PlayListDialogUiState.Ready
                     PlayListCheckList(
@@ -138,7 +142,7 @@ private fun PlayListCheckItem(
     modifier: Modifier = Modifier,
     isChecked: Boolean,
     item: PlayListItem,
-    onCheckedChange: ((Boolean) -> Unit)?,
+    onCheckedChange: ((Boolean) -> Unit)?
 ) {
     Row(
         modifier = modifier,

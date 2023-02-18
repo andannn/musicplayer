@@ -41,7 +41,7 @@ class MainActivityViewModel @Inject constructor(
 
     var syncJob: Job? = null
 
-    private val interactingUri = MutableStateFlow<Uri?>(null)
+    val interactingUri = MutableStateFlow<Uri?>(null)
     private val interactingType = interactingUri.map {
         it?.toRequestType()
     }

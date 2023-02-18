@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation project(":core:database")
     implementation project(":core:designsystem")
+    implementation project(":core:model")
 
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
 

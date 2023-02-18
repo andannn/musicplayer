@@ -100,7 +100,9 @@ fun SimpleMusicApp(
                 mainViewModel.onDrawerItemClick(drawerItem)
                 when (drawerItem) {
                     DrawerItem.ADD_TO_PLAY_LIST -> {
-                        appState.navController.navigateToAddPlayListDialog()
+                        appState.navController.navigateToAddPlayListDialog(
+                            mainViewModel.interactingUri.value!!
+                        )
                     }
                     else -> Unit
                 }
