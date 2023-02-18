@@ -3,7 +3,6 @@ package com.andanana.musicplayer.feature.library
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,7 +44,8 @@ fun PlayListDialog(
     val uiState by playListDialogViewModel.uiState.collectAsState()
 
     PlayListDialogContent(
-        uiState = uiState
+        uiState = uiState,
+        onItemCheckChange = playListDialogViewModel::onItemCheckChange
     )
 }
 
@@ -53,22 +53,24 @@ fun PlayListDialog(
 @Composable
 fun PlayListDialogContent(
     modifier: Modifier = Modifier,
-    uiState: PlayListDialogUiState
+    uiState: PlayListDialogUiState,
+    onItemCheckChange: (PlayListItem, Boolean) -> Unit
 ) {
     Card(
         modifier = modifier.wrapContentSize(),
         shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(
-            modifier = modifier.padding(20.dp)
+            modifier = modifier.padding(10.dp)
         ) {
             Row(
-                modifier = Modifier.padding(vertical = 10.dp),
+                modifier = Modifier.padding(bottom = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = "Save music to..",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 TextButton(onClick = {}) {
@@ -78,22 +80,24 @@ fun PlayListDialogContent(
             }
             Divider()
             Spacer(modifier = Modifier.height(10.dp))
+
+            val isReadyState = uiState is PlayListDialogUiState.Ready
             AnimatedContent(
                 modifier = Modifier.align(CenterHorizontally),
-                targetState = uiState
-            ) { state ->
-                when (state) {
-                    PlayListDialogUiState.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = modifier.padding(10.dp).size(50.dp)
-                        )
-                    }
-                    is PlayListDialogUiState.Ready -> {
-                        PlayListCheckList(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
-                            items = state.playListItems
-                        )
-                    }
+                targetState = isReadyState
+            ) { isReady ->
+                if (!isReady) {
+                    CircularProgressIndicator(
+                        modifier = modifier.padding(10.dp).size(50.dp)
+                    )
+                } else {
+                    val state = uiState as PlayListDialogUiState.Ready
+                    PlayListCheckList(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+                        items = state.playListItems,
+                        checkedItems = state.checkItemList,
+                        onItemCheckChange = onItemCheckChange
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -112,13 +116,18 @@ fun PlayListDialogContent(
 @Composable
 private fun PlayListCheckList(
     modifier: Modifier = Modifier,
-    items: List<PlayListItem>
+    items: List<PlayListItem>,
+    checkedItems: List<PlayListItem>,
+    onItemCheckChange: (PlayListItem, Boolean) -> Unit
 ) {
     Column(modifier = modifier) {
         items.forEachIndexed { index, playListItem ->
             PlayListCheckItem(
-                isChecked = true,
-                item = playListItem
+                isChecked = checkedItems.contains(playListItem),
+                item = playListItem,
+                onCheckedChange = {
+                    onItemCheckChange(playListItem, it)
+                }
             )
         }
     }
@@ -128,13 +137,14 @@ private fun PlayListCheckList(
 private fun PlayListCheckItem(
     modifier: Modifier = Modifier,
     isChecked: Boolean,
-    item: PlayListItem
+    item: PlayListItem,
+    onCheckedChange: ((Boolean) -> Unit)?,
 ) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Checkbox(checked = isChecked, onCheckedChange = {})
+        Checkbox(checked = isChecked, onCheckedChange = onCheckedChange)
         Spacer(modifier = Modifier.width(10.dp))
         Text(text = item.name, style = MaterialTheme.typography.bodyMedium)
     }
@@ -152,7 +162,8 @@ private fun PlayListDialogContentPreview() {
                     PlayListItem("Test C"),
                     PlayListItem("Test D")
                 )
-            )
+            ),
+            onItemCheckChange = { _, _ -> }
         )
     }
 }
