@@ -21,13 +21,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -46,7 +46,6 @@ import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
-import kotlinx.coroutines.flow.collect
 
 private const val TAG = "SimpleMusicApp"
 
@@ -55,10 +54,30 @@ private const val TAG = "SimpleMusicApp"
 fun SimpleMusicApp(
     appState: SimpleMusicAppState = rememberSimpleMusicAppState()
 ) {
+    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No view model store owner"
+    }
+    val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
+        ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
+    }
+
     Scaffold(
         snackbarHost = {
+            val interactingItem by mainViewModel.interactingMusicItem.collectAsState()
+
+            val snackBarPaddingBottom =
+                remember(
+                    appState.currentNavDestination,
+                    appState.isPlayerRoute,
+                    interactingItem
+                ) {
+                    getSnackBarPaddingBottom(
+                        appState = appState,
+                        haseInteractingMusicItem = interactingItem != null
+                    )
+                }
             SnackbarHost(
-                modifier = Modifier.padding(bottom = 150.dp),
+                modifier = Modifier.padding(bottom = snackBarPaddingBottom),
                 hostState = appState.snackbarHostState
             )
         },
@@ -78,13 +97,6 @@ fun SimpleMusicApp(
         appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
         appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
-
-        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-            "No view model store owner"
-        }
-        val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
-            ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
-        }
 
         LaunchedEffect(key1 = Unit) {
             mainViewModel.snackbarEvent.collect { event ->
@@ -226,6 +238,27 @@ private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLev
     this?.hierarchy?.any {
         it.route?.contains(destination.name, true) ?: false
     } ?: false
+
+private fun getSnackBarPaddingBottom(
+    appState: SimpleMusicAppState,
+    haseInteractingMusicItem: Boolean
+): Dp {
+    val navigationBarHeight = 80.0.dp
+    val playerBoxHeight = 70.dp
+    val snackBarPaddingBottom = 10.dp
+
+    val isNavigationBarVisible = !appState.isNavigationBarHide
+    val isMiniPlayerBoxShow = !appState.isPlayerRoute && haseInteractingMusicItem
+    return snackBarPaddingBottom + if (isNavigationBarVisible && !isMiniPlayerBoxShow) {
+        navigationBarHeight
+    } else if (!isNavigationBarVisible && isMiniPlayerBoxShow) {
+        playerBoxHeight
+    } else if (isNavigationBarVisible && isMiniPlayerBoxShow) {
+        navigationBarHeight + playerBoxHeight
+    } else {
+        0.dp
+    }
+}
 
 @Preview
 @Composable

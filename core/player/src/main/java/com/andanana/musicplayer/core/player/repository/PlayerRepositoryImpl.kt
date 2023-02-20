@@ -11,9 +11,11 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "PlayerRepositoryImpl"
 
+@Singleton
 class PlayerRepositoryImpl @Inject constructor(
     private val player: Player
 ) : PlayerRepository {
@@ -87,6 +89,7 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     init {
+        Log.d(TAG, "creatae: ")
         player.prepare()
         player.playWhenReady = true
         player.addListener(playerListener)

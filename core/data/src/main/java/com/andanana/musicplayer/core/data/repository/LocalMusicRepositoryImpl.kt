@@ -13,6 +13,7 @@ import com.andanana.musicplayer.core.model.MusicInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "LocalMusicRepositoryImp"
 
@@ -50,6 +51,7 @@ private val AlbumInfoProjection = listOf(
 //    "audio/flac"
 // ).toTypedArray()
 
+@Singleton
 class LocalMusicRepositoryImpl @Inject constructor(
     private val app: Application
 ) : LocalMusicRepository {

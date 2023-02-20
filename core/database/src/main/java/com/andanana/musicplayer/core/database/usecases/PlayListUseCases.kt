@@ -1,7 +1,9 @@
 package com.andanana.musicplayer.core.database.usecases
 
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 data class PlayListUseCases @Inject constructor(
     val addMusicToPlayList: AddMusicToPlayList,
     val addMusicToFavorite: AddMusicToFavorite,
