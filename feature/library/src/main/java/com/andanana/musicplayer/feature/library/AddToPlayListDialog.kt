@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.SmpTextButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
@@ -49,7 +48,8 @@ fun PlayListDialog(
     PlayListDialogContent(
         uiState = uiState,
         onItemCheckChange = playListDialogViewModel::onItemCheckChange,
-        onNewPlayListButtonClick = onNewPlayListButtonClick
+        onNewPlayListButtonClick = onNewPlayListButtonClick,
+        onApplyButtonClick = playListDialogViewModel::onApplyButtonClick
     )
 }
 
@@ -59,7 +59,8 @@ fun PlayListDialogContent(
     modifier: Modifier = Modifier,
     uiState: PlayListDialogUiState,
     onItemCheckChange: (PlayListItem, Boolean) -> Unit,
-    onNewPlayListButtonClick: () -> Unit
+    onNewPlayListButtonClick: () -> Unit,
+    onApplyButtonClick: () -> Unit
 ) {
     Card(
         modifier = modifier.wrapContentSize(),
@@ -121,7 +122,7 @@ fun PlayListDialogContent(
                 modifier = Modifier.wrapContentHeight().align(CenterHorizontally),
                 text = "Apply",
                 imageVector = Icons.Rounded.Approval,
-                onClick = {}
+                onClick = onApplyButtonClick
             )
         }
     }
@@ -173,19 +174,15 @@ private fun PlayListDialogContentPreview() {
         PlayListDialogContent(
             uiState = PlayListDialogUiState.Ready(
                 playListItems = listOf(
-                    PlayListItem("Test A"),
-                    PlayListItem("Test B"),
-                    PlayListItem("Test C"),
-                    PlayListItem("Test D"),
-                    PlayListItem("Test D"),
-                    PlayListItem("Test D"),
-                    PlayListItem("Test D"),
-                    PlayListItem("Test D"),
-                    PlayListItem("Test D"),
+                    PlayListItem(id = 0L, "Test A"),
+                    PlayListItem(id = 0L, "Test B"),
+                    PlayListItem(id = 0L, "Test C"),
+                    PlayListItem(id = 0L, "Test D")
                 )
             ),
             onItemCheckChange = { _, _ -> },
-            onNewPlayListButtonClick = {}
+            onNewPlayListButtonClick = {},
+            onApplyButtonClick = {}
         )
     }
 }

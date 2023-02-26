@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andanana.musicplayer.core.database.entity.PlayList
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
@@ -11,8 +12,10 @@ import com.andanana.musicplayer.feature.library.navigation.requestUriLastSegment
 import com.andanana.musicplayer.feature.library.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,6 +42,13 @@ class PlayListDialogViewModel @Inject constructor(
         type.toUri(lastSegment)
     }
 
+    private val savedPlayListItem =
+        useCases.getPlayListsOfMusic(requestUriLastSegmentFlow.value.toLong())
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val readyStateOrNull
+        get() = (_uiState.value as? PlayListDialogUiState.Ready)
+
     init {
         viewModelScope.launch {
             _uiState.collect {
@@ -48,20 +58,23 @@ class PlayListDialogViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 useCases.getAllPlayList(),
-                useCases.getPlayListsOfMusic(requestUriLastSegmentFlow.value.toLong())
+                savedPlayListItem
             ) { allPlayList, checkedPlayList ->
                 allPlayList to checkedPlayList
             }.collect { (allPlayList, checkedPlayList) ->
                 _uiState.value = PlayListDialogUiState.Ready(
-                    playListItems = allPlayList.map { PlayListItem(it.name) },
-                    checkItemList = checkedPlayList.map { PlayListItem(it.name) }
+                    playListItems = allPlayList
+                        .sortedByDescending { it.createdDate }
+                        .map { it.matToUiData() },
+                    checkItemList = checkedPlayList
+                        .map { it.matToUiData() }
                 )
             }
         }
     }
 
     fun onItemCheckChange(item: PlayListItem, checked: Boolean) {
-        (_uiState.value as? PlayListDialogUiState.Ready)?.let { state ->
+        readyStateOrNull?.let { state ->
             _uiState.update {
                 state.copy(
                     checkItemList = state.checkItemList.toMutableList().apply {
@@ -75,9 +88,28 @@ class PlayListDialogViewModel @Inject constructor(
             }
         }
     }
+
+    fun onApplyButtonClick() {
+        val unSavedPlayListItem =
+            readyStateOrNull?.checkItemList?.subtract(
+                savedPlayListItem.value.map { it.matToUiData() }.toSet()
+            )
+                ?.toList() ?: emptyList()
+
+        viewModelScope.launch {
+            unSavedPlayListItem.forEach {
+                useCases.addMusicToPlayList.invoke(
+                    musicMediaId = requestUriLastSegmentFlow.value.toLong(),
+                    playlistId = it.id
+                )
+            }
+        }
+    }
 }
 
+fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name)
 data class PlayListItem(
+    val id: Long,
     val name: String
 )
 

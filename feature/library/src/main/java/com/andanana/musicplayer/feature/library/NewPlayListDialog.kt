@@ -34,7 +34,7 @@ fun NewPlayListDialog(
 ) {
     NewPlayListDialogContent(
         onCreateButtonClick = onCreateButtonClick,
-        onCancelButtonClick = onNavigateBack
+        onNavigateBack = onNavigateBack
     )
 }
 
@@ -43,7 +43,7 @@ fun NewPlayListDialog(
 internal fun NewPlayListDialogContent(
     modifier: Modifier = Modifier,
     onCreateButtonClick: (name: String) -> Unit = {},
-    onCancelButtonClick: () -> Unit = {}
+    onNavigateBack: () -> Unit = {}
 ) {
     Card(
         modifier = modifier.wrapContentSize(),
@@ -87,13 +87,14 @@ internal fun NewPlayListDialogContent(
             Row(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.weight(1f))
                 SmpTextButton(
-                    onClick = onCancelButtonClick,
+                    onClick = onNavigateBack,
                     text = "Cancel"
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 SmpTextButton(
                     onClick = {
                         onCreateButtonClick(text)
+                        onNavigateBack.invoke()
                     },
                     enabled = applyButtonEnabled,
                     text = "Create"
