@@ -4,7 +4,7 @@ import com.andanana.musicplayer.core.database.dao.PlayListDao
 import com.andanana.musicplayer.core.database.entity.PlayList
 import javax.inject.Inject
 
-const val FAVORITE_PLAY_LIST_ID = Long.MAX_VALUE
+const val FAVORITE_PLAY_LIST_ID = 10000L
 
 class AddFavoritePlayListEntity @Inject constructor(
     private val playListDao: PlayListDao

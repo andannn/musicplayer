@@ -2,7 +2,6 @@ package com.andanana.musicplayer.navigation
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,6 +10,7 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.addPlayListDialog
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
+import com.andanana.musicplayer.feature.library.navigation.newPlayListDialog
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
 import com.andanana.musicplayer.feature.player.navigation.playerScreen
@@ -23,7 +23,9 @@ fun SmpNavHost(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
-    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit
+    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
+    onNewPlayListButtonClick: () -> Unit,
+    onCreateButtonClick: (name: String) -> Unit
 ) {
     NavHost(
         navController = navHostController,
@@ -46,6 +48,12 @@ fun SmpNavHost(
         playerScreen(
             navHostController = navHostController
         )
-        addPlayListDialog()
+        addPlayListDialog(
+            onNewPlayListButtonClick = onNewPlayListButtonClick
+        )
+        newPlayListDialog(
+            onNavigateBack = onBackPressed,
+            onCreateButtonClick = onCreateButtonClick
+        )
     }
 }

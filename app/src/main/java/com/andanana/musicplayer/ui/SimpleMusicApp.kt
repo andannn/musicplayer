@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.ui
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -42,6 +41,7 @@ import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayListDialog
+import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
@@ -134,7 +134,11 @@ fun SimpleMusicApp(
                             mainViewModel.setCurrentInteractingUri(it)
                             appState.showDrawerByUri(it)
                         },
-                        onPlayMusicInList = mainViewModel::onPlayMusic
+                        onPlayMusicInList = mainViewModel::onPlayMusic,
+                        onNewPlayListButtonClick = {
+                            appState.navController.navigateToNewPlayListDialog()
+                        },
+                        onCreateButtonClick = mainViewModel::onNewPlaylist
                     )
 
                     val backStackEntry by appState.currentBackStackEntry

@@ -158,6 +158,15 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onNewPlaylist(name: String) {
+        viewModelScope.launch {
+            useCases.addPlayListEntity(
+                playListName = name,
+                createdDate = System.currentTimeMillis()
+            )
+        }
+    }
+
     companion object {
         private const val PLAY_LIST_KEY = "play_list_key"
     }

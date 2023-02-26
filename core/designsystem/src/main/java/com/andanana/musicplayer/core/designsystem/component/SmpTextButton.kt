@@ -22,11 +22,13 @@ fun SmpTextButton(
     onClick: () -> Unit,
     imageVector: ImageVector? = null,
     text: String,
+    enabled: Boolean = true,
     textAlpha: Float = 1f
 ) {
     TextButton(
         modifier = modifier,
         onClick = onClick,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors()
     ) {
         if (imageVector != null) {
