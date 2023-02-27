@@ -43,16 +43,20 @@ dependencies {
     implementation project(":core:designsystem")
     implementation project(":core:model")
 
-    implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
-
     // Acitvity
     implementation 'androidx.core:core-ktx:1.9.0'
 
     // Compose
-    implementation "androidx.compose.ui:ui:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation "androidx.compose.material:material:$compose_ui_version"
-    implementation 'androidx.compose.material3:material3:1.0.1'
+    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    implementation composeBom
+    androidTestImplementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.material:material-icons-extended'
+
+    // Android Studio Preview support
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:$navigation_version"
