@@ -148,39 +148,9 @@ private fun PlayListContent(
                 )
             }
 
-            LazyColumn(
-                modifier = modifier.nestedScroll(nestedScrollConnection),
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
-            ) {
-                items(
-                    items = musicItems,
-                    key = { it.hashCode() }
-                ) { info ->
-                    MusicCard(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        colors = if (activeMusic == info.contentUri) {
-                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
-                        } else {
-                            CardDefaults.cardColors()
-                        },
-                        albumArtUri = info.albumUri,
-                        title = info.title,
-                        showTrackNum = type == RequestType.ALBUM_REQUEST,
-                        artist = info.artist,
-                        trackNum = info.cdTrackNumber,
-                        date = info.modifiedDate,
-                        onMusicItemClick = {
-                            onAudioItemClick(musicItems, musicItems.indexOf(info))
-                        },
-                        onOptionButtonClick = {
-                            onShowMusicItemOption(info.contentUri)
-                        }
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(250.dp))
-                }
-            }
+            AnimatedUpdateList(
+                list = musicItems
+            )
         }
     }
 }

@@ -1,25 +1,28 @@
-package com.andanana.musicplayer.feature.library
+package com.andanana.musicplayer.feature.playList
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.model.RequestType
+import kotlinx.coroutines.delay
+
+private const val TAG = "AnimatedUpdateList"
 
 @Composable
 fun AnimatedUpdateList(
@@ -32,20 +35,30 @@ fun AnimatedUpdateList(
     LaunchedEffect(list) {
         listState.submitList(list)
     }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            listState.submitList(
+                listState._list.toMutableList().apply { removeAt(0) }.map { it.info }.also {
+                    Log.d(TAG, "AnimatedUpdateList: ${it.map { it.title }}")
+                }
+            )
+        }
+    }
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
     ) {
         items(
-            items = listState.list,
+            items = listState._list,
             key = { it.hashCode() }
         ) { item ->
             val info = item.info
             val visibleState = item.visibleState
             AnimatedVisibility(
                 visibleState,
-                enter = expandVertically(),
-                exit = shrinkVertically()
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
             ) {
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp),
@@ -69,7 +82,7 @@ fun AnimatedUpdateList(
 }
 
 private class AnimatedListState {
-    var list: List<ListItem> = mutableListOf()
+    val _list: MutableList<ListItem> = mutableStateListOf()
 
     class ListItem(
         val visibleState: MutableTransitionState<Boolean>,
@@ -82,13 +95,25 @@ private class AnimatedListState {
                 newList.indexOf(it)
             },
             valueTransform = {
-                list.find { item -> item.info == it }
+                _list.find { item -> item.info == it }
                     ?: ListItem(
                         visibleState = MutableTransitionState(false).apply { targetState = true },
                         info = it
                     )
             }
         )
-        list = map.toSortedMap().map { it.value }
+        val newSortedList = map.toSortedMap().map { it.value }
+
+        val iterator = _list.listIterator()
+//        while (iterator.hasNext()) {
+//            val item = iterator.next()
+//            if (!newSortedList.contains(item)) {
+//                item.visibleState.targetState = false
+//            }
+//        }
+        newSortedList.forEach {
+            val item = iterator.next()
+
+        }
     }
 }
