@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.feature.playList
+package com.andanana.musicplayer.core.designsystem.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
@@ -15,18 +15,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.andanana.musicplayer.core.model.MusicInfo
 
 private const val TAG = "AnimatedUpdateList"
 
 @Composable
-fun AnimatedUpdateList(
+fun <K : Any> AnimatedUpdateList(
     modifier: Modifier = Modifier,
-    list: List<MusicInfo>,
-    content: @Composable () -> Unit
+    list: List<K>,
+    content: @Composable (K) -> Unit
 ) {
     val listState = remember {
-        AnimatedListState()
+        AnimatedListState<K>()
     }
     LaunchedEffect(list) {
         listState.submitList(list)
@@ -38,41 +37,32 @@ fun AnimatedUpdateList(
     ) {
         items(
             items = listState.list,
-            key = { it.hashCode() }
+            key = { it.first }
         ) { item ->
-            val info = item.info
-            val visibleState = item.visibleState
+            val visibleState = item.second
             AnimatedVisibility(
                 visibleState,
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
-                content()
+                content(item.first)
             }
         }
     }
 }
 
-private class AnimatedListState {
-    private val _list: MutableList<ListItem> = mutableStateListOf()
-    val list: List<ListItem> = _list
+private class AnimatedListState<K> {
+    private val _list: MutableList<Pair<K, MutableTransitionState<Boolean>>> = mutableStateListOf()
+    val list: List<Pair<K, MutableTransitionState<Boolean>>> = _list
 
-    class ListItem(
-        val visibleState: MutableTransitionState<Boolean>,
-        val info: MusicInfo
-    )
-
-    fun submitList(newList: List<MusicInfo>) {
+    fun submitList(newList: List<K>) {
         val map = newList.associateBy(
             keySelector = {
                 newList.indexOf(it)
             },
             valueTransform = {
-                _list.find { item -> item.info == it }
-                    ?: ListItem(
-                        visibleState = MutableTransitionState(false).apply { targetState = true },
-                        info = it
-                    )
+                _list.find { item -> item.first == it }
+                    ?: (it to MutableTransitionState(false).apply { targetState = true })
             }
         )
         val newSortedList = map.toSortedMap().map { it.value }
@@ -83,7 +73,7 @@ private class AnimatedListState {
             while (iterator.hasNext()) {
                 val item = iterator.next()
                 if (!newSortedList.contains(item)) {
-                    item.visibleState.targetState = false
+                    item.second.targetState = false
                 }
             }
         }

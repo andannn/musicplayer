@@ -41,7 +41,8 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 @Composable
 fun PlayListDialog(
     playListDialogViewModel: PlayListDialogViewModel = hiltViewModel(),
-    onNewPlayListButtonClick: () -> Unit
+    onNewPlayListButtonClick: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val uiState by playListDialogViewModel.uiState.collectAsState()
 
@@ -49,7 +50,10 @@ fun PlayListDialog(
         uiState = uiState,
         onItemCheckChange = playListDialogViewModel::onItemCheckChange,
         onNewPlayListButtonClick = onNewPlayListButtonClick,
-        onApplyButtonClick = playListDialogViewModel::onApplyButtonClick
+        onApplyButtonClick = {
+            playListDialogViewModel.onApplyButtonClick()
+            onNavigateBack()
+        }
     )
 }
 

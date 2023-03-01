@@ -107,12 +107,6 @@ class PlayListDialogViewModel @Inject constructor(
     }
 }
 
-fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name)
-data class PlayListItem(
-    val id: Long,
-    val name: String
-)
-
 sealed interface PlayListDialogUiState {
     object Loading : PlayListDialogUiState
 

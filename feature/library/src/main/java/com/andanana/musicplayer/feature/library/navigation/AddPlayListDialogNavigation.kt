@@ -18,7 +18,10 @@ fun NavController.navigateToAddPlayListDialog(uri: Uri) {
     this.navigate("$addPlayListDialogRoute/${uri.lastPathSegment}/${uri.toRequestType()}")
 }
 
-fun NavGraphBuilder.addPlayListDialog(onNewPlayListButtonClick: () -> Unit) {
+fun NavGraphBuilder.addPlayListDialog(
+    onNewPlayListButtonClick: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
     dialog(
         route = "$addPlayListDialogRoute/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
         arguments = listOf(
@@ -31,7 +34,8 @@ fun NavGraphBuilder.addPlayListDialog(onNewPlayListButtonClick: () -> Unit) {
         )
     ) {
         PlayListDialog(
-            onNewPlayListButtonClick = onNewPlayListButtonClick
+            onNewPlayListButtonClick = onNewPlayListButtonClick,
+            onNavigateBack = onNavigateBack
         )
     }
 }

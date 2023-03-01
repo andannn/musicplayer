@@ -3,14 +3,10 @@ package com.andanana.musicplayer.feature.playList
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +26,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.andanana.musicplayer.core.designsystem.component.AnimatedUpdateList
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
@@ -149,7 +146,29 @@ private fun PlayListContent(
             }
 
             AnimatedUpdateList(
-                list = musicItems
+                list = musicItems,
+                content = { info ->
+                    MusicCard(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        colors = if (activeMusic == info.contentUri) {
+                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
+                        } else {
+                            CardDefaults.cardColors()
+                        },
+                        albumArtUri = info.albumUri,
+                        title = info.title,
+                        showTrackNum = type == RequestType.ALBUM_REQUEST,
+                        artist = info.artist,
+                        trackNum = info.cdTrackNumber,
+                        date = info.modifiedDate,
+                        onMusicItemClick = {
+                            onAudioItemClick(musicItems, musicItems.indexOf(info))
+                        },
+                        onOptionButtonClick = {
+                            onShowMusicItemOption(info.contentUri)
+                        }
+                    )
+                }
             )
         }
     }

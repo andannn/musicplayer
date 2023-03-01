@@ -49,7 +49,8 @@ fun SmpNavHost(
             navHostController = navHostController
         )
         addPlayListDialog(
-            onNewPlayListButtonClick = onNewPlayListButtonClick
+            onNewPlayListButtonClick = onNewPlayListButtonClick,
+            onNavigateBack = onBackPressed
         )
         newPlayListDialog(
             onNavigateBack = onBackPressed,
