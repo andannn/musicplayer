@@ -1,12 +1,13 @@
 package com.andanana.musicplayer.feature.home
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +32,7 @@ fun ArtistPage(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumPageContent(
     modifier: Modifier = Modifier,
@@ -46,9 +48,9 @@ private fun AlbumPageContent(
         is ArtistPageUiState.Ready -> {
             val musicInfoList = state.infoList
 
-            LazyVerticalGrid(
+            LazyVerticalStaggeredGrid(
                 modifier = modifier,
-                columns = GridCells.Fixed(2)
+                columns = StaggeredGridCells.Fixed(2)
             ) {
                 items(
                     items = musicInfoList,
