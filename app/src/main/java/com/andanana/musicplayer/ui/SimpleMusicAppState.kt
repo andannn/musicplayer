@@ -67,6 +67,8 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val drawerState: BottomDrawerState,
     val snackbarHostState: SnackbarHostState
 ) {
+    val drawerType: MutableState<DrawerType> = mutableStateOf(DrawerType.OPTION_LIST)
+
     val topLevelDestinations = TopLevelDestination.values().toList()
 
     val currentBackStackEntry
@@ -138,6 +140,15 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
             else -> error("Invalid Type")
         }
         coroutineScope.launch {
+            drawerType.value = DrawerType.OPTION_LIST
+            drawerState.open()
+        }
+    }
+
+    @OptIn(ExperimentalMaterialApi::class)
+    fun showPlayerDrawer() {
+        coroutineScope.launch {
+            drawerType.value = DrawerType.PLAYER
             drawerState.open()
         }
     }
@@ -152,4 +163,9 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     fun onBackPressed() {
         navController.popBackStack()
     }
+}
+
+enum class DrawerType {
+    PLAYER,
+    OPTION_LIST
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +36,8 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.DrawerItem
-import com.andanana.musicplayer.core.designsystem.component.ItemListBottomDrawer
+import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
+import com.andanana.musicplayer.core.designsystem.component.SmpBottomDrawer
 import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
@@ -43,9 +45,11 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayListDialog
 import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
+import com.andanana.musicplayer.feature.player.PlayerRoute
 import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
+import kotlinx.coroutines.launch
 
 private const val TAG = "SimpleMusicApp"
 
@@ -105,23 +109,25 @@ fun SimpleMusicApp(
                 }
             }
         }
-        ItemListBottomDrawer(
+        SmpBottomDrawer(
             state = appState.drawerState,
-            items = appState.drawer.value?.itemList ?: emptyList(),
             scope = appState.coroutineScope,
             gesturesEnabled = appState.drawerState.isOpen,
-            onItemClick = {
-                val drawerItem = appState.drawer.value?.itemList?.get(it)!!
-                mainViewModel.onDrawerItemClick(drawerItem)
-                when (drawerItem) {
-                    DrawerItem.ADD_TO_PLAY_LIST -> {
-                        appState.navController.navigateToAddPlayListDialog(
-                            mainViewModel.interactingUri.value!!
-                        )
-                    }
-                    else -> Unit
+            drawerContent = {
+                if (appState.drawerType.value == DrawerType.OPTION_LIST) {
+                    DrawerItemsList(
+                        items = appState.drawer.value?.itemList ?: emptyList(),
+                        onItemClick = { index ->
+                            onDrawerItemClick(
+                                appState = appState,
+                                mainViewModel = mainViewModel,
+                                index = index
+                            )
+                        }
+                    )
+                } else {
+                    PlayerRoute()
                 }
-                appState.closeDrawer()
             }
         ) {
             Box(modifier = Modifier.padding(it)) {
@@ -154,7 +160,10 @@ fun SimpleMusicApp(
                     ) {
                         MiniPlayerBox(
                             playerStateViewModel = hiltViewModel(parentBackEntry),
-                            onNavigateToPlayer = { appState.navController.navigateToPlayer() },
+                            onNavigateToPlayer = {
+                                appState.showPlayerDrawer()
+//                                appState.navController.navigateToPlayer()
+                            },
                             onToggleFavorite = mainViewModel::onToggleFavorite
                         )
                     }
@@ -171,6 +180,49 @@ fun SimpleMusicApp(
             }
         }
     }
+}
+
+@Composable
+private fun DrawerItemsList(
+    items: List<DrawerItem>,
+    onItemClick: (Int) -> Unit
+) {
+    items.forEachIndexed { index, item ->
+        val imageVector = when (val icon = item.icon) {
+            is Icon.ImageVectorIcon -> {
+                icon.imageVector
+            }
+        }
+        DrawerItemView(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            icon = imageVector,
+            text = item.text,
+            onClick = {
+                onItemClick(index)
+            }
+        )
+        if (index != items.lastIndex) {
+            Divider()
+        }
+    }
+}
+
+private fun onDrawerItemClick(
+    appState: SimpleMusicAppState,
+    mainViewModel: MainActivityViewModel,
+    index: Int
+) {
+    val drawerItem = appState.drawer.value?.itemList?.get(index)!!
+    mainViewModel.onDrawerItemClick(drawerItem)
+    when (drawerItem) {
+        DrawerItem.ADD_TO_PLAY_LIST -> {
+            appState.navController.navigateToAddPlayListDialog(
+                mainViewModel.interactingUri.value!!
+            )
+        }
+        else -> Unit
+    }
+    appState.closeDrawer()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

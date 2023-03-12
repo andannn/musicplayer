@@ -7,19 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.ModeStandby
-import androidx.compose.material.icons.rounded.NavigateBefore
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.PlaylistPlay
-import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -48,7 +44,7 @@ import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
 @Composable
-internal fun PlayerRoute(
+fun PlayerRoute(
     playerStateViewModel: PlayerStateViewModel = hiltViewModel()
 ) {
     val uiState by playerStateViewModel.playerUiStateFlow.collectAsState()
@@ -121,25 +117,14 @@ private fun PlayerScreenContent(
     onPlayListButtonClick: () -> Unit = {},
     onBackButtonClick: () -> Unit = {}
 ) {
-    Surface(modifier = modifier.fillMaxSize()) {
+    Surface(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(modifier.padding(10.dp)) {
-                SmpSubIconButton(
-                    onClick = onShareButtonClick,
-                    imageVector = Icons.Rounded.NavigateBefore
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                SmpSubIconButton(
-                    onClick = onBackButtonClick,
-                    imageVector = Icons.Rounded.Share
-                )
-            }
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             AsyncImage(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .fillMaxWidth(0.6f)
                     .aspectRatio(1f)
                     .clip(CircleShape)
                     .border(
@@ -151,41 +136,40 @@ private fun PlayerScreenContent(
                 contentScale = ContentScale.FillHeight,
                 contentDescription = ""
             )
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = title,
                 maxLines = 1,
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.headlineSmall,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = subTitle,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(10.dp))
             Slider(
-                modifier = Modifier.padding(horizontal = 10.dp),
+                modifier = Modifier.padding(horizontal = 30.dp),
                 value = progress,
                 onValueChange = {
                     onSeekToTime.invoke(duration.times(it).roundToInt())
                 }
             )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(modifier= Modifier.padding(horizontal = 10.dp)) {
+            Row(modifier = Modifier.padding(horizontal = 30.dp)) {
                 val formatter = remember {
                     SimpleDateFormat("mm:ss")
                 }
                 val durationString = formatter.format(duration)
                 val currentString = formatter.format(duration.times(progress).roundToInt())
-                Text(text = currentString)
+                Text(text = currentString, style = MaterialTheme.typography.bodySmall)
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = durationString)
+                Text(text = durationString, style = MaterialTheme.typography.bodySmall)
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                modifier = Modifier.weight(1f).padding(horizontal = 10.dp),
+                modifier = Modifier.padding(horizontal = 30.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -208,27 +192,34 @@ private fun PlayerScreenContent(
                     CircularProgressIndicator(
                         modifier = Modifier
                             .weight(1f)
+                            .padding(10.dp)
                             .aspectRatio(1f).clip(CircleShape)
                     )
                 } else {
                     SmpMainIconButton(
-                        modifier = Modifier.weight(1f).aspectRatio(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f),
                         onClick = onPlayButtonClick,
                         imageVector = image
                     )
                 }
                 SmpSubIconButton(
-                    modifier = Modifier.weight(1f).rotate(180f).aspectRatio(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .rotate(180f)
+                        .aspectRatio(1f)
+                        .padding(10.dp),
                     onClick = onNextButtonClick,
-//                    imageVector = Icons.Rounded.Favorite
                     painter = painterResource(id = R.drawable.music_music_player_player_previous_icon)
                 )
                 SmpSubIconButton(
-                    modifier = Modifier.weight(1f).aspectRatio(1f),
+                    modifier = Modifier.weight(1f),
                     onClick = onPlayListButtonClick,
                     imageVector = Icons.Rounded.PlaylistPlay
                 )
             }
+            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }

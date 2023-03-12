@@ -2,6 +2,7 @@ package com.andanana.musicplayer.core.designsystem.component
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +15,6 @@ import androidx.compose.material.BottomDrawerState
 import androidx.compose.material.BottomDrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomDrawerState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,20 +28,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ItemListBottomDrawer(
+fun SmpBottomDrawer(
     modifier: Modifier = Modifier,
     state: BottomDrawerState = rememberBottomDrawerState(BottomDrawerValue.Closed),
     scope: CoroutineScope = rememberCoroutineScope(),
     gesturesEnabled: Boolean,
-    items: List<DrawerItem>,
-    onItemClick: (Int) -> Unit,
+    drawerContent: @Composable ColumnScope.() -> Unit,
     content: @Composable () -> Unit
 ) {
     BackHandler(enabled = state.isOpen) {
@@ -68,22 +66,7 @@ fun ItemListBottomDrawer(
                     )
             )
             Spacer(modifier = Modifier.height(10.dp))
-            items.forEachIndexed { index, item ->
-                val imageVector = when (val icon = item.icon) {
-                    is Icon.ImageVectorIcon -> {
-                        icon.imageVector
-                    }
-                }
-                DrawerItemView(
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                    icon = imageVector,
-                    text = item.text,
-                    onClick = { onItemClick(index) }
-                )
-                if (index != items.lastIndex) {
-                    Divider()
-                }
-            }
+            drawerContent()
         },
         content = content
     )
@@ -91,7 +74,7 @@ fun ItemListBottomDrawer(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DrawerItemView(
+fun DrawerItemView(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     text: String,

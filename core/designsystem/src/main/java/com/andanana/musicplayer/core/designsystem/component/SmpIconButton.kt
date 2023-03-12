@@ -34,7 +34,7 @@ fun SmpSubIconButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     imageVector: ImageVector,
-    scale: Float = 1.5f
+    scale: Float = 1.0f
 ) {
     IconButton(
         modifier = modifier,
