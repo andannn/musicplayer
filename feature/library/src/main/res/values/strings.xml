@@ -1,3 +1,5 @@
 <resources>
     <string name="title">Library</string>
+    <string name="play_list_page_title">Play List</string>
+    <string name="collection_page_title">Collection</string>
 </resources>
