@@ -71,14 +71,10 @@ private fun LibraryContent(
         pagerContent = { page ->
             when (page) {
                 LibraryPage.PLAY_LIST -> {
-                    Text(
-                        modifier = Modifier.fillMaxSize(),
-                        text = "Your play list",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    PlayListScreen(modifier = Modifier.fillMaxSize())
                 }
                 LibraryPage.COLLECTION -> {
+
                 }
             }
         }
