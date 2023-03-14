@@ -35,7 +35,7 @@
         </activity>
 
         <service
-            android:name="com.andanana.musicplayer.core.player.PlayerService"
+            android:name="com.andanana.musicplayer.PlayerService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />

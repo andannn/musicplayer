@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.player
+package com.andanana.musicplayer
 
 import android.app.Notification
 import android.app.NotificationChannel

@@ -22,7 +22,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.core.player.PlayerService
 import com.andanana.musicplayer.ui.SimpleMusicApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
