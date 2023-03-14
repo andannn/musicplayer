@@ -1,6 +1,7 @@
 package com.andanana.musicplayer
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.player.PlayerService
 import com.andanana.musicplayer.ui.SimpleMusicApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -88,6 +91,14 @@ class MainActivity : ComponentActivity() {
                         ) == PackageManager.PERMISSION_DENIED
                     }.let {
                         launcher.launch(it.toTypedArray())
+                    }
+                }
+            } else {
+                LaunchedEffect(Unit) {
+                    val context = this@MainActivity
+                    val intent = Intent(context, PlayerService::class.java)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        context.startForegroundService(intent)
                     }
                 }
             }

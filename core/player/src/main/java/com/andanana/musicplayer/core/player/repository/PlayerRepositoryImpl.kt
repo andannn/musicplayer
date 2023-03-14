@@ -88,13 +88,6 @@ class PlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    init {
-        Log.d(TAG, "creatae: ")
-        player.prepare()
-        player.playWhenReady = true
-        player.addListener(playerListener)
-    }
-
     override val currentPositionMs: Long
         get() = player.currentPosition
 
@@ -136,5 +129,18 @@ class PlayerRepositoryImpl @Inject constructor(
     override fun previous() {
         player.seekToPreviousMediaItem()
         player.play()
+    }
+
+    override fun initial() {
+        player.prepare()
+        player.playWhenReady = true
+        player.addListener(playerListener)
+    }
+
+    override fun release() {
+        player.clearMediaItems()
+        player.removeListener(playerListener)
+        player.stop()
+        player.release()
     }
 }
