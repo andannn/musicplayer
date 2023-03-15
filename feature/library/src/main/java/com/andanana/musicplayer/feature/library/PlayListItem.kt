@@ -6,16 +6,19 @@ import com.andanana.musicplayer.core.database.entity.PlayList
 
 data class PlayListItem(
     val id: Long,
-    val name: String
+    val name: String,
+    val count: Int = 0,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readLong(),
-        parcel.readString() ?: ""
+        parcel.readString() ?: "",
+        parcel.readInt(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeLong(id)
         parcel.writeString(name)
+        parcel.writeInt(count)
     }
 
     override fun describeContents(): Int {
@@ -33,7 +36,7 @@ data class PlayListItem(
     }
 }
 
-fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name)
+fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name, 0)
 fun List<PlayList>.matToUiData() = this.map {
     it.matToUiData()
 }

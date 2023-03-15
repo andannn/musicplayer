@@ -15,4 +15,5 @@ data class PlayListUseCases @Inject constructor(
     val deleteMusicInFavorite: DeleteMusicInFavorite,
     val getAllPlayList: GetAllPlayList,
     val getPlayListsOfMusic: GetPlayListsOfMusic,
+    val getAllPlayListMusicCount: GetAllPlayListMusicCount,
 )

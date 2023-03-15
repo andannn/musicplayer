@@ -133,7 +133,6 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun initial() {
         player.prepare()
-        player.playWhenReady = true
         player.addListener(playerListener)
     }
 

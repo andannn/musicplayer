@@ -35,7 +35,7 @@ private fun PlayListPage(
         is PlayListPageUiState.Ready -> {
             PlayListPageContent(
                 modifier = modifier,
-                itemList = state.infoList
+                itemList = state.infoMap.map { it.value }
             )
         }
     }
@@ -59,7 +59,7 @@ private fun PlayListPageContent(
                 modifier = Modifier.padding(vertical = 5.dp),
                 title = item.name,
                 coverImage = coverImage,
-                trackCount = 0
+                trackCount = item.count
             )
         }
     )

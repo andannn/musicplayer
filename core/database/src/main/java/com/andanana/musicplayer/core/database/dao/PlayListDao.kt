@@ -8,8 +8,8 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.andanana.musicplayer.core.database.entity.MusicWithPlayLists
 import com.andanana.musicplayer.core.database.entity.PlayList
+import com.andanana.musicplayer.core.database.entity.PlayListMusicCount
 import com.andanana.musicplayer.core.database.entity.PlayListMusicCrossRef
-import com.andanana.musicplayer.core.database.entity.PlayListWithMusics
 import com.andanana.musicplayer.core.database.entity.PlayListWithoutId
 import kotlinx.coroutines.flow.Flow
 
@@ -40,4 +40,10 @@ interface PlayListDao {
     @Transaction
     @Query("SELECT * FROM music WHERE media_store_id = :mediaId")
     fun getMusicWithPlayLists(mediaId: Long): Flow<MusicWithPlayLists?>
+
+    @Query("SELECT COUNT(*) FROM play_list_music WHERE play_list_id = :playListId")
+    fun getMusicCountByPlayListId(playListId: Long): Int
+
+    @Query("SELECT play_list_id AS playListId, COUNT(*) AS musicCount FROM play_list_music GROUP BY play_list_id")
+    fun getAllMusicCounts(): Flow<List<PlayListMusicCount>>
 }
