@@ -133,10 +133,16 @@ private fun PlayListContent(
     ) {
         Column {
             Surface {
+                val imageUri = remember(coverArtUri, musicItems) {
+                    coverArtUri.ifBlank {
+                        musicItems.firstOrNull()?.albumUri ?: ""
+                    }
+                }
+
                 PlayListControlBox(
                     modifier = Modifier.padding(20.dp),
                     height = with(LocalDensity.current) { playListControlBoxHeight.toDp() },
-                    coverArtUri = coverArtUri,
+                    coverArtUri = imageUri,
                     title = title,
                     trackCount = trackCount,
                     onPlayAllButtonClick = onPlayAllButtonClick,
