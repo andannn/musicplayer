@@ -4,10 +4,13 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.andanana.musicplayer.core.designsystem.Drawer
 
+const val PlayListContentUri = "content://m_playlist/"
+
 enum class RequestType(val externalContentUri: String) {
     ALBUM_REQUEST(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString()),
     ARTIST_REQUEST(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString()),
-    MUSIC_REQUEST(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString());
+    MUSIC_REQUEST(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString()),
+    PLAYLIST_REQUEST(PlayListContentUri);
 
     companion object {
         fun Uri.toRequestType(): RequestType? {

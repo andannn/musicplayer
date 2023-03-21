@@ -11,9 +11,11 @@ data class PlayListUseCases @Inject constructor(
     val addMusicEntities: AddMusicEntities,
     val addFavoritePlayListEntity: AddFavoritePlayListEntity,
     val addPlayListEntity: AddPlayListEntity,
-    val getMusicInFavorite: GetMusicInFavorite,
     val deleteMusicInFavorite: DeleteMusicInFavorite,
+    val getMusicInFavorite: GetMusicInFavorite,
+    val getMusicInPlayList: GetMusicInPlayList,
     val getAllPlayList: GetAllPlayList,
     val getPlayListsOfMusic: GetPlayListsOfMusic,
-    val getAllPlayListMusicCount: GetAllPlayListMusicCount,
+    val getPlayListByPlayListId: GetPlayListByPlayListId,
+    val getAllPlayListMusicCount: GetAllPlayListMusicCount
 )

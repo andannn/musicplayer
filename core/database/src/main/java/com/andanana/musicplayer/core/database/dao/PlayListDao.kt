@@ -34,6 +34,9 @@ interface PlayListDao {
     @Query("SELECT * FROM play_list")
     fun getAllPlaylist(): Flow<List<PlayList>>
 
+    @Query("SELECT * FROM play_list WHERE play_list_id = :playListId")
+    fun getPlaylistByPlayListId(playListId: Long): PlayList
+
     @Delete
     suspend fun deleteMusicInPlaylist(playListMusicCrossRefReferences: List<PlayListMusicCrossRef>)
 

@@ -1,8 +1,10 @@
 package com.andanana.musicplayer.feature.library
 
+import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.andanana.musicplayer.core.database.entity.PlayList
+import com.andanana.musicplayer.core.model.PlayListContentUri
 
 data class PlayListItem(
     val id: Long,
@@ -39,4 +41,8 @@ data class PlayListItem(
 fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name, 0)
 fun List<PlayList>.matToUiData() = this.map {
     it.matToUiData()
+}
+
+fun PlayListItem.toUri(): Uri {
+    return Uri.parse("$PlayListContentUri${this.id}")
 }

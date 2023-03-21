@@ -1,11 +1,11 @@
 package com.andanana.musicplayer.feature.library
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,18 +28,21 @@ enum class LibraryPage(
 
 @Composable
 fun LibraryRoute(
-    libraryViewModel: LibraryViewModel = hiltViewModel()
+    libraryViewModel: LibraryViewModel = hiltViewModel(),
+    onNavigateToPlayScreen: (Uri) -> Unit
 ) {
     val uiState by libraryViewModel.uiState.collectAsState()
     LibraryScreen(
-        uiState = uiState
+        uiState = uiState,
+        onNavigateToPlayScreen = onNavigateToPlayScreen
     )
 }
 
 @Composable
 private fun LibraryScreen(
     modifier: Modifier = Modifier,
-    uiState: LibraryUiState
+    uiState: LibraryUiState,
+    onNavigateToPlayScreen: (Uri) -> Unit
 ) {
     when (uiState) {
         LibraryUiState.Loading -> {
@@ -49,15 +52,20 @@ private fun LibraryScreen(
         }
         is LibraryUiState.Ready -> {
             LibraryContent(
-                modifier = modifier
+                modifier = modifier,
+                onPlayListItemClick = { playListItem ->
+                    onNavigateToPlayScreen(playListItem.toUri())
+                }
             )
         }
     }
 }
 
+
 @Composable
 private fun LibraryContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPlayListItemClick: (PlayListItem) -> Unit
 ) {
     TabRowAndPager(
         modifier = modifier.fillMaxSize(),
@@ -71,10 +79,12 @@ private fun LibraryContent(
         pagerContent = { page ->
             when (page) {
                 LibraryPage.PLAY_LIST -> {
-                    PlayListScreen(modifier = Modifier.fillMaxSize())
+                    PlayListScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onPlayListItemClick = onPlayListItemClick
+                    )
                 }
                 LibraryPage.COLLECTION -> {
-
                 }
             }
         }
@@ -85,6 +95,8 @@ private fun LibraryContent(
 @Composable
 private fun LibraryContentPreview() {
     MusicPlayerTheme {
-        LibraryContent()
+        LibraryContent(
+            onPlayListItemClick = {}
+        )
     }
 }

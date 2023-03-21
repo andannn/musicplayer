@@ -16,26 +16,30 @@ import com.andanana.musicplayer.core.designsystem.component.PlayListCard
 @Composable
 fun PlayListScreen(
     modifier: Modifier = Modifier,
-    playListViewModel: PlayListViewModel = hiltViewModel()
+    playListViewModel: PlayListViewModel = hiltViewModel(),
+    onPlayListItemClick: (PlayListItem) -> Unit
 ) {
     val state by playListViewModel.playListPageUiState.collectAsState()
     PlayListPage(
         modifier = modifier,
-        state = state
+        state = state,
+        onPlayListItemClick = onPlayListItemClick
     )
 }
 
 @Composable
 private fun PlayListPage(
     modifier: Modifier,
-    state: PlayListPageUiState
+    state: PlayListPageUiState,
+    onPlayListItemClick: (PlayListItem) -> Unit
 ) {
     when (state) {
         PlayListPageUiState.Loading -> {}
         is PlayListPageUiState.Ready -> {
             PlayListPageContent(
                 modifier = modifier,
-                itemList = state.infoMap.map { it.value }
+                itemList = state.infoMap.map { it.value },
+                onPlayListItemClick = onPlayListItemClick
             )
         }
     }
@@ -44,7 +48,8 @@ private fun PlayListPage(
 @Composable
 private fun PlayListPageContent(
     modifier: Modifier = Modifier,
-    itemList: List<PlayListItem>
+    itemList: List<PlayListItem>,
+    onPlayListItemClick: (PlayListItem) -> Unit
 ) {
     AnimatedUpdateList(
         modifier = modifier,
@@ -59,7 +64,10 @@ private fun PlayListPageContent(
                 modifier = Modifier.padding(vertical = 5.dp),
                 title = item.name,
                 coverImage = coverImage,
-                trackCount = item.count
+                trackCount = item.count,
+                onPlayListItemClick = {
+                    onPlayListItemClick(item)
+                }
             )
         }
     )
