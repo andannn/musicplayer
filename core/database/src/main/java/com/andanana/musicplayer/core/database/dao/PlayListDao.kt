@@ -31,6 +31,9 @@ interface PlayListDao {
         playListMusicCrossRefReferences: List<PlayListMusicCrossRef>
     )
 
+    @Query("SELECT * FROM play_list_music WHERE play_list_id = :playListId AND media_store_id = :musicId")
+    fun getPlayListMusicCrossRef(playListId: Long, musicId: Long): PlayListMusicCrossRef
+
     @Query("SELECT * FROM play_list")
     fun getAllPlaylist(): Flow<List<PlayList>>
 

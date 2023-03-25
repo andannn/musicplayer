@@ -168,7 +168,9 @@ class PlayerStateViewModel @Inject constructor(
     }
 
     private fun isMusicInFavorite(uri: Uri) =
-        musicInFavorite.value.contains(uri.lastPathSegment!!.toLong())
+        musicInFavorite.value.map {
+            it.music.mediaStoreId
+        }.contains(uri.lastPathSegment!!.toLong())
 }
 
 sealed class PlayerUiState {

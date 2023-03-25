@@ -111,7 +111,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun onToggleFavorite(uri: Uri) {
         uri.lastPathSegment?.toLong()?.let { mediaId ->
-            if (musicInFavorite.value.contains(mediaId)) {
+            if (musicInFavorite.value.map { it.music.mediaStoreId }.contains(mediaId)) {
                 deleteMusicInFavorite(mediaId)
             } else {
                 addMusicToFavorite(mediaId)
