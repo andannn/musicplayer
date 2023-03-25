@@ -7,12 +7,13 @@ import javax.inject.Inject
 class AddMusicsToPlayList @Inject constructor(
     private val playListDao: PlayListDao
 ) {
-    suspend operator fun invoke(musicMediaIds: List<Long>, playlistId: Long) {
+    suspend operator fun invoke(musicMediaIds: List<Long>, playlistId: Long, addedDate: Long) {
         playListDao.insertOrIgnorePlayListMusicCrossRefEntities(
             musicMediaIds.map { id ->
                 PlayListMusicCrossRef(
                     playListId = playlistId,
-                    musicId = id
+                    musicId = id,
+                    musicAddedDate = addedDate
                 )
             }
         )

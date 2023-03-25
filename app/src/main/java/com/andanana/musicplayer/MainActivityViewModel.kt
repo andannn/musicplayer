@@ -128,7 +128,10 @@ class MainActivityViewModel @Inject constructor(
 
     private fun addMusicToFavorite(mediaId: Long) {
         viewModelScope.launch {
-            useCases.addMusicToFavorite(mediaId)
+            useCases.addMusicToFavorite(
+                mediaId,
+                addedDate = System.currentTimeMillis()
+            )
             _snackbarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
         }
     }

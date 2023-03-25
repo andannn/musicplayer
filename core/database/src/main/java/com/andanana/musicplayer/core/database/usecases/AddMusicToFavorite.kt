@@ -10,13 +10,14 @@ private const val TAG = "AddMusicToFavorite"
 class AddMusicToFavorite @Inject constructor(
     private val playListDao: PlayListDao
 ) {
-    suspend operator fun invoke(musicMediaId: Long) {
+    suspend operator fun invoke(musicMediaId: Long, addedDate: Long) {
         Log.d(TAG, "invoke: $musicMediaId")
         playListDao.insertOrIgnorePlayListMusicCrossRefEntities(
             listOf(
                 PlayListMusicCrossRef(
                     playListId = FAVORITE_PLAY_LIST_ID,
-                    musicId = musicMediaId
+                    musicId = musicMediaId,
+                    musicAddedDate = addedDate
                 )
             )
         )

@@ -100,7 +100,8 @@ class PlayListDialogViewModel @Inject constructor(
             unSavedPlayListItem.forEach {
                 useCases.addMusicToPlayList.invoke(
                     musicMediaId = requestUriLastSegmentFlow.value.toLong(),
-                    playlistId = it.id
+                    playlistId = it.id,
+                    addedDate = System.currentTimeMillis()
                 )
             }
         }
