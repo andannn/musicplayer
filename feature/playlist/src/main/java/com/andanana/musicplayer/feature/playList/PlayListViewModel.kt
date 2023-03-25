@@ -113,10 +113,11 @@ class PlayListViewModel @Inject constructor(
                         useCases.getMusicInPlayList.invoke(
                             playListId = playListId
                         )
+                            .map { it.sortedByDescending { it.musicAddedDate } }
                             .map { ids ->
                                 ids.map {
                                     repository.getMusicInfoById(
-                                        id = it
+                                        id = it.music.mediaStoreId
                                     ) ?: MusicInfo(contentUri = Uri.parse(""))
                                 }
                             }

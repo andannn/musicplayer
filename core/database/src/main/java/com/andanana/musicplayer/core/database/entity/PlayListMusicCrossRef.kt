@@ -32,7 +32,5 @@ data class PlayListMusicCrossRef(
     val playListId: Long,
     @ColumnInfo(name = "media_store_id")
     val musicId: Long,
-    val musicAddedDate: Long
+    val musicAddedDate: Long = 0L
 )
-
-

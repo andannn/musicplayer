@@ -8,13 +8,13 @@ class DeleteMusicInFavorite @Inject constructor(
     private val playListDao: PlayListDao
 ) {
     suspend operator fun invoke(musicMediaId: Long) {
-//        playListDao.deleteMusicInPlaylist(
-//            listOf(
-//                PlayListMusicCrossRef(
-//                    playListId = FAVORITE_PLAY_LIST_ID,
-//                    musicId = musicMediaId
-//                )
-//            )
-//        )
+        playListDao.deleteMusicInPlaylist(
+            listOf(
+                PlayListMusicCrossRef(
+                    playListId = FAVORITE_PLAY_LIST_ID,
+                    musicId = musicMediaId
+                )
+            )
+        )
     }
 }
