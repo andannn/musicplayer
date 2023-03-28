@@ -25,7 +25,7 @@ class PlayerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        playerRepository.initial()
+        playerRepository.initialize()
 
         mediaSession = MediaSessionCompat(this, MEDIA_SESSION)
 

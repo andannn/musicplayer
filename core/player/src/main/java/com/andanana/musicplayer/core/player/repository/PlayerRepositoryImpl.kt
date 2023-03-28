@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import com.andanana.musicplayer.core.player.repository.PlayMode.Companion.DefaultPlayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
@@ -21,7 +22,10 @@ class PlayerRepositoryImpl @Inject constructor(
 ) : PlayerRepository {
 
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
+
     private val playingMediaItemStateFlow = MutableStateFlow<MediaItem?>(null)
+
+    private val playModeStateFlow = MutableStateFlow(DefaultPlayMode)
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -101,6 +105,8 @@ class PlayerRepositoryImpl @Inject constructor(
             it?.localConfiguration?.uri
         }
 
+    override fun observePlayMode(): Flow<PlayMode> = playModeStateFlow
+
     override fun setPlayList(mediaItems: List<MediaItem>) {
         player.setMediaItems(mediaItems)
     }
@@ -131,9 +137,10 @@ class PlayerRepositoryImpl @Inject constructor(
         player.play()
     }
 
-    override fun initial() {
+    override fun initialize() {
         player.prepare()
         player.addListener(playerListener)
+        setRepeatMode(PlayMode.DefaultPlayMode)
     }
 
     override fun release() {
@@ -141,5 +148,16 @@ class PlayerRepositoryImpl @Inject constructor(
         player.removeListener(playerListener)
         player.stop()
         player.release()
+    }
+
+    override fun setRepeatMode(playMode: PlayMode) {
+        if (playMode == PlayMode.SHUFFLE) {
+            player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
+            player.shuffleModeEnabled = true
+        } else {
+            player.repeatMode = playMode.toExoPlayerMode()
+            player.shuffleModeEnabled = false
+        }
+        playModeStateFlow.value = playMode
     }
 }

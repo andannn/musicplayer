@@ -2,6 +2,7 @@ package com.andanana.musicplayer.core.player.repository
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import kotlinx.coroutines.flow.Flow
 
 sealed interface PlayerState {
@@ -13,11 +14,30 @@ sealed interface PlayerState {
     data class Error(val throwable: Throwable) : PlayerState
 }
 
+enum class PlayMode {
+    REPEAT_ONE,
+    REPEAT_OFF,
+    REPEAT_ALL,
+    SHUFFLE;
+
+    companion object {
+        val DefaultPlayMode = REPEAT_ALL
+    }
+}
+
+fun PlayMode.toExoPlayerMode() = when (this) {
+    PlayMode.REPEAT_ONE -> Player.REPEAT_MODE_ONE
+    PlayMode.REPEAT_OFF -> Player.REPEAT_MODE_OFF
+    PlayMode.REPEAT_ALL -> Player.REPEAT_MODE_ALL
+    PlayMode.SHUFFLE -> -1
+}
+
 interface PlayerRepository {
     val currentPositionMs: Long
     val playerState: PlayerState
     fun observePlayerState(): Flow<PlayerState>
     fun observePlayingUri(): Flow<Uri?>
+    fun observePlayMode(): Flow<PlayMode>
     fun setPlayList(mediaItems: List<MediaItem>)
     fun seekToMediaIndex(index: Int)
     fun play()
@@ -25,6 +45,7 @@ interface PlayerRepository {
     fun next()
     fun seekTo(time: Int)
     fun previous()
-    fun initial()
+    fun initialize()
     fun release()
+    fun setRepeatMode(playMode: PlayMode)
 }

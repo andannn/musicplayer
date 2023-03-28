@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.model.MusicInfo
+import com.andanana.musicplayer.core.player.repository.PlayMode
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
@@ -66,7 +67,7 @@ class PlayerStateViewModel @Inject constructor(
         }
         viewModelScope.launch {
             musicInFavorite.collect {
-                (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
+                playStateNullable?.let { playerState ->
                     _playerUiStateFlow.update {
                         playerState.copy(
                             isFavorite = isMusicInFavorite(playerState.musicInfo.contentUri)
@@ -180,6 +181,7 @@ sealed class PlayerUiState {
         val state: PlayState = PlayState.LOADING,
         val progress: Float = 0f,
         val isFavorite: Boolean,
+        val playMode: PlayMode = PlayMode.REPEAT_ALL,
         val musicInfo: MusicInfo
     ) : PlayerUiState()
 }
