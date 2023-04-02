@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+
+option java_package = "com.andanana.musicplayer.core.datastore";
+option java_multiple_files = true;
+
+enum PlayMode {
+    PLAT_MODE_REPEAT_ONE = 0;
+    PLAT_MODE_REPEAT_OFF = 1;
+    PLAT_MODE_REPEAT_ALL = 2;
+    PLAT_MODE_SHUFFLE = 3;
+}
