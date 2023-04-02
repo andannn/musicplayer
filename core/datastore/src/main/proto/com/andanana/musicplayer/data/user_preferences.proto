@@ -7,5 +7,5 @@ option java_package = "com.andanana.musicplayer.core.datastore";
 option java_multiple_files = true;
 
 message UserPreferences {
-    PlayMode play_mode = 1;
+    PlayModeProto play_mode = 1;
 }

@@ -3,6 +3,7 @@ package com.andanana.musicplayer.core.player.repository
 import android.net.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import com.andanana.musicplayer.core.model.PlayMode
 import kotlinx.coroutines.flow.Flow
 
 sealed interface PlayerState {
@@ -12,17 +13,6 @@ sealed interface PlayerState {
     data class Paused(val currentPositionMs: Long) : PlayerState
     object PlayBackEnd : PlayerState
     data class Error(val throwable: Throwable) : PlayerState
-}
-
-enum class PlayMode {
-    REPEAT_ONE,
-    REPEAT_OFF,
-    REPEAT_ALL,
-    SHUFFLE;
-
-    companion object {
-        val DefaultPlayMode = REPEAT_ALL
-    }
 }
 
 fun PlayMode.toExoPlayerMode() = when (this) {

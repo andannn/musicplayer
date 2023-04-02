@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.player.repository.PlayMode
+import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker

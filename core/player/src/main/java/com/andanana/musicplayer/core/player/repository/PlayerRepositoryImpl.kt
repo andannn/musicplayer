@@ -5,7 +5,8 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import com.andanana.musicplayer.core.player.repository.PlayMode.Companion.DefaultPlayMode
+import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.model.PlayMode.Companion.DefaultPlayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
