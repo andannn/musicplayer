@@ -81,6 +81,7 @@ class PlayerStateViewModel @Inject constructor(
                         )
                     }
                 }
+                playerRepository.setRepeatMode(playMode)
             }
         }
         viewModelScope.launch {

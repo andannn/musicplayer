@@ -152,6 +152,7 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     override fun setRepeatMode(playMode: PlayMode) {
+        Log.d(TAG, "setRepeatMode: $playMode")
         if (playMode == PlayMode.SHUFFLE) {
             player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
             player.shuffleModeEnabled = true
