@@ -74,6 +74,7 @@ class PlayerStateViewModel @Inject constructor(
                 it.playMode
             }.collect { playMode ->
                 playStateNullable?.let { playerState ->
+                    Log.d(TAG, ": playerState updated $playMode")
                     _playerUiStateFlow.update {
                         playerState.copy(
                             playMode = playMode
@@ -99,15 +100,20 @@ class PlayerStateViewModel @Inject constructor(
                 if (musicInfo == null) {
                     _playerUiStateFlow.value = PlayerUiState.Inactive
                 } else {
-                    _playerUiStateFlow.value = PlayerUiState.Active(
-                        musicInfo = musicInfo,
-                        state = when (playerRepository.playerState) {
-                            is PlayerState.Paused -> PlayState.PAUSED
-                            is PlayerState.Playing -> PlayState.PLAYING
-                            else -> PlayState.LOADING
-                        },
-                        isFavorite = isMusicInFavorite(musicInfo.contentUri)
-                    )
+                    _playerUiStateFlow.update { state ->
+                        when (state) {
+                            is PlayerUiState.Active -> {
+                                state.copy(
+                                    musicInfo = musicInfo
+                                )
+                            }
+                            PlayerUiState.Inactive -> {
+                                PlayerUiState.Active(
+                                    musicInfo = musicInfo
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -206,7 +212,7 @@ sealed class PlayerUiState {
     data class Active(
         val state: PlayState = PlayState.LOADING,
         val progress: Float = 0f,
-        val isFavorite: Boolean,
+        val isFavorite: Boolean = false,
         val playMode: PlayMode = PlayMode.REPEAT_ALL,
         val musicInfo: MusicInfo
     ) : PlayerUiState()
