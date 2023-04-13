@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import com.andanana.musicplayer.core.datastore.SmpPreferencesDataSource
 import com.andanana.musicplayer.core.datastore.UserPreferences
 import com.andanana.musicplayer.core.datastore.UserPreferencesSerializer
+import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
+import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,4 +35,12 @@ object DataStoreModule {
         ) {
             context.dataStoreFile("user_preferences.pb")
         }
+
+    @Provides
+    @Singleton
+    fun providesUserPreferencesRepository(
+        smpPreferencesDataSource: SmpPreferencesDataSource
+    ): SmpPreferenceRepository =
+        SmpPreferenceRepositoryImpl(smpPreferencesDataSource)
+
 }

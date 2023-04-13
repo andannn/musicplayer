@@ -21,4 +21,17 @@ class SmpPreferencesDataSource @Inject constructor(
                 }
             )
         }
+
+    suspend fun setPlayMode(playMode: PlayMode) {
+        userPreferences.updateData { userPreferences ->
+            userPreferences.copy {
+                this.playMode = when (playMode) {
+                    PlayMode.REPEAT_ONE -> PlayModeProto.PLAT_MODE_REPEAT_ONE
+                    PlayMode.REPEAT_OFF -> PlayModeProto.PLAT_MODE_REPEAT_OFF
+                    PlayMode.REPEAT_ALL -> PlayModeProto.PLAT_MODE_REPEAT_ALL
+                    PlayMode.SHUFFLE -> PlayModeProto.PLAT_MODE_SHUFFLE
+                }
+            }
+        }
+    }
 }

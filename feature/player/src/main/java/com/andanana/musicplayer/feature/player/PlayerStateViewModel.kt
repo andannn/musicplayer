@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
+import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -28,6 +31,7 @@ private const val TAG = "PlayerStateViewModel"
 class PlayerStateViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val localMusicRepository: LocalMusicRepository,
+    private val smpPreferenceRepository: SmpPreferenceRepository,
     private val useCases: PlayListUseCases
 ) : ViewModel() {
 
@@ -63,6 +67,19 @@ class PlayerStateViewModel @Inject constructor(
         viewModelScope.launch {
             _playerUiStateFlow.collect {
                 Log.d(TAG, ": playerUiStateFlow state $it")
+            }
+        }
+        viewModelScope.launch {
+            smpPreferenceRepository.userData.map {
+                it.playMode
+            }.collect { playMode ->
+                playStateNullable?.let { playerState ->
+                    _playerUiStateFlow.update {
+                        playerState.copy(
+                            playMode = playMode
+                        )
+                    }
+                }
             }
         }
         viewModelScope.launch {
@@ -166,6 +183,15 @@ class PlayerStateViewModel @Inject constructor(
 
     fun onSeekToTime(time: Int) {
         playerRepository.seekTo(time)
+    }
+
+    fun changePlayMode() {
+        viewModelScope.launch {
+            val userPreferences = smpPreferenceRepository.userData.first()
+            smpPreferenceRepository.setPlayMode(
+                playMode = userPreferences.playMode.next()
+            )
+        }
     }
 
     private fun isMusicInFavorite(uri: Uri) =

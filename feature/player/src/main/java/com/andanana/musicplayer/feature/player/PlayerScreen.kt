@@ -79,6 +79,7 @@ private fun PlayerScreen(
         is PlayerUiState.Active -> {
             PlayerScreenContent(
                 progress = uiState.progress,
+                
                 isPlaying = uiState.state == PlayState.PLAYING,
                 isLoading = uiState.state == PlayState.LOADING,
                 coverArtUri = uiState.musicInfo.albumUri,
