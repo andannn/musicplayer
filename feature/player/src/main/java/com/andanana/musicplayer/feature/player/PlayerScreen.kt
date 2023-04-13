@@ -40,6 +40,8 @@ import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
+import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.feature.player.util.getIconRes
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
 
@@ -55,7 +57,7 @@ fun PlayerRoute(
         onPlayButtonClick = playerStateViewModel::togglePlayState,
         onPreviousButtonClick = playerStateViewModel::previous,
         onNextButtonClick = playerStateViewModel::next,
-        onPlayModeButtonClick = playerStateViewModel::next,
+        onPlayModeButtonClick = playerStateViewModel::changePlayMode,
         onPlayListButtonClick = {},
         onBackButtonClick = {}
     )
@@ -79,7 +81,7 @@ private fun PlayerScreen(
         is PlayerUiState.Active -> {
             PlayerScreenContent(
                 progress = uiState.progress,
-                
+                playMode = uiState.playMode,
                 isPlaying = uiState.state == PlayState.PLAYING,
                 isLoading = uiState.state == PlayState.LOADING,
                 coverArtUri = uiState.musicInfo.albumUri,
@@ -103,6 +105,7 @@ private fun PlayerScreen(
 private fun PlayerScreenContent(
     modifier: Modifier = Modifier,
     progress: Float,
+    playMode: PlayMode,
     isPlaying: Boolean,
     isLoading: Boolean,
     coverArtUri: String,
@@ -177,7 +180,7 @@ private fun PlayerScreenContent(
                 SmpSubIconButton(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
                     onClick = onPlayModeButtonClick,
-                    imageVector = Icons.Rounded.ModeStandby
+                    resId = playMode.getIconRes()
                 )
                 SmpSubIconButton(
                     modifier = Modifier.weight(1f).aspectRatio(1f),
@@ -234,6 +237,7 @@ private fun PlayerScreenContentPreview() {
         isLoading = true,
         coverArtUri = "",
         title = "Title",
-        subTitle = "subTitle"
+        subTitle = "subTitle",
+        playMode = PlayMode.SHUFFLE
     )
 }

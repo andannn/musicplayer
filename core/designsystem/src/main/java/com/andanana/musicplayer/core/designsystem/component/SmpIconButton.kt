@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -41,6 +42,21 @@ fun SmpSubIconButton(
         onClick = onClick
     ) {
         Icon(modifier = Modifier.scale(scale), imageVector = imageVector, contentDescription = null)
+    }
+}
+
+@Composable
+fun SmpSubIconButton(
+    modifier: Modifier = Modifier,
+    resId: Int,
+    onClick: () -> Unit,
+    scale: Float = 1.0f
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(modifier = Modifier.scale(scale), painter = painterResource(id = resId), contentDescription = null)
     }
 }
 
