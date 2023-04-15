@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -96,60 +97,55 @@ class PlayerStateViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            interactingMusicItem.collect { musicInfo ->
-                Log.d(TAG, "musicInfo11: $musicInfo")
-                if (musicInfo == null) {
-                    _playerUiStateFlow.value = PlayerUiState.Inactive
+            combine(
+                interactingMusicItem,
+                playerRepository.observePlayerState()
+            ) { interactingMusicItem, playerState ->
+                interactingMusicItem to playerState
+            }.collect {
+                val (interactingMusicItem, state) = it
+                if (interactingMusicItem == null) {
+                    _playerUiStateFlow.update { PlayerUiState.Inactive }
                 } else {
-                    _playerUiStateFlow.update { state ->
-                        when (state) {
-                            is PlayerUiState.Active -> {
-                                state.copy(
-                                    musicInfo = musicInfo
-                                )
-                            }
-                            PlayerUiState.Inactive -> {
-                                PlayerUiState.Active(
-                                    musicInfo = musicInfo
-                                )
-                            }
+                    if (playerUiStateFlow.value is PlayerUiState.Inactive) {
+                        _playerUiStateFlow.update {
+                            PlayerUiState.Active(
+                                musicInfo = interactingMusicItem
+                            )
                         }
                     }
-                }
-            }
-        }
-        viewModelScope.launch {
-            playerRepository.observePlayerState().collect { state ->
-                Log.d(TAG, "observePlayerState : $state")
-                when (state) {
-                    is PlayerState.Playing -> {
-                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
-                            _playerUiStateFlow.update {
-                                playerState.copy(
-                                    state = PlayState.PLAYING
-                                )
+                    when (state) {
+                        is PlayerState.Playing -> {
+                            playStateNullable?.let { playerState ->
+                                _playerUiStateFlow.update {
+                                    playerState.copy(
+                                        state = PlayState.PLAYING,
+                                        musicInfo = interactingMusicItem
+                                    )
+                                }
                             }
                         }
-                    }
-                    is PlayerState.Paused, PlayerState.PlayBackEnd -> {
-                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
-                            _playerUiStateFlow.update {
-                                playerState.copy(
-                                    state = PlayState.PAUSED
-                                )
+                        is PlayerState.Paused, PlayerState.PlayBackEnd -> {
+                            playStateNullable?.let { playerState ->
+                                _playerUiStateFlow.update {
+                                    playerState.copy(
+                                        state = PlayState.PAUSED,
+                                        musicInfo = interactingMusicItem
+                                    )
+                                }
                             }
                         }
-                    }
-                    is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
-                        _playerUiStateFlow.update { PlayerUiState.Inactive }
-                    }
-                    PlayerState.Buffering -> {
-                        Log.d(TAG, "EEEEEEEEEEEEEEEE: ")
-                        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
-                            _playerUiStateFlow.update {
-                                playerState.copy(
-                                    state = PlayState.LOADING
-                                )
+                        is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
+                            _playerUiStateFlow.update { PlayerUiState.Inactive }
+                        }
+                        PlayerState.Buffering -> {
+                            playStateNullable?.let { playerState ->
+                                _playerUiStateFlow.update {
+                                    playerState.copy(
+                                        state = PlayState.LOADING,
+                                        musicInfo = interactingMusicItem
+                                    )
+                                }
                             }
                         }
                     }
