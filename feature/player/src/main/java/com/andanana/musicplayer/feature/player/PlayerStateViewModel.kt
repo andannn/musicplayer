@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -102,6 +103,13 @@ class PlayerStateViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            playerUiStateFlow.map {
+                (it as? PlayerUiState.Active)?.playMode
+            }.collect { playMode ->
+                if (playMode != null) {
+                    playerRepository.setRepeatMode(playMode)
+                }
+            }
         }
         viewModelScope.launch {
             playerRepository.observePlayerState().collect { state ->
