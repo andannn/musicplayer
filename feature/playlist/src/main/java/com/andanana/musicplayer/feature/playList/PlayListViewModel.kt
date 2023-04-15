@@ -53,63 +53,64 @@ class PlayListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            requestUri.collect { uri ->
-                when (uri.toRequestType()) {
-                    RequestType.ALBUM_REQUEST -> {
-                        val info = repository.getAlbumInfoById(
-                            id = uri.lastPathSegment?.toLong() ?: 0L
-                        )
-                        val title = info.title
-                        val artCoverUri = info.albumUri.toString()
-                        val trackCount = info.trackCount
-                        val musicItems = repository.getMusicInfoByAlbumId(
-                            id = uri.lastPathSegment?.toLong() ?: 0L
-                        ).sortedBy { it.cdTrackNumber }
-                        _playListUiStateFlow.value = PlayListUiState.Ready(
-                            title = title,
-                            contentUri = uri,
-                            type = uri.toRequestType()!!,
-                            artCoverUri = artCoverUri,
-                            trackCount = trackCount,
-                            musicItems = musicItems
-                        )
-                    }
-                    RequestType.ARTIST_REQUEST -> {
-                        val info = repository.getArtistInfoById(
-                            id = uri.lastPathSegment?.toLong() ?: 0L
-                        )
-                        val title = info.name
-                        val artCoverUri = info.artistCoverUri.toString()
-                        val trackCount = info.trackCount
-                        val musicItems = repository.getMusicInfoByArtistId(
-                            id = uri.lastPathSegment?.toLong() ?: 0L
-                        )
-                        _playListUiStateFlow.value = PlayListUiState.Ready(
-                            title = title,
-                            contentUri = uri,
-                            type = uri.toRequestType()!!,
-                            artCoverUri = artCoverUri,
-                            trackCount = trackCount,
-                            musicItems = musicItems
-                        )
-                    }
-                    RequestType.PLAYLIST_REQUEST -> {
-                        val playListId = uri.lastPathSegment?.toLong() ?: 0L
+            val uri = requestTypeFlow.value.toUri(requestUriLastSegmentFlow.value)
+            when (uri.toRequestType()) {
+                RequestType.ALBUM_REQUEST -> {
+                    val info = repository.getAlbumInfoById(
+                        id = uri.lastPathSegment?.toLong() ?: 0L
+                    )
+                    val title = info.title
+                    val artCoverUri = info.albumUri.toString()
+                    val trackCount = info.trackCount
+                    val musicItems = repository.getMusicInfoByAlbumId(
+                        id = uri.lastPathSegment?.toLong() ?: 0L
+                    ).sortedBy { it.cdTrackNumber }
+                    _playListUiStateFlow.value = PlayListUiState.Ready(
+                        title = title,
+                        contentUri = uri,
+                        type = uri.toRequestType()!!,
+                        artCoverUri = artCoverUri,
+                        trackCount = trackCount,
+                        musicItems = musicItems
+                    )
+                }
+                RequestType.ARTIST_REQUEST -> {
+                    val info = repository.getArtistInfoById(
+                        id = uri.lastPathSegment?.toLong() ?: 0L
+                    )
+                    val title = info.name
+                    val artCoverUri = info.artistCoverUri.toString()
+                    val trackCount = info.trackCount
+                    val musicItems = repository.getMusicInfoByArtistId(
+                        id = uri.lastPathSegment?.toLong() ?: 0L
+                    )
+                    _playListUiStateFlow.value = PlayListUiState.Ready(
+                        title = title,
+                        contentUri = uri,
+                        type = uri.toRequestType()!!,
+                        artCoverUri = artCoverUri,
+                        trackCount = trackCount,
+                        musicItems = musicItems
+                    )
+                }
+                RequestType.PLAYLIST_REQUEST -> {
+                    val playListId = uri.lastPathSegment?.toLong() ?: 0L
 
-                        val playList = useCases.getPlayListByPlayListId.invoke(
-                            playListId = playListId
-                        )
-                        val title = playList.name
-                        val artCoverUri = ""
-                        _playListUiStateFlow.value = PlayListUiState.Ready(
-                            title = title,
-                            contentUri = uri,
-                            type = uri.toRequestType()!!,
-                            artCoverUri = artCoverUri,
-                            trackCount = 0,
-                            musicItems = emptyList()
-                        )
+                    val playList = useCases.getPlayListByPlayListId.invoke(
+                        playListId = playListId
+                    )
+                    val title = playList.name
+                    val artCoverUri = ""
+                    _playListUiStateFlow.value = PlayListUiState.Ready(
+                        title = title,
+                        contentUri = uri,
+                        type = uri.toRequestType()!!,
+                        artCoverUri = artCoverUri,
+                        trackCount = 0,
+                        musicItems = emptyList()
+                    )
 
+                    viewModelScope.launch {
                         useCases.getMusicInPlayList.invoke(
                             playListId = playListId
                         )
@@ -128,25 +129,21 @@ class PlayListViewModel @Inject constructor(
                                 ) ?: return@collect
                             }
                     }
-                    else -> error("Invalid type")
+                }
+                else -> error("Invalid type")
+            }
+
+            playerRepository.observePlayingUri().collect { playingUri ->
+                _playListUiStateFlow.update {
+                    playListReadyState?.copy(
+                        interactingUri = playingUri
+                    ) ?: return@collect
                 }
             }
         }
     }
 
     init {
-        viewModelScope.launch {
-            playerRepository.observePlayingUri().collect { uri ->
-                _playListUiStateFlow.update {
-                    (_playListUiStateFlow.value as? PlayListUiState.Ready)?.let {
-                        it.copy(
-                            interactingUri = uri
-                        )
-                    }
-                        ?: return@collect
-                }
-            }
-        }
         viewModelScope.launch {
             _playListUiStateFlow.collect {
                 Log.d(TAG, ":_playListUiStateFlow $it")
@@ -158,12 +155,12 @@ class PlayListViewModel @Inject constructor(
 sealed interface PlayListUiState {
     object Loading : PlayListUiState
     data class Ready(
-        val title: String,
-        val type: RequestType,
-        val artCoverUri: String,
-        val trackCount: Int,
-        val musicItems: List<MusicInfo>,
+        val title: String = "",
+        val type: RequestType = RequestType.PLAYLIST_REQUEST,
+        val artCoverUri: String = "",
+        val trackCount: Int = 0,
+        val musicItems: List<MusicInfo> = emptyList(),
         val interactingUri: Uri? = null,
-        val contentUri: Uri
+        val contentUri: Uri = Uri.EMPTY
     ) : PlayListUiState
 }

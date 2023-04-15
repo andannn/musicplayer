@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayMode.Companion.DefaultPlayMode
 import kotlinx.coroutines.flow.Flow
@@ -24,9 +25,7 @@ class PlayerRepositoryImpl @Inject constructor(
 
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
-    private val playingMediaItemStateFlow = MutableStateFlow<MediaItem?>(null)
-
-    private val playModeStateFlow = MutableStateFlow(DefaultPlayMode)
+    private val playingMediaItemStateFlow = MutableStateFlow<Uri?>(null)
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -70,8 +69,8 @@ class PlayerRepositoryImpl @Inject constructor(
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            Log.d(TAG, "onMediaItemTransition: $mediaItem  reason $reason")
-            playingMediaItemStateFlow.value = mediaItem
+            Log.d(TAG, "onMediaItemTransition: ${mediaItem?.localConfiguration?.uri}  reason $reason")
+            playingMediaItemStateFlow.value = mediaItem?.localConfiguration?.uri
         }
 
         override fun onPositionDiscontinuity(
@@ -101,12 +100,7 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
 
-    override fun observePlayingUri(): Flow<Uri?> =
-        playingMediaItemStateFlow.map {
-            it?.localConfiguration?.uri
-        }
-
-    override fun observePlayMode(): Flow<PlayMode> = playModeStateFlow
+    override fun observePlayingUri(): Flow<Uri?> = playingMediaItemStateFlow
 
     override fun setPlayList(mediaItems: List<MediaItem>) {
         player.setMediaItems(mediaItems)
@@ -160,6 +154,5 @@ class PlayerRepositoryImpl @Inject constructor(
             player.repeatMode = playMode.toExoPlayerMode()
             player.shuffleModeEnabled = false
         }
-        playModeStateFlow.value = playMode
     }
 }

@@ -27,7 +27,6 @@ interface PlayerRepository {
     val playerState: PlayerState
     fun observePlayerState(): Flow<PlayerState>
     fun observePlayingUri(): Flow<Uri?>
-    fun observePlayMode(): Flow<PlayMode>
     fun setPlayList(mediaItems: List<MediaItem>)
     fun seekToMediaIndex(index: Int)
     fun play()
