@@ -98,7 +98,7 @@ class PlayerStateViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            playerUiStateFlow.collect {
+            interactingMusicItem.collect {
                 Log.d(TAG, ": playerUiStateFlow state $it")
             }
         }

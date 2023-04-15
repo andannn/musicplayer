@@ -13,7 +13,6 @@ import com.andanana.musicplayer.feature.library.navigation.libraryScreen
 import com.andanana.musicplayer.feature.library.navigation.newPlayListDialog
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
-import com.andanana.musicplayer.feature.player.navigation.playerScreen
 
 private const val TAG = "SmpNavHost"
 
@@ -48,9 +47,6 @@ fun SmpNavHost(
             onShowMusicItemOption = onShowMusicItemOption,
             onPlayMusicInList = onPlayMusicInList,
             onBackPressed = onBackPressed
-        )
-        playerScreen(
-            navHostController = navHostController
         )
         addPlayListDialog(
             onNewPlayListButtonClick = onNewPlayListButtonClick,

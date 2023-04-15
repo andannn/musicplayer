@@ -25,7 +25,6 @@ import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
 import com.andanana.musicplayer.feature.playList.navigation.playListRoute
-import com.andanana.musicplayer.feature.player.navigation.playerRoute
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -60,7 +59,8 @@ fun rememberSimpleMusicAppState(
     }
 }
 
-class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
+@OptIn(ExperimentalMaterialApi::class)
+class SimpleMusicAppState constructor(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
     val systemUiController: SystemUiController,
@@ -88,17 +88,14 @@ class SimpleMusicAppState @OptIn(ExperimentalMaterialApi::class) constructor(
     val isLibraryRoute
         get() = currentDestinationWithoutDialog?.route == libraryRoute
 
-    val isPlayerRoute
-        get() = currentDestinationWithoutDialog?.route == playerRoute
-
     private val isPlayListRoute
         get() = currentDestinationWithoutDialog?.route?.contains(playListRoute) == true
 
     val isTopBarHide
-        get() = (isPlayListRoute) || isPlayerRoute
+        get() = (isPlayListRoute)
 
     val isNavigationBarHide
-        get() = isPlayListRoute || isPlayerRoute
+        get() = isPlayListRoute
 
     val currentTopLevelDestination
         @Composable get() = when (currentNavDestination?.route) {

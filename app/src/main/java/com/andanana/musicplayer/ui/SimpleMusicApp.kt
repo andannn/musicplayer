@@ -2,8 +2,6 @@ package com.andanana.musicplayer.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,10 +44,8 @@ import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayList
 import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.PlayerRoute
-import com.andanana.musicplayer.feature.player.navigation.navigateToPlayer
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
-import kotlinx.coroutines.launch
 
 private const val TAG = "SimpleMusicApp"
 
@@ -72,7 +68,6 @@ fun SimpleMusicApp(
             val snackBarPaddingBottom =
                 remember(
                     appState.currentNavDestination,
-                    appState.isPlayerRoute,
                     interactingItem
                 ) {
                     getSnackBarPaddingBottom(
@@ -151,22 +146,13 @@ fun SimpleMusicApp(
                     val parentBackEntry = remember(backStackEntry) {
                         appState.navController.getBackStackEntry(homeRoute)
                     }
-                    val visible = !appState.isPlayerRoute
-
-                    AnimatedVisibility(
-                        visible = visible,
-                        enter = expandVertically() + fadeIn(),
-                        exit = shrinkVertically() + fadeOut()
-                    ) {
-                        MiniPlayerBox(
-                            playerStateViewModel = hiltViewModel(parentBackEntry),
-                            onNavigateToPlayer = {
-                                appState.showPlayerDrawer()
-//                                appState.navController.navigateToPlayer()
-                            },
-                            onToggleFavorite = mainViewModel::onToggleFavorite
-                        )
-                    }
+                    MiniPlayerBox(
+                        playerStateViewModel = hiltViewModel(parentBackEntry),
+                        onNavigateToPlayer = {
+                            appState.showPlayerDrawer()
+                        },
+                        onToggleFavorite = mainViewModel::onToggleFavorite
+                    )
                     val isNavigationBarVisible = remember(appState.currentNavDestination) {
                         !appState.isNavigationBarHide
                     }
@@ -304,12 +290,11 @@ private fun getSnackBarPaddingBottom(
     val snackBarPaddingBottom = 10.dp
 
     val isNavigationBarVisible = !appState.isNavigationBarHide
-    val isMiniPlayerBoxShow = !appState.isPlayerRoute && haseInteractingMusicItem
-    return snackBarPaddingBottom + if (isNavigationBarVisible && !isMiniPlayerBoxShow) {
+    return snackBarPaddingBottom + if (isNavigationBarVisible && !haseInteractingMusicItem) {
         navigationBarHeight
-    } else if (!isNavigationBarVisible && isMiniPlayerBoxShow) {
+    } else if (!isNavigationBarVisible && haseInteractingMusicItem) {
         playerBoxHeight
-    } else if (isNavigationBarVisible && isMiniPlayerBoxShow) {
+    } else if (isNavigationBarVisible && haseInteractingMusicItem) {
         navigationBarHeight + playerBoxHeight
     } else {
         0.dp
