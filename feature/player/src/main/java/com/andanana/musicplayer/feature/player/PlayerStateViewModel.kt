@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.player
 
-import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,16 +12,14 @@ import com.andanana.musicplayer.core.player.repository.PlayerRepository
 import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,112 +42,67 @@ class PlayerStateViewModel @Inject constructor(
             }
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val _playerUiStateFlow = MutableStateFlow<PlayerUiState>(PlayerUiState.Inactive)
-    val playerUiStateFlow = _playerUiStateFlow.asStateFlow()
+    private val playModeFlow = smpPreferenceRepository.userData
+        .map { it.playMode }
 
     private val musicInFavorite = useCases.getMusicInFavorite.invoke()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 10L) {
-        (_playerUiStateFlow.value as? PlayerUiState.Active)?.let { playerState ->
-            _playerUiStateFlow.update {
-                playerState.copy(
-                    progress = playerRepository.currentPositionMs.div(playerState.musicInfo.duration.toFloat())
+    private val isCurrentMusicFavorite = combine(
+        playerRepository.observePlayingUri(),
+        musicInFavorite
+    ) { playingUri, favoriteList ->
+        favoriteList.map {
+            it.music.mediaStoreId
+        }.contains(playingUri?.lastPathSegment?.toLong())
+    }
+    private val updateProgressEventFlow = MutableSharedFlow<Unit>()
+    val playerUiStateFlow =
+        combine(
+            interactingMusicItem,
+            playerRepository.observePlayerState(),
+            playModeFlow,
+            isCurrentMusicFavorite,
+            updateProgressEventFlow
+        ) { interactingMusicItem, state, playMode, isCurrentMusicFavorite, _ ->
+            if (interactingMusicItem == null) {
+                PlayerUiState.Inactive
+            } else {
+                PlayerUiState.Active(
+                    musicInfo = interactingMusicItem,
+                    progress = playerRepository.currentPositionMs.div(interactingMusicItem.duration.toFloat()),
+                    playMode = playMode,
+                    isFavorite = isCurrentMusicFavorite,
+                    state = when (state) {
+                        is PlayerState.Playing -> {
+                            PlayState.PLAYING
+                        }
+                        is PlayerState.Paused, PlayerState.PlayBackEnd -> {
+                            PlayState.PAUSED
+                        }
+                        is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
+                            PlayState.LOADING
+                        }
+                        PlayerState.Buffering -> {
+                            PlayState.LOADING
+                        }
+                    }
                 )
             }
         }
-    }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PlayerUiState.Inactive)
 
-    private val playStateNullable
-        get() = _playerUiStateFlow.value as? PlayerUiState.Active
+    private var coroutineTicker: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 30L) {
+        viewModelScope.launch {
+            updateProgressEventFlow.emit(Unit)
+        }
+    }
 
     init {
         viewModelScope.launch {
-            _playerUiStateFlow.collect {
+            playerUiStateFlow.collect {
                 Log.d(TAG, ": playerUiStateFlow state $it")
             }
         }
         viewModelScope.launch {
-            smpPreferenceRepository.userData.map {
-                it.playMode
-            }.collect { playMode ->
-                playStateNullable?.let { playerState ->
-                    Log.d(TAG, ": playerState updated $playMode")
-                    _playerUiStateFlow.update {
-                        playerState.copy(
-                            playMode = playMode
-                        )
-                    }
-                }
-                playerRepository.setRepeatMode(playMode)
-            }
-        }
-        viewModelScope.launch {
-            musicInFavorite.collect {
-                playStateNullable?.let { playerState ->
-                    _playerUiStateFlow.update {
-                        playerState.copy(
-                            isFavorite = isMusicInFavorite(playerState.musicInfo.contentUri)
-                        )
-                    }
-                }
-            }
-        }
-        viewModelScope.launch {
-            combine(
-                interactingMusicItem,
-                playerRepository.observePlayerState()
-            ) { interactingMusicItem, playerState ->
-                interactingMusicItem to playerState
-            }.collect {
-                val (interactingMusicItem, state) = it
-                if (interactingMusicItem == null) {
-                    _playerUiStateFlow.update { PlayerUiState.Inactive }
-                } else {
-                    if (playerUiStateFlow.value is PlayerUiState.Inactive) {
-                        _playerUiStateFlow.update {
-                            PlayerUiState.Active(
-                                musicInfo = interactingMusicItem
-                            )
-                        }
-                    }
-                    when (state) {
-                        is PlayerState.Playing -> {
-                            playStateNullable?.let { playerState ->
-                                _playerUiStateFlow.update {
-                                    playerState.copy(
-                                        state = PlayState.PLAYING,
-                                        musicInfo = interactingMusicItem
-                                    )
-                                }
-                            }
-                        }
-                        is PlayerState.Paused, PlayerState.PlayBackEnd -> {
-                            playStateNullable?.let { playerState ->
-                                _playerUiStateFlow.update {
-                                    playerState.copy(
-                                        state = PlayState.PAUSED,
-                                        musicInfo = interactingMusicItem
-                                    )
-                                }
-                            }
-                        }
-                        is PlayerState.Error, PlayerState.Idle, PlayerState.PlayBackEnd -> {
-                            _playerUiStateFlow.update { PlayerUiState.Inactive }
-                        }
-                        PlayerState.Buffering -> {
-                            playStateNullable?.let { playerState ->
-                                _playerUiStateFlow.update {
-                                    playerState.copy(
-                                        state = PlayState.LOADING,
-                                        musicInfo = interactingMusicItem
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
         viewModelScope.launch {
             playerRepository.observePlayerState().collect { state ->
@@ -167,11 +119,14 @@ class PlayerStateViewModel @Inject constructor(
     }
 
     fun togglePlayState() {
-        playStateNullable?.let {
-            when (it.state) {
-                PlayState.PAUSED -> playerRepository.play()
-                PlayState.PLAYING -> playerRepository.pause()
-                else -> Unit
+        val state = playerUiStateFlow.value
+        if (state is PlayerUiState.Active) {
+            playerUiStateFlow.value.let {
+                when (state.state) {
+                    PlayState.PAUSED -> playerRepository.play()
+                    PlayState.PLAYING -> playerRepository.pause()
+                    else -> Unit
+                }
             }
         }
     }
@@ -196,11 +151,6 @@ class PlayerStateViewModel @Inject constructor(
             )
         }
     }
-
-    private fun isMusicInFavorite(uri: Uri) =
-        musicInFavorite.value.map {
-            it.music.mediaStoreId
-        }.contains(uri.lastPathSegment!!.toLong())
 }
 
 sealed class PlayerUiState {
