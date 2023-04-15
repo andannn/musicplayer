@@ -1,14 +1,12 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
-import com.andanana.musicplayer.core.model.MusicInfo
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
 import com.andanana.musicplayer.core.player.repository.PlayerRepository
@@ -133,10 +131,6 @@ class MainActivityViewModel @Inject constructor(
                 createdDate = System.currentTimeMillis()
             )
         }
-    }
-
-    companion object {
-        private const val PLAY_LIST_KEY = "play_list_key"
     }
 }
 

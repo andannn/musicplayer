@@ -146,7 +146,7 @@ class SimpleMusicAppState constructor(
     fun showPlayerDrawer() {
         coroutineScope.launch {
             drawerType.value = DrawerType.PLAYER
-            drawerState.open()
+            drawerState.expand()
         }
     }
 
