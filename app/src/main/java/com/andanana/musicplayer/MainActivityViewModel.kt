@@ -17,7 +17,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -33,7 +32,7 @@ class MainActivityViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val localMusicRepository: LocalMusicRepository,
     private val useCases: PlayListUseCases
-) : ViewModel() {
+) : ViewModel(), PlayerRepository by playerRepository {
 
     private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
     val mainUiState = _mainUiState.asStateFlow()
@@ -46,30 +45,13 @@ class MainActivityViewModel @Inject constructor(
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val _snackbarEvent = MutableSharedFlow<SnackBarEvent>()
-    val snackbarEvent = _snackbarEvent.asSharedFlow()
+    private val _snackBarEvent = MutableSharedFlow<SnackBarEvent>()
+    val snackBarEvent = _snackBarEvent.asSharedFlow()
 
     private val musicInFavorite = useCases.getMusicInFavorite.invoke()
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    val interactingMusicItem: StateFlow<MusicInfo?> =
-        playerRepository.observePlayingUri()
-            .map { uri ->
-                uri?.lastPathSegment?.toLong()?.let {
-                    localMusicRepository.getMusicInfoById(it)
-                }
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-    private val playListFlow =
-        savedStateHandle.getStateFlow<List<MusicInfo>>(PLAY_LIST_KEY, emptyList())
-
     init {
-        viewModelScope.launch {
-            interactingMusicItem.collect {
-                Log.d(TAG, "$it: ")
-            }
-        }
         syncMediaStore()
     }
 
@@ -122,7 +104,7 @@ class MainActivityViewModel @Inject constructor(
     private fun deleteMusicInFavorite(mediaId: Long) {
         viewModelScope.launch {
             useCases.deleteMusicInFavorite(mediaId)
-            _snackbarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
+            _snackBarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
         }
     }
 
@@ -132,7 +114,7 @@ class MainActivityViewModel @Inject constructor(
                 mediaId,
                 addedDate = System.currentTimeMillis()
             )
-            _snackbarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
+            _snackBarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
         }
     }
 
@@ -142,23 +124,6 @@ class MainActivityViewModel @Inject constructor(
 
     private fun clearInteractingUri() {
         interactingUri.value = null
-    }
-
-    fun onPlayMusic(playList: List<MusicInfo>, index: Int) {
-        when {
-            playList != this.playListFlow.value -> {
-                // Play list changed.
-                savedStateHandle[PLAY_LIST_KEY] = playList
-                playerRepository.setPlayList(playList.map { it.mediaItem })
-                playerRepository.seekToMediaIndex(index)
-                playerRepository.play()
-            }
-            index != playListFlow.value.indexOf(interactingMusicItem.value) -> {
-                // Play list is same but play item changed.
-                playerRepository.seekToMediaIndex(index)
-                playerRepository.play()
-            }
-        }
     }
 
     fun onNewPlaylist(name: String) {

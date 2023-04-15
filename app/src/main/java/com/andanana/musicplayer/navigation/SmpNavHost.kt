@@ -22,7 +22,6 @@ fun SmpNavHost(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
-    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onNewPlayListButtonClick: () -> Unit,
     onCreateButtonClick: (name: String) -> Unit
 ) {
@@ -35,8 +34,7 @@ fun SmpNavHost(
             onNavigateToPlayList = {
                 navHostController.navigateToPlayList(it)
             },
-            onShowMusicItemOption = onShowMusicItemOption,
-            onPlayMusicInList = onPlayMusicInList
+            onShowMusicItemOption = onShowMusicItemOption
         )
         libraryScreen(
             onNavigateToPlayScreen = {
@@ -45,7 +43,6 @@ fun SmpNavHost(
         )
         playListScreen(
             onShowMusicItemOption = onShowMusicItemOption,
-            onPlayMusicInList = onPlayMusicInList,
             onBackPressed = onBackPressed
         )
         addPlayListDialog(

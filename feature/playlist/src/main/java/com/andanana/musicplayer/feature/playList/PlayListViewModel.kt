@@ -32,7 +32,7 @@ class PlayListViewModel @Inject constructor(
     private val repository: LocalMusicRepository,
     private val playerRepository: PlayerRepository,
     private val useCases: PlayListUseCases
-) : ViewModel() {
+) : ViewModel(), PlayerRepository by playerRepository {
     private val requestTypeFlow =
         savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
     private val requestUriLastSegmentFlow =

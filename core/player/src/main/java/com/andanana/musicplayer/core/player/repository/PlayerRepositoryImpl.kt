@@ -5,13 +5,11 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import com.andanana.musicplayer.core.model.MusicInfo
+import androidx.media3.common.Timeline
 import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.PlayMode.Companion.DefaultPlayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,6 +24,8 @@ class PlayerRepositoryImpl @Inject constructor(
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
     private val playingMediaItemStateFlow = MutableStateFlow<Uri?>(null)
+
+    private val playListFlow = MutableStateFlow<List<Uri>>(emptyList())
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -69,7 +69,10 @@ class PlayerRepositoryImpl @Inject constructor(
         }
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-            Log.d(TAG, "onMediaItemTransition: ${mediaItem?.localConfiguration?.uri}  reason $reason")
+            Log.d(
+                TAG,
+                "onMediaItemTransition: ${mediaItem?.localConfiguration?.uri}  reason $reason"
+            )
             playingMediaItemStateFlow.value = mediaItem?.localConfiguration?.uri
         }
 
@@ -90,6 +93,18 @@ class PlayerRepositoryImpl @Inject constructor(
                 }
             }
         }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            MutableList(timeline.windowCount) { index ->
+                timeline.getWindow(index, Timeline.Window()).mediaItem.let { mediaItem ->
+                    mediaItem.localConfiguration?.uri ?: error("No valid uri")
+                }
+            }.also { uriList ->
+                Log.d(TAG, "onTimelineChanged: $uriList")
+                playListFlow.value = uriList.toList()
+            }
+        }
     }
 
     override val currentPositionMs: Long
@@ -99,12 +114,9 @@ class PlayerRepositoryImpl @Inject constructor(
         get() = playerStateFlow.value
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
+    override fun observePlayListQueue(): Flow<List<Uri>> = playListFlow
 
     override fun observePlayingUri(): Flow<Uri?> = playingMediaItemStateFlow
-
-    override fun setPlayList(mediaItems: List<MediaItem>) {
-        player.setMediaItems(mediaItems)
-    }
 
     override fun seekToMediaIndex(index: Int) {
         player.seekToDefaultPosition(index)
@@ -153,6 +165,22 @@ class PlayerRepositoryImpl @Inject constructor(
         } else {
             player.repeatMode = playMode.toExoPlayerMode()
             player.shuffleModeEnabled = false
+        }
+    }
+
+    override fun setPlayListAndStartIndex(playList: List<Uri>, startIndex: Int) {
+        when {
+            playList != this.playListFlow.value -> {
+                // Play list changed.
+                player.setMediaItems(playList.map { MediaItem.fromUri(it) })
+                player.seekToDefaultPosition(startIndex)
+                player.play()
+            }
+            startIndex != playListFlow.value.indexOf(playingMediaItemStateFlow.value) -> {
+                // Play list is same but play item changed.
+                player.seekToDefaultPosition(startIndex)
+                player.play()
+            }
         }
     }
 }

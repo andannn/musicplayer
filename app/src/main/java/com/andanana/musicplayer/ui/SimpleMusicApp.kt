@@ -63,7 +63,7 @@ fun SimpleMusicApp(
 
     Scaffold(
         snackbarHost = {
-            val interactingItem by mainViewModel.interactingMusicItem.collectAsState()
+            val interactingItem by mainViewModel.interactingUri.collectAsState()
 
             val snackBarPaddingBottom =
                 remember(
@@ -72,7 +72,7 @@ fun SimpleMusicApp(
                 ) {
                     getSnackBarPaddingBottom(
                         appState = appState,
-                        haseInteractingMusicItem = interactingItem != null
+                        isMusicBoxShowing = interactingItem != null
                     )
                 }
             SnackbarHost(
@@ -98,7 +98,7 @@ fun SimpleMusicApp(
         appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
 
         LaunchedEffect(key1 = Unit) {
-            mainViewModel.snackbarEvent.collect { event ->
+            mainViewModel.snackBarEvent.collect { event ->
                 event.let {
                     appState.snackbarHostState.showSnackbar(it.message, it.actionLabel)
                 }
@@ -135,7 +135,6 @@ fun SimpleMusicApp(
                             mainViewModel.setCurrentInteractingUri(it)
                             appState.showDrawerByUri(it)
                         },
-                        onPlayMusicInList = mainViewModel::onPlayMusic,
                         onNewPlayListButtonClick = {
                             appState.navController.navigateToNewPlayListDialog()
                         },
@@ -283,18 +282,18 @@ private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLev
 
 private fun getSnackBarPaddingBottom(
     appState: SimpleMusicAppState,
-    haseInteractingMusicItem: Boolean
+    isMusicBoxShowing: Boolean
 ): Dp {
     val navigationBarHeight = 80.0.dp
     val playerBoxHeight = 70.dp
     val snackBarPaddingBottom = 10.dp
 
     val isNavigationBarVisible = !appState.isNavigationBarHide
-    return snackBarPaddingBottom + if (isNavigationBarVisible && !haseInteractingMusicItem) {
+    return snackBarPaddingBottom + if (isNavigationBarVisible && !isMusicBoxShowing) {
         navigationBarHeight
-    } else if (!isNavigationBarVisible && haseInteractingMusicItem) {
+    } else if (!isNavigationBarVisible && isMusicBoxShowing) {
         playerBoxHeight
-    } else if (isNavigationBarVisible && haseInteractingMusicItem) {
+    } else if (isNavigationBarVisible && isMusicBoxShowing) {
         navigationBarHeight + playerBoxHeight
     } else {
         0.dp

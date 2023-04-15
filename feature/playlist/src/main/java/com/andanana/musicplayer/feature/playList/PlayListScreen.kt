@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,7 +38,6 @@ private const val TAG = "PlayListScreen"
 @Composable
 fun PlayListScreen(
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onShowPlayListItemOption: (Uri) -> Unit
 ) {
@@ -49,10 +47,13 @@ fun PlayListScreen(
         uiState = uiState,
         onPlayAllButtonClick = {
             (uiState as? PlayListUiState.Ready)?.let {
-                onPlayMusicInList(it.musicItems, 0)
+                playListViewModel.setPlayListAndStartIndex(
+                    it.musicItems.map { it.contentUri },
+                    0
+                )
             }
         },
-        onAudioItemClick = onPlayMusicInList,
+        onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
         onShowMusicItemOption = onShowMusicItemOption,
         onShowPlayListItemOption = onShowPlayListItemOption
     )
@@ -63,7 +64,7 @@ private fun PlayListScreenContent(
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onAudioItemClick: (List<Uri>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onShowPlayListItemOption: (Uri) -> Unit
 ) {
@@ -101,7 +102,7 @@ private fun PlayListContent(
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onAudioItemClick: (List<Uri>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onOptionButtonClick: () -> Unit
 ) {
@@ -168,7 +169,10 @@ private fun PlayListContent(
                         trackNum = info.cdTrackNumber,
                         date = info.modifiedDate,
                         onMusicItemClick = {
-                            onAudioItemClick(musicItems, musicItems.indexOf(info))
+                            onAudioItemClick(
+                                musicItems.map { it.contentUri },
+                                musicItems.indexOf(info)
+                            )
                         },
                         onOptionButtonClick = {
                             onShowMusicItemOption(info.contentUri)

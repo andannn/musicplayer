@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
-import com.andanana.musicplayer.core.model.MusicInfo
 
 private const val TAG = "AudioPage"
 
@@ -19,7 +18,7 @@ private const val TAG = "AudioPage"
 fun AudioPage(
     modifier: Modifier = Modifier,
     audioPageViewModel: AudioPageViewModel = hiltViewModel(),
-    onPlayMusicInList: (List<MusicInfo>, Int) -> Unit,
+    onPlayMusicInList: (List<Uri>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     val state by audioPageViewModel.audioPageUiState.collectAsState()
@@ -35,7 +34,7 @@ fun AudioPage(
 private fun AudioPageContent(
     modifier: Modifier = Modifier,
     state: AudioPageUiState,
-    onAudioItemClick: (List<MusicInfo>, Int) -> Unit,
+    onAudioItemClick: (List<Uri>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     when (state) {
@@ -58,7 +57,10 @@ private fun AudioPageContent(
                         artist = info.artist,
                         date = info.modifiedDate,
                         onMusicItemClick = {
-                            onAudioItemClick(musicInfoList, musicInfoList.indexOf(info))
+                            onAudioItemClick(
+                                musicInfoList.map { it.contentUri },
+                                musicInfoList.indexOf(info)
+                            )
                         },
                         onOptionButtonClick = {
                             onShowMusicItemOption(info.contentUri)
