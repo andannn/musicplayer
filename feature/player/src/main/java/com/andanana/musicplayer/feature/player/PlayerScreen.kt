@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ModeStandby
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.PlaylistPlay
@@ -47,33 +46,30 @@ import kotlin.math.roundToInt
 
 @Composable
 fun PlayerRoute(
-    playerStateViewModel: PlayerStateViewModel = hiltViewModel()
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
+    onNavigateToPlayQueue: () -> Unit
 ) {
     val uiState by playerStateViewModel.playerUiStateFlow.collectAsState()
     PlayerScreen(
         uiState = uiState,
-        onShareButtonClick = {},
         onSeekToTime = playerStateViewModel::onSeekToTime,
         onPlayButtonClick = playerStateViewModel::togglePlayState,
         onPreviousButtonClick = playerStateViewModel::previous,
         onNextButtonClick = playerStateViewModel::next,
         onPlayModeButtonClick = playerStateViewModel::changePlayMode,
-        onPlayListButtonClick = {},
-        onBackButtonClick = {}
+        onPlayListButtonClick = onNavigateToPlayQueue,
     )
 }
 
 @Composable
 private fun PlayerScreen(
     uiState: PlayerUiState,
-    onShareButtonClick: () -> Unit = {},
     onSeekToTime: (Int) -> Unit = {},
     onPlayButtonClick: () -> Unit = {},
     onPreviousButtonClick: () -> Unit = {},
     onNextButtonClick: () -> Unit = {},
     onPlayModeButtonClick: () -> Unit = {},
     onPlayListButtonClick: () -> Unit = {},
-    onBackButtonClick: () -> Unit = {}
 ) {
     when (uiState) {
         PlayerUiState.Inactive -> {
@@ -88,14 +84,12 @@ private fun PlayerScreen(
                 title = uiState.musicInfo.title,
                 subTitle = uiState.musicInfo.album,
                 duration = uiState.musicInfo.duration,
-                onShareButtonClick = onShareButtonClick,
                 onSeekToTime = onSeekToTime,
                 onPlayButtonClick = onPlayButtonClick,
                 onPreviousButtonClick = onPreviousButtonClick,
                 onNextButtonClick = onNextButtonClick,
                 onPlayModeButtonClick = onPlayModeButtonClick,
                 onPlayListButtonClick = onPlayListButtonClick,
-                onBackButtonClick = onBackButtonClick
             )
         }
     }
@@ -112,14 +106,12 @@ private fun PlayerScreenContent(
     title: String,
     subTitle: String,
     duration: Int = 1000,
-    onShareButtonClick: () -> Unit = {},
     onSeekToTime: (Int) -> Unit = {},
     onPlayButtonClick: () -> Unit = {},
     onPreviousButtonClick: () -> Unit = {},
     onPlayModeButtonClick: () -> Unit = {},
     onNextButtonClick: () -> Unit = {},
     onPlayListButtonClick: () -> Unit = {},
-    onBackButtonClick: () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
         Column(

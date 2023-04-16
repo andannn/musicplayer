@@ -44,6 +44,7 @@ import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayList
 import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.PlayerRoute
+import com.andanana.musicplayer.feature.playqueue.navigation.navigateToPlayQueue
 import com.andanana.musicplayer.navigation.SmpNavHost
 import com.andanana.musicplayer.navigation.TopLevelDestination
 
@@ -121,7 +122,11 @@ fun SimpleMusicApp(
                         }
                     )
                 } else {
-                    PlayerRoute()
+                    PlayerRoute(
+                        onNavigateToPlayQueue = {
+                            appState.navController.navigateToPlayQueue()
+                        }
+                    )
                 }
             }
         ) {

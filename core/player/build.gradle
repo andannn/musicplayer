@@ -46,6 +46,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
     // Media3
-    implementation 'androidx.media3:media3-exoplayer:1.0.0-beta03'
+    implementation 'androidx.media3:media3-exoplayer:1.0.0'
     implementation 'androidx.media:media:1.6.0'
 }
