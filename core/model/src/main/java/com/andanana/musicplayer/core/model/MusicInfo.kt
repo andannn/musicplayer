@@ -3,7 +3,6 @@ package com.andanana.musicplayer.core.model
 import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.media3.common.MediaItem
 
 data class MusicInfo(
     val contentUri: Uri,
@@ -19,8 +18,6 @@ data class MusicInfo(
     val cdTrackNumber: Int = 0,
     val discNumberIndex: Int = 0
 ) : Parcelable {
-
-    val mediaItem: MediaItem = MediaItem.fromUri(contentUri)
 
     constructor(parcel: Parcel) : this(
         contentUri = parcel.readParcelable(Uri::class.java.classLoader) ?: Uri.EMPTY,

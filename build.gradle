@@ -4,7 +4,7 @@ buildscript {
         compose_pager_version = '0.25.1'
         dagger_version = '2.44.2'
         navigation_version = '2.5.3'
-        lifecycle_version = '2.5.1'
+        lifecycle_version = '2.6.1'
         hilt_navigation_compose_version = '1.0.0'
         coil_version = '2.2.2'
         room_version = '2.5.0'

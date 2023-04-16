@@ -60,21 +60,17 @@ dependencies {
     implementation project(':feature:player')
     implementation project(':feature:playlist')
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.0'
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
     implementation "com.google.accompanist:accompanist-navigation-animation:0.16.1"
 
-    // Media3
-    implementation 'androidx.media3:media3-exoplayer:1.0.0-beta03'
-    implementation 'androidx.media:media:1.6.0'
-
     // Hilt Navigation Compose
     implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_compose_version"
 
     // Activity
-    implementation 'androidx.activity:activity-compose:1.6.1'
+    implementation 'androidx.activity:activity-compose:1.7.0'
 
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
@@ -98,10 +94,6 @@ dependencies {
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:$navigation_version"
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
 
 kapt {

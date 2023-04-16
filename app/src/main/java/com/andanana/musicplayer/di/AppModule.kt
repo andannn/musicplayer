@@ -3,7 +3,7 @@ package com.andanana.musicplayer.di
 import android.app.Application
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.andanana.musicplayer.SmpNotificationManager
+import com.andanana.musicplayer.core.player.SmpNotificationManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

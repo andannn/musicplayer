@@ -1,4 +1,4 @@
-package com.andanana.musicplayer
+package com.andanana.musicplayer.core.player
 
 import android.app.Service
 import android.content.Intent
