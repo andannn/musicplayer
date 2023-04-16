@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -42,6 +44,7 @@ fun MusicCard(
     date: Long,
     trackNum: Int = 0,
     showTrackNum: Boolean = false,
+    showSwapIcon: Boolean = false,
     onMusicItemClick: () -> Unit = {},
     onOptionButtonClick: () -> Unit = {}
 ) {
@@ -97,11 +100,20 @@ fun MusicCard(
                 )
             }
 
-            IconButton(
-                modifier = Modifier,
-                onClick = onOptionButtonClick
-            ) {
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "menu")
+            if (showSwapIcon) {
+                IconButton(
+                    modifier = Modifier,
+                    onClick = onOptionButtonClick
+                ) {
+                    Icon(imageVector = Icons.Filled.Menu, contentDescription = "menu")
+                }
+            } else {
+                IconButton(
+                    modifier = Modifier,
+                    onClick = onOptionButtonClick
+                ) {
+                    Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "menu")
+                }
             }
         }
     }
@@ -115,6 +127,7 @@ private fun MusicCardPreview() {
         title = "Title",
         artist = "artist",
         date = 1543121980333L,
-        showTrackNum = true
+        showTrackNum = true,
+        showSwapIcon = true
     )
 }

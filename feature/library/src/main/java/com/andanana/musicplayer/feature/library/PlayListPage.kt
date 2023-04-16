@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.library
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,6 +48,7 @@ private fun PlayListPage(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlayListPageContent(
     modifier: Modifier = Modifier,
@@ -67,7 +69,9 @@ private fun PlayListPageContent(
                 null
             }
             PlayListCard(
-                modifier = Modifier.padding(vertical = 5.dp),
+                modifier = Modifier
+                    .padding(vertical = 5.dp)
+                    .animateItemPlacement(),
                 title = item.name,
                 coverImage = coverImage,
                 trackCount = item.count,

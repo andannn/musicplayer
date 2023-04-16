@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.feature.playList
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -95,6 +94,7 @@ private fun PlayListScreenContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlayListContent(
     modifier: Modifier = Modifier,
@@ -165,7 +165,9 @@ private fun PlayListContent(
                     key = { it.contentUri }
                 ) { info ->
                     MusicCard(
-                        modifier = Modifier.padding(vertical = 4.dp),
+                        modifier = Modifier
+                            .padding(vertical = 4.dp)
+                            .animateItemPlacement(),
                         colors = if (activeMusic == info.contentUri) {
                             CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
                         } else {
