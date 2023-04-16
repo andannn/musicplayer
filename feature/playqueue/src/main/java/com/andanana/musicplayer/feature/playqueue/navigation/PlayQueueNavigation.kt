@@ -13,7 +13,7 @@ fun NavController.navigateToPlayQueue() {
     this.navigate(playingQueueRoute)
 }
 
-fun NavGraphBuilder.playListScreen(
+fun NavGraphBuilder.playQueueScreen(
     onBackPressed: () -> Unit
 ) {
     composable(

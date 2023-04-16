@@ -6,15 +6,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.MiniPlayerBox
 
 private const val TAG = "MiniPlayerBox"
 
 @Composable
 fun MiniPlayerBox(
-    playerStateViewModel: PlayerStateViewModel,
+    playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
     onNavigateToPlayer: () -> Unit,
-    onToggleFavorite: (Uri) -> Unit,
+    onToggleFavorite: (Uri) -> Unit
 ) {
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 

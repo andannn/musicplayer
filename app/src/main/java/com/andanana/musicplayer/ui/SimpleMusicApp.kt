@@ -124,6 +124,7 @@ fun SimpleMusicApp(
                 } else {
                     PlayerRoute(
                         onNavigateToPlayQueue = {
+                            appState.closeDrawer()
                             appState.navController.navigateToPlayQueue()
                         }
                     )
@@ -146,12 +147,7 @@ fun SimpleMusicApp(
                         onCreateButtonClick = mainViewModel::onNewPlaylist
                     )
 
-                    val backStackEntry by appState.currentBackStackEntry
-                    val parentBackEntry = remember(backStackEntry) {
-                        appState.navController.getBackStackEntry(homeRoute)
-                    }
                     MiniPlayerBox(
-                        playerStateViewModel = hiltViewModel(parentBackEntry),
                         onNavigateToPlayer = {
                             appState.showPlayerDrawer()
                         },

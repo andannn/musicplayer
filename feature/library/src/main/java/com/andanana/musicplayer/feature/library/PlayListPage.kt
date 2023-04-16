@@ -1,6 +1,9 @@
 package com.andanana.musicplayer.feature.library
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.runtime.Composable
@@ -10,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.database.usecases.FAVORITE_PLAY_LIST_ID
-import com.andanana.musicplayer.core.designsystem.component.AnimatedUpdateList
 import com.andanana.musicplayer.core.designsystem.component.PlayListCard
 
 @Composable
@@ -51,10 +53,14 @@ private fun PlayListPageContent(
     itemList: List<PlayListItem>,
     onPlayListItemClick: (PlayListItem) -> Unit
 ) {
-    AnimatedUpdateList(
+    LazyColumn(
         modifier = modifier,
-        list = itemList,
-        content = { item ->
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+    ) {
+        items(
+            items = itemList,
+            key = { it.id }
+        ) { item ->
             val coverImage = if (item.id == FAVORITE_PLAY_LIST_ID) {
                 Icons.Rounded.FavoriteBorder
             } else {
@@ -70,5 +76,5 @@ private fun PlayListPageContent(
                 }
             )
         }
-    )
+    }
 }
