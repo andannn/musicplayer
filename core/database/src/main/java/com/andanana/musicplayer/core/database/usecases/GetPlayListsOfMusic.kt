@@ -11,7 +11,7 @@ class GetPlayListsOfMusic @Inject constructor(
 ) {
     operator fun invoke(mediaId: Long): Flow<List<PlayList>> {
         return playListDao.getMusicWithPlayLists(mediaId).map {
-            it?.playList ?: emptyList()
+            it?.playList?.sortedByDescending { it.createdDate } ?: emptyList()
         }
     }
 }

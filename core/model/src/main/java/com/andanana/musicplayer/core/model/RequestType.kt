@@ -2,7 +2,6 @@ package com.andanana.musicplayer.core.model
 
 import android.net.Uri
 import android.provider.MediaStore
-import com.andanana.musicplayer.core.designsystem.Drawer
 
 const val PlayListContentUri = "content://m_playlist/"
 
@@ -21,14 +20,5 @@ enum class RequestType(val externalContentUri: String) {
 
         fun RequestType.toUri(lastPathSegment: String): Uri =
             Uri.withAppendedPath(Uri.parse(externalContentUri), lastPathSegment)
-    }
-}
-
-fun RequestType.toDrawer(): Drawer {
-    return when (this) {
-        RequestType.MUSIC_REQUEST -> Drawer.MusicDrawer
-        RequestType.ALBUM_REQUEST -> Drawer.AlbumDrawer
-        RequestType.ARTIST_REQUEST -> Drawer.ArtistDrawer
-        else -> error("Invalid Type")
     }
 }

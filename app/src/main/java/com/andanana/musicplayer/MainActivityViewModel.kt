@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.database.usecases.FAVORITE_PLAY_LIST_ID
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.model.RequestType
@@ -81,6 +82,7 @@ class MainActivityViewModel @Inject constructor(
 
                         clearInteractingUri()
                     }
+
                     DrawerItem.PLAY_NEXT -> {
                         interactingUri.value?.let {
                             playerRepository.setPlayNext(it)
@@ -90,6 +92,23 @@ class MainActivityViewModel @Inject constructor(
                     else -> {}
                 }
             }
+
+            RequestType.PLAYLIST_REQUEST -> {
+                when (item) {
+                    DrawerItem.DELETE -> {
+                        val id = interactingUri.value!!.lastPathSegment!!.toLong()
+                        if (id == FAVORITE_PLAY_LIST_ID) {
+                            return
+                        }
+                        viewModelScope.launch {
+                            useCases.deletePlayList(id)
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
+
             else -> error("not impl")
         }
     }

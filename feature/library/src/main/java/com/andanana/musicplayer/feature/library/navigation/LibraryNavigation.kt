@@ -13,10 +13,14 @@ fun NavController.navigateToLibrary(navOptions: NavOptions? = null) {
     this.navigate(libraryRoute, navOptions)
 }
 
-fun NavGraphBuilder.libraryScreen(onNavigateToPlayScreen: (Uri) -> Unit) {
+fun NavGraphBuilder.libraryScreen(
+    onNavigateToPlayScreen: (Uri) -> Unit,
+    onOptionButtonClick: (Uri) -> Unit
+) {
     composable(route = libraryRoute) {
         LibraryRoute(
-            onNavigateToPlayScreen = onNavigateToPlayScreen
+            onNavigateToPlayScreen = onNavigateToPlayScreen,
+            onOptionButtonClick = onOptionButtonClick
         )
     }
 }

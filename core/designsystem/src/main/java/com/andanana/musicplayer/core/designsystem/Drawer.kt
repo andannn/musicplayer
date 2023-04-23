@@ -41,9 +41,7 @@ sealed class Drawer(
             DrawerItem.ADD_TO_FAVORITE,
             DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
-            DrawerItem.SHARE,
             DrawerItem.INFORMATION,
-            DrawerItem.DELETE,
         )
     )
     object AlbumDrawer : Drawer(
@@ -51,7 +49,6 @@ sealed class Drawer(
             DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
             DrawerItem.INFORMATION,
-            DrawerItem.DELETE
         )
     )
     object ArtistDrawer : Drawer(
@@ -59,7 +56,14 @@ sealed class Drawer(
             DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
             DrawerItem.INFORMATION,
+        )
+    )
+    object PlayListDrawer : Drawer(
+        listOf(
+            DrawerItem.PLAY_NEXT,
+            DrawerItem.INFORMATION,
             DrawerItem.DELETE
         )
     )
 }
+

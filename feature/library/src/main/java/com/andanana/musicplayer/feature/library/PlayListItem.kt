@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.andanana.musicplayer.core.database.entity.PlayList
+import com.andanana.musicplayer.core.database.usecases.FAVORITE_PLAY_LIST_ID
 import com.andanana.musicplayer.core.model.PlayListContentUri
 
 data class PlayListItem(
@@ -37,6 +38,9 @@ data class PlayListItem(
         }
     }
 }
+
+val PlayListItem.isFavoritePlayList
+    get() = id == FAVORITE_PLAY_LIST_ID
 
 fun PlayList.matToUiData() = PlayListItem(id = this.playListId, this.name, 0)
 fun List<PlayList>.matToUiData() = this.map {

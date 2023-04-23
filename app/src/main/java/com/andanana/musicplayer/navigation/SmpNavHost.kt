@@ -39,7 +39,8 @@ fun SmpNavHost(
         libraryScreen(
             onNavigateToPlayScreen = {
                 navHostController.navigateToPlayList(it)
-            }
+            },
+            onOptionButtonClick = onShowMusicItemOption
         )
         playListScreen(
             onShowMusicItemOption = onShowMusicItemOption,

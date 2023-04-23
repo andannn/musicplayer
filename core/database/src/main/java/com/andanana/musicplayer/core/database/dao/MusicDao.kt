@@ -19,5 +19,9 @@ interface MusicDao {
 
     @Transaction
     @Query("SELECT * FROM play_list WHERE play_list_id = :playListId")
-    fun getPlayListWithMusics(playListId: Long): Flow<PlayListWithMusics?>
+    fun getPlayListWithMusicsFlow(playListId: Long): Flow<PlayListWithMusics?>
+
+    @Transaction
+    @Query("SELECT * FROM play_list WHERE play_list_id = :playListId")
+    suspend fun getPlayListWithMusics(playListId: Long): PlayListWithMusics?
 }

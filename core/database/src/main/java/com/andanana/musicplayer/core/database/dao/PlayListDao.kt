@@ -43,6 +43,9 @@ interface PlayListDao {
     @Delete
     suspend fun deleteMusicInPlaylist(playListMusicCrossRefReferences: List<PlayListMusicCrossRef>)
 
+    @Query("DELETE FROM play_list WHERE play_list_id = :playListId")
+    suspend fun deletePlaylist(playListId: Long)
+
     @Transaction
     @Query("SELECT * FROM music WHERE media_store_id = :mediaId")
     fun getMusicWithPlayLists(mediaId: Long): Flow<MusicWithPlayLists?>

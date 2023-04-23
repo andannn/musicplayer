@@ -1,23 +1,20 @@
-package com.andanana.musicplayer.feature.library
+package com.andanana.musicplayer.feature.library.dialog
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Approval
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -35,8 +32,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.andanana.musicplayer.core.designsystem.component.SmpTextButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.feature.library.PlayListItem
 
 @Composable
 fun PlayListDialog(
@@ -49,11 +46,7 @@ fun PlayListDialog(
     PlayListDialogContent(
         uiState = uiState,
         onItemCheckChange = playListDialogViewModel::onItemCheckChange,
-        onNewPlayListButtonClick = onNewPlayListButtonClick,
-        onApplyButtonClick = {
-            playListDialogViewModel.onApplyButtonClick()
-            onNavigateBack()
-        }
+        onNewPlayListButtonClick = onNewPlayListButtonClick
     )
 }
 
@@ -63,16 +56,14 @@ fun PlayListDialogContent(
     modifier: Modifier = Modifier,
     uiState: PlayListDialogUiState,
     onItemCheckChange: (PlayListItem, Boolean) -> Unit,
-    onNewPlayListButtonClick: () -> Unit,
-    onApplyButtonClick: () -> Unit
+    onNewPlayListButtonClick: () -> Unit
 ) {
     Card(
-        modifier = modifier.wrapContentSize(),
+        modifier = modifier,
         shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(
-            modifier = modifier
-                .heightIn(max = 500.dp)
+            modifier = Modifier
                 .padding(10.dp)
         ) {
             Row(
@@ -95,7 +86,7 @@ fun PlayListDialogContent(
 
             val isReadyState = uiState is PlayListDialogUiState.Ready
             AnimatedContent(
-                modifier = Modifier.align(CenterHorizontally).weight(1f),
+                modifier = Modifier.align(CenterHorizontally).height(400.dp),
                 targetState = isReadyState
             ) { isReady ->
                 if (!isReady) {
@@ -110,24 +101,15 @@ fun PlayListDialogContent(
                     val state = uiState as PlayListDialogUiState.Ready
                     PlayListCheckList(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 10.dp),
-                        items = state.playListItems,
+                            .fillMaxWidth(),
+                        favoriteItem = state.favoriteItem,
+                        items = state.playListItemWithoutFavorite,
                         checkedItems = state.checkItemList,
                         onItemCheckChange = onItemCheckChange
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(10.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(10.dp))
-            SmpTextButton(
-                modifier = Modifier.wrapContentHeight().align(CenterHorizontally),
-                text = "Apply",
-                imageVector = Icons.Rounded.Approval,
-                onClick = onApplyButtonClick
-            )
+            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }
@@ -136,18 +118,37 @@ fun PlayListDialogContent(
 private fun PlayListCheckList(
     modifier: Modifier = Modifier,
     items: List<PlayListItem>,
+    favoriteItem: PlayListItem?,
     checkedItems: List<PlayListItem>,
     onItemCheckChange: (PlayListItem, Boolean) -> Unit
 ) {
-    Column(
-        modifier = modifier
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 10.dp)
     ) {
-        items.forEachIndexed { index, playListItem ->
+        item {
+            favoriteItem?.let { item ->
+                PlayListCheckItem(
+                    isChecked = checkedItems.contains(item),
+                    item = item,
+                    onCheckedChange = {
+                        onItemCheckChange(item, it)
+                    }
+                )
+            }
+        }
+        item {
+            Divider(color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        items(
+            items = items,
+            key = { it.id }
+        ) { item ->
             PlayListCheckItem(
-                isChecked = checkedItems.contains(playListItem),
-                item = playListItem,
+                isChecked = checkedItems.contains(item),
+                item = item,
                 onCheckedChange = {
-                    onItemCheckChange(playListItem, it)
+                    onItemCheckChange(item, it)
                 }
             )
         }
@@ -185,8 +186,7 @@ private fun PlayListDialogContentPreview() {
                 )
             ),
             onItemCheckChange = { _, _ -> },
-            onNewPlayListButtonClick = {},
-            onApplyButtonClick = {}
+            onNewPlayListButtonClick = {}
         )
     }
 }

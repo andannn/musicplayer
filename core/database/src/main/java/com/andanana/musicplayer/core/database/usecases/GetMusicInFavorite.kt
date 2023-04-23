@@ -14,7 +14,7 @@ class GetMusicInFavorite @Inject constructor(
     private val musicDao: MusicDao
 ) {
     operator fun invoke(): Flow<List<MusicWithAddedTime>> {
-        return musicDao.getPlayListWithMusics(FAVORITE_PLAY_LIST_ID).map {
+        return musicDao.getPlayListWithMusicsFlow(FAVORITE_PLAY_LIST_ID).map {
             val playList = it?.playList
             val musics = it?.musics ?: emptyList()
             playList?.let { playList ->

@@ -8,7 +8,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
-import com.andanana.musicplayer.feature.library.PlayListDialog
+import com.andanana.musicplayer.feature.library.dialog.PlayListDialog
 
 const val addPlayListDialogRoute = "play_list_dialog_route"
 const val requestUriLastSegmentArg = "request_uri_lastSegment"

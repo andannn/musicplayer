@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.TabRowAndPager
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.model.RequestType
+import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
 
 enum class LibraryPage(
     @StringRes val titleResId: Int
@@ -29,12 +31,14 @@ enum class LibraryPage(
 @Composable
 fun LibraryRoute(
     libraryViewModel: LibraryViewModel = hiltViewModel(),
-    onNavigateToPlayScreen: (Uri) -> Unit
+    onNavigateToPlayScreen: (Uri) -> Unit,
+    onOptionButtonClick: (Uri) -> Unit
 ) {
     val uiState by libraryViewModel.uiState.collectAsState()
     LibraryScreen(
         uiState = uiState,
-        onNavigateToPlayScreen = onNavigateToPlayScreen
+        onNavigateToPlayScreen = onNavigateToPlayScreen,
+        onOptionButtonClick = onOptionButtonClick
     )
 }
 
@@ -42,7 +46,8 @@ fun LibraryRoute(
 private fun LibraryScreen(
     modifier: Modifier = Modifier,
     uiState: LibraryUiState,
-    onNavigateToPlayScreen: (Uri) -> Unit
+    onNavigateToPlayScreen: (Uri) -> Unit,
+    onOptionButtonClick: (Uri) -> Unit
 ) {
     when (uiState) {
         LibraryUiState.Loading -> {
@@ -50,22 +55,30 @@ private fun LibraryScreen(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
         }
+
         is LibraryUiState.Ready -> {
             LibraryContent(
                 modifier = modifier,
                 onPlayListItemClick = { playListItem ->
                     onNavigateToPlayScreen(playListItem.toUri())
+                },
+                onOptionButtonClick = { item ->
+                    onOptionButtonClick(
+                        RequestType.PLAYLIST_REQUEST.toUri(
+                            item.id.toString()
+                        )
+                    )
                 }
             )
         }
     }
 }
 
-
 @Composable
 private fun LibraryContent(
     modifier: Modifier = Modifier,
-    onPlayListItemClick: (PlayListItem) -> Unit
+    onPlayListItemClick: (PlayListItem) -> Unit,
+    onOptionButtonClick: (PlayListItem) -> Unit
 ) {
     TabRowAndPager(
         modifier = modifier.fillMaxSize(),
@@ -81,9 +94,11 @@ private fun LibraryContent(
                 LibraryPage.PLAY_LIST -> {
                     PlayListScreen(
                         modifier = Modifier.fillMaxSize(),
-                        onPlayListItemClick = onPlayListItemClick
+                        onPlayListItemClick = onPlayListItemClick,
+                        onOptionButtonClick = onOptionButtonClick
                     )
                 }
+
                 LibraryPage.COLLECTION -> {
                 }
             }
@@ -96,7 +111,8 @@ private fun LibraryContent(
 private fun LibraryContentPreview() {
     MusicPlayerTheme {
         LibraryContent(
-            onPlayListItemClick = {}
+            onPlayListItemClick = {},
+            onOptionButtonClick = {}
         )
     }
 }

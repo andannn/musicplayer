@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.feature.library
+package com.andanana.musicplayer.feature.library.dialog
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column

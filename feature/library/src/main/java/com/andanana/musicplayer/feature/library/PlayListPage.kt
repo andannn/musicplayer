@@ -20,13 +20,15 @@ import com.andanana.musicplayer.core.designsystem.component.PlayListCard
 fun PlayListScreen(
     modifier: Modifier = Modifier,
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    onPlayListItemClick: (PlayListItem) -> Unit
+    onPlayListItemClick: (PlayListItem) -> Unit,
+    onOptionButtonClick: (PlayListItem) -> Unit
 ) {
     val state by playListViewModel.playListPageUiState.collectAsState()
     PlayListPage(
         modifier = modifier,
         state = state,
-        onPlayListItemClick = onPlayListItemClick
+        onPlayListItemClick = onPlayListItemClick,
+        onOptionButtonClick = onOptionButtonClick
     )
 }
 
@@ -34,7 +36,8 @@ fun PlayListScreen(
 private fun PlayListPage(
     modifier: Modifier,
     state: PlayListPageUiState,
-    onPlayListItemClick: (PlayListItem) -> Unit
+    onPlayListItemClick: (PlayListItem) -> Unit,
+    onOptionButtonClick: (PlayListItem) -> Unit
 ) {
     when (state) {
         PlayListPageUiState.Loading -> {}
@@ -42,7 +45,8 @@ private fun PlayListPage(
             PlayListPageContent(
                 modifier = modifier,
                 itemList = state.infoMap.map { it.value },
-                onPlayListItemClick = onPlayListItemClick
+                onPlayListItemClick = onPlayListItemClick,
+                onOptionButtonClick = onOptionButtonClick
             )
         }
     }
@@ -53,7 +57,8 @@ private fun PlayListPage(
 private fun PlayListPageContent(
     modifier: Modifier = Modifier,
     itemList: List<PlayListItem>,
-    onPlayListItemClick: (PlayListItem) -> Unit
+    onPlayListItemClick: (PlayListItem) -> Unit,
+    onOptionButtonClick: (PlayListItem) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -77,6 +82,9 @@ private fun PlayListPageContent(
                 trackCount = item.count,
                 onPlayListItemClick = {
                     onPlayListItemClick(item)
+                },
+                onOptionButtonClick = {
+                    onOptionButtonClick(item)
                 }
             )
         }

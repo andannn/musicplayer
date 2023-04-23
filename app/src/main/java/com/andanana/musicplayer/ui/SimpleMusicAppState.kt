@@ -19,7 +19,6 @@ import androidx.navigation.navOptions
 import com.andanana.musicplayer.core.designsystem.Drawer
 import com.andanana.musicplayer.core.model.RequestType
 import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
-import com.andanana.musicplayer.core.model.toDrawer
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
@@ -133,7 +132,8 @@ class SimpleMusicAppState constructor(
         drawer.value = when (val type = uri.toRequestType()) {
             RequestType.MUSIC_REQUEST,
             RequestType.ALBUM_REQUEST,
-            RequestType.ARTIST_REQUEST -> type.toDrawer()
+            RequestType.ARTIST_REQUEST,
+            RequestType.PLAYLIST_REQUEST-> type.toDrawer()
             else -> error("Invalid Type")
         }
         coroutineScope.launch {
@@ -159,6 +159,16 @@ class SimpleMusicAppState constructor(
 
     fun onBackPressed() {
         navController.popBackStack()
+    }
+}
+
+fun RequestType.toDrawer(): Drawer {
+    return when (this) {
+        RequestType.MUSIC_REQUEST -> Drawer.MusicDrawer
+        RequestType.ALBUM_REQUEST -> Drawer.AlbumDrawer
+        RequestType.ARTIST_REQUEST -> Drawer.ArtistDrawer
+        RequestType.PLAYLIST_REQUEST -> Drawer.PlayListDrawer
+        else -> error("Invalid Type")
     }
 }
 
