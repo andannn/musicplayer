@@ -41,23 +41,24 @@ sealed class Drawer(
             DrawerItem.ADD_TO_FAVORITE,
             DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            DrawerItem.INFORMATION
         )
     )
+
     object AlbumDrawer : Drawer(
         listOf(
-            DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            DrawerItem.INFORMATION
         )
     )
+
     object ArtistDrawer : Drawer(
         listOf(
-            DrawerItem.ADD_TO_PLAY_LIST,
             DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            DrawerItem.INFORMATION
         )
     )
+
     object PlayListDrawer : Drawer(
         listOf(
             DrawerItem.PLAY_NEXT,
@@ -66,4 +67,3 @@ sealed class Drawer(
         )
     )
 }
-

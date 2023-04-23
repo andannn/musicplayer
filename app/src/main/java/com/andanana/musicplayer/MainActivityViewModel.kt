@@ -1,6 +1,7 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -72,44 +74,70 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onDrawerItemClick(item: DrawerItem) {
-        when (interactingType.value) {
-            RequestType.MUSIC_REQUEST -> {
-                when (item) {
-                    DrawerItem.ADD_TO_FAVORITE -> {
-                        interactingUri.value?.lastPathSegment?.toLong()?.let {
-                            addMusicToFavorite(it)
-                        }
+        val type = interactingUri.value!!.toRequestType()
+        when (item) {
+            DrawerItem.PLAY_NEXT -> {
+                val id = interactingUri.value!!.lastPathSegment!!.toLong()
+                onPlayNextClicked(id, type)
+            }
 
-                        clearInteractingUri()
+            DrawerItem.ADD_TO_FAVORITE -> {
+                if (type == RequestType.MUSIC_REQUEST) {
+                    interactingUri.value?.lastPathSegment?.toLong()?.let {
+                        addMusicToFavorite(it)
                     }
 
-                    DrawerItem.PLAY_NEXT -> {
-                        interactingUri.value?.let {
-                            playerRepository.setPlayNext(it)
-                        }
-                    }
-
-                    else -> {}
+                    clearInteractingUri()
                 }
             }
 
-            RequestType.PLAYLIST_REQUEST -> {
-                when (item) {
-                    DrawerItem.DELETE -> {
-                        val id = interactingUri.value!!.lastPathSegment!!.toLong()
-                        if (id == FAVORITE_PLAY_LIST_ID) {
-                            return
-                        }
-                        viewModelScope.launch {
-                            useCases.deletePlayList(id)
-                        }
-                    }
-
-                    else -> {}
+            DrawerItem.DELETE -> {
+                val id = interactingUri.value!!.lastPathSegment!!.toLong()
+                if (id == FAVORITE_PLAY_LIST_ID) {
+                    return
+                }
+                viewModelScope.launch {
+                    useCases.deletePlayList(id)
                 }
             }
 
-            else -> error("not impl")
+            else -> {}
+        }
+    }
+
+    private fun onPlayNextClicked(id: Long, type: RequestType?) {
+        viewModelScope.launch {
+            val uris = when (type) {
+                RequestType.ALBUM_REQUEST -> {
+                    localMusicRepository.getMusicInfoByAlbumId(id).map { info ->
+                        info.contentUri
+                    }
+                }
+
+                RequestType.ARTIST_REQUEST -> {
+                    localMusicRepository.getMusicInfoByArtistId(id).map { info ->
+                        info.contentUri
+                    }
+                }
+
+                RequestType.MUSIC_REQUEST -> {
+                    localMusicRepository.getMusicInfoById(id)?.contentUri?.let {
+                        listOf(it)
+                    } ?: emptyList()
+                }
+
+                RequestType.PLAYLIST_REQUEST -> {
+                    useCases.getMusicInPlayList(id).first().map {
+                        Uri.withAppendedPath(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            it.music.mediaStoreId.toString()
+                        )
+                    }
+                }
+
+                else -> emptyList()
+            }
+            playerRepository.setPlayNext(uris)
         }
     }
 

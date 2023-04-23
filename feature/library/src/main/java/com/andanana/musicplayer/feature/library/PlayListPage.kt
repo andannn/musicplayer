@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -71,7 +72,7 @@ private fun PlayListPageContent(
             val coverImage = if (item.id == FAVORITE_PLAY_LIST_ID) {
                 Icons.Rounded.FavoriteBorder
             } else {
-                null
+                Icons.Rounded.MusicNote
             }
             PlayListCard(
                 modifier = Modifier

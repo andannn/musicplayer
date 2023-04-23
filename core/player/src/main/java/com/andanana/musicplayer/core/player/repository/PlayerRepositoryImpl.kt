@@ -126,27 +126,34 @@ class PlayerRepositoryImpl @Inject constructor(
         player.play()
     }
 
-    override fun setPlayNext(uri: Uri) {
+    override fun setPlayNext(uris: List<Uri>) {
+        Log.d(TAG, "setPlayNext: $uris")
         val playingIndex = playListFlow.value.indexOfFirst { it == playingMediaItemStateFlow.value }
-        val targetUriIndex = playListFlow.value.indexOfFirst {
-            it == uri
-        }
-        if (targetUriIndex != -1) {
-            // Already in play list.
-            player.moveMediaItem(
-                /* currentIndex = */ targetUriIndex,
-                /* newIndex = */ playingIndex + 1
-            )
-        } else if (playingIndex != -1) {
-            player.addMediaItem(
-                /* index = */ playingIndex + 1,
-                /* mediaItem = */ MediaItem.fromUri(uri)
-            )
-        } else {
+
+        if (playingIndex == -1) {
             player.setMediaItems(
-                listOf(MediaItem.fromUri(uri))
+                uris.map { MediaItem.fromUri(it) }
             )
             player.play()
+            return
+        }
+
+        uris.reversed().onEach { uri ->
+            val targetUriIndex = playListFlow.value.indexOfFirst {
+                it == uri
+            }
+            if (targetUriIndex != -1) {
+                // Already in play list.
+                player.moveMediaItem(
+                    /* currentIndex = */ targetUriIndex,
+                    /* newIndex = */ playingIndex + 1
+                )
+            } else {
+                player.addMediaItem(
+                    /* index = */ playingIndex + 1,
+                    /* mediaItem = */ MediaItem.fromUri(uri)
+                )
+            }
         }
     }
 
