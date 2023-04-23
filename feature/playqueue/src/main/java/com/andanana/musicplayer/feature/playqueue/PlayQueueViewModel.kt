@@ -22,4 +22,6 @@ class PlayQueueViewModel @Inject constructor(
                 ) ?: error("invalid uri.")
             }
         }
+
+    val playingUriFlow = playerRepository.observePlayingUri()
 }

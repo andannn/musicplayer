@@ -168,11 +168,7 @@ private fun PlayListContent(
                         modifier = Modifier
                             .padding(vertical = 4.dp)
                             .animateItemPlacement(),
-                        colors = if (activeMusic == info.contentUri) {
-                            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
-                        } else {
-                            CardDefaults.cardColors()
-                        },
+                        isActive = activeMusic == info.contentUri,
                         albumArtUri = info.albumUri,
                         title = info.title,
                         showTrackNum = type == RequestType.ALBUM_REQUEST,

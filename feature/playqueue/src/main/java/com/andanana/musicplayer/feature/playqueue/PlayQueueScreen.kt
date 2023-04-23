@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.playqueue
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,16 +31,19 @@ internal fun PlayQueueScreen(
     playQueueViewModel: PlayQueueViewModel = hiltViewModel()
 ) {
     val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
+    val playingUri by playQueueViewModel.playingUriFlow.collectAsState(null)
 
     PlayQueueScreenContent(
-        queueList = queueList
+        queueList = queueList,
+        playingUri = playingUri
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlayQueueScreenContent(
-    queueList: List<MusicInfo>
+    queueList: List<MusicInfo>,
+    playingUri: Uri?
 ) {
     LazyColumn(
         modifier = Modifier,
@@ -71,6 +75,7 @@ private fun PlayQueueScreenContent(
                     .padding(vertical = 4.dp)
                     .animateItemPlacement(),
                 albumArtUri = info.albumUri,
+                isActive = playingUri == info.contentUri,
                 title = info.title,
                 showTrackNum = false,
                 showSwapIcon = true,

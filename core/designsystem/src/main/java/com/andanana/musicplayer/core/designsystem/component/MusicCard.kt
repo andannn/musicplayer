@@ -37,8 +37,8 @@ private const val TAG = "MusicCard"
 @Composable
 fun MusicCard(
     modifier: Modifier = Modifier,
-    colors: CardColors = CardDefaults.cardColors(),
     albumArtUri: String,
+    isActive: Boolean = false,
     title: String,
     artist: String,
     date: Long,
@@ -50,7 +50,11 @@ fun MusicCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        colors = colors,
+        colors = if (isActive) {
+            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
+        } else {
+            CardDefaults.cardColors()
+        },
         shape = MaterialTheme.shapes.medium,
         onClick = onMusicItemClick
     ) {
