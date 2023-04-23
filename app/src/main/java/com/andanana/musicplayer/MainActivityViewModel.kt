@@ -81,6 +81,11 @@ class MainActivityViewModel @Inject constructor(
 
                         clearInteractingUri()
                     }
+                    DrawerItem.PLAY_NEXT -> {
+                        interactingUri.value?.let {
+                            playerRepository.setPlayNext(it)
+                        }
+                    }
 
                     else -> {}
                 }

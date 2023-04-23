@@ -102,12 +102,8 @@ class PlayerStateViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            playerUiStateFlow.map {
-                (it as? PlayerUiState.Active)?.playMode
-            }.collect { playMode ->
-                if (playMode != null) {
-                    playerRepository.setRepeatMode(playMode)
-                }
+            playModeFlow.collect { playMode ->
+                playerRepository.setRepeatMode(playMode)
             }
         }
         viewModelScope.launch {

@@ -32,6 +32,7 @@ interface PlayerRepository {
     fun setPlayListAndStartIndex(playList: List<Uri>, startIndex: Int)
     fun seekToMediaIndex(index: Int)
     fun play()
+    fun setPlayNext(uri: Uri)
     fun pause()
     fun next()
     fun seekTo(time: Int)
