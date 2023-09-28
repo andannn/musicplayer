@@ -76,19 +76,7 @@ class SimpleMusicAppState constructor(
     val currentNavDestination
         @Composable get() = currentBackStackEntry.value?.destination
 
-    private val currentDestinationWithoutDialog
-        get() = navController.backQueue.lastOrNull {
-            it.destination.route?.contains("dialog") == false
-        }?.destination
-
-    val isHomeRoute
-        get() = currentDestinationWithoutDialog?.route == homeRoute
-
-    val isLibraryRoute
-        get() = currentDestinationWithoutDialog?.route == libraryRoute
-
-    private val isPlayListRoute
-        get() = currentDestinationWithoutDialog?.route?.contains(playListRoute) == true
+    private val isPlayListRoute = false
 
     val isTopBarHide
         get() = (isPlayListRoute)
