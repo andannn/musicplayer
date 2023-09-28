@@ -30,11 +30,11 @@ import com.andanana.musicplayer.core.model.MusicInfo
 internal fun PlayQueueScreen(
     playQueueViewModel: PlayQueueViewModel = hiltViewModel()
 ) {
-    val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
+//    val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
     val playingUri by playQueueViewModel.playingUriFlow.collectAsState(null)
 
     PlayQueueScreenContent(
-        queueList = queueList,
+        queueList = emptyList(),
         playingUri = playingUri
     )
 }

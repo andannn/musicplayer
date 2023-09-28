@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.andanana.musicplayer.core.database.entity.Music
+import com.andanana.musicplayer.core.database.entity.MusicEntity
 import com.andanana.musicplayer.core.database.entity.PlayListWithMusics
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +14,7 @@ interface MusicDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertOrIgnoreMusicEntities(
-        entities: List<Music>
+        entities: List<MusicEntity>
     )
 
     @Transaction

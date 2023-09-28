@@ -1,15 +1,15 @@
-package com.andanana.musicplayer.core.data.repository
+package com.andanana.musicplayer.core.data.data
 
 import android.app.Application
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import com.andanana.musicplayer.core.data.model.AlbumData
+import com.andanana.musicplayer.core.data.model.ArtistData
+import com.andanana.musicplayer.core.data.model.AudioData
 import com.andanana.musicplayer.core.data.util.CrQueryParameter
 import com.andanana.musicplayer.core.data.util.CrQueryUtil
-import com.andanana.musicplayer.core.model.AlbumInfo
-import com.andanana.musicplayer.core.model.ArtistInfo
-import com.andanana.musicplayer.core.model.MusicInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,31 +17,32 @@ import javax.inject.Singleton
 
 private const val TAG = "LocalMusicRepositoryImp"
 
-private val MusicInfoProjection = listOf(
+private val musicInfoProjection = listOf(
     MediaStore.Audio.Media._ID,
     MediaStore.Audio.Media.TITLE,
     MediaStore.Audio.Media.DURATION,
     MediaStore.Audio.Media.DATE_MODIFIED,
     MediaStore.Audio.Media.SIZE,
     MediaStore.Audio.Media.MIME_TYPE,
-    MediaStore.Audio.Media.DATA,
     MediaStore.Audio.Media.ALBUM,
     MediaStore.Audio.Media.ARTIST,
     MediaStore.Audio.Media.ALBUM_ID,
+    MediaStore.Audio.Media.ARTIST_ID,
     MediaStore.Audio.Media.CD_TRACK_NUMBER,
     MediaStore.Audio.Media.DISC_NUMBER
 ).toTypedArray()
 
-private val ArtistInfoProjection = listOf(
+private val artistInfoProjection = listOf(
     MediaStore.Audio.Artists._ID,
     MediaStore.Audio.Artists.ARTIST,
     MediaStore.Audio.Artists.NUMBER_OF_TRACKS
 ).toTypedArray()
 
-private val AlbumInfoProjection = listOf(
+private val albumInfoProjection = listOf(
     MediaStore.Audio.Albums._ID,
     MediaStore.Audio.Albums.ALBUM,
-    MediaStore.Audio.Albums.NUMBER_OF_SONGS
+    MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+    MediaStore.Audio.Albums.ARTIST,
 ).toTypedArray()
 
 // private const val MimeTypeLimitation = "(${MediaStore.Audio.Media.MIME_TYPE} in (?,?,?))"
@@ -52,99 +53,99 @@ private val AlbumInfoProjection = listOf(
 // ).toTypedArray()
 
 @Singleton
-class LocalMusicRepositoryImpl @Inject constructor(
+class MediaStoreSourceImpl @Inject constructor(
     private val app: Application
-) : LocalMusicRepository {
-
-    override suspend fun getAllMusicMediaId(): List<Long> {
-        val params = CrQueryParameter()
-        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-        params.apply {
-            projection = listOf(
-                MediaStore.Audio.Albums._ID
-            ).toTypedArray()
-        }
-        return CrQueryUtil.query(app, uri, params)?.use { cursor ->
-            val idList = mutableListOf<Long>()
-            val idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-            while (cursor.moveToNext()) {
-                idList.add(cursor.getLong(idIndex))
-            }
-            idList
-        } ?: emptyList()
-    }
+) : MediaStoreSource {
+//
+//    override suspend fun getAllMusicMediaId(): List<Long> {
+//        val params = CrQueryParameter()
+//        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+//        params.apply {
+//            projection = listOf(
+//                MediaStore.Audio.Albums._ID
+//            ).toTypedArray()
+//        }
+//        return CrQueryUtil.query(app, uri, params)?.use { cursor ->
+//            val idList = mutableListOf<Long>()
+//            val idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+//            while (cursor.moveToNext()) {
+//                idList.add(cursor.getLong(idIndex))
+//            }
+//            idList
+//        } ?: emptyList()
+//    }
 
     override suspend fun getAllMusicInfo() = withContext(Dispatchers.IO) {
-        queryMusicInfo {
-            projection = MusicInfoProjection
+        queryAudio {
+            projection = musicInfoProjection
 //            where = MimeTypeLimitation
 //            selectionArgs = MimeTypeSelectionArg
         }
     }
-
-    override suspend fun getAlbumInfoById(id: Long) = withContext(Dispatchers.IO) {
-        queryAlbumInfo {
-            projection = AlbumInfoProjection
-            where = "(${MediaStore.Audio.Albums._ID} like ?)"
-            selectionArgs = listOf(id.toString()).toTypedArray()
-        }.getOrNull(0) ?: error("invalid album id")
-    }
-
-    override suspend fun getMusicInfoByAlbumId(id: Long) = withContext(Dispatchers.IO) {
-        queryMusicInfo {
-            val albumLimitation = "(${MediaStore.Audio.Media.ALBUM_ID} like ?)"
-            val albumSelectArgs = listOf(id.toString()).toTypedArray()
-
-            projection = MusicInfoProjection
-            where = albumLimitation
-            selectionArgs = albumSelectArgs
-        }
-    }
-
-    override suspend fun getMusicInfoById(id: Long) = withContext(Dispatchers.IO) {
-        queryMusicInfo {
-            val albumLimitation = "(${MediaStore.Audio.Media._ID} like ?)"
-            val albumSelectArgs = listOf(id.toString()).toTypedArray()
-
-            projection = MusicInfoProjection
-            limit = 1
-            where = albumLimitation
-            selectionArgs = albumSelectArgs
-        }.getOrNull(0)
-    }
-
-    override suspend fun getArtistInfoById(id: Long) = withContext(Dispatchers.IO) {
-        queryArtistInfo {
-            projection = ArtistInfoProjection
-            where = "(${MediaStore.Audio.Artists._ID} like ?)"
-            selectionArgs = listOf(id.toString()).toTypedArray()
-        }.getOrNull(0) ?: error("invalid artist id")
-    }
-
-    override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {
-        queryMusicInfo {
-            val artistLimitation = "(${MediaStore.Audio.Media.ARTIST_ID} like ?)"
-            val artistSelectArgs = listOf(id.toString()).toTypedArray()
-
-            projection = MusicInfoProjection
-            where = artistLimitation
-            selectionArgs = artistSelectArgs
-        }
-    }
+//
+//    override suspend fun getAlbumInfoById(id: Long) = withContext(Dispatchers.IO) {
+//        queryAlbumInfo {
+//            projection = albumInfoProjection
+//            where = "(${MediaStore.Audio.Albums._ID} like ?)"
+//            selectionArgs = listOf(id.toString()).toTypedArray()
+//        }.getOrNull(0) ?: error("invalid album id")
+//    }
+//
+//    override suspend fun getMusicInfoByAlbumId(id: Long) = withContext(Dispatchers.IO) {
+//        queryAudio {
+//            val albumLimitation = "(${MediaStore.Audio.Media.ALBUM_ID} like ?)"
+//            val albumSelectArgs = listOf(id.toString()).toTypedArray()
+//
+//            projection = musicInfoProjection
+//            where = albumLimitation
+//            selectionArgs = albumSelectArgs
+//        }
+//    }
+//
+//    override suspend fun getMusicInfoById(id: Long) = withContext(Dispatchers.IO) {
+//        queryAudio {
+//            val albumLimitation = "(${MediaStore.Audio.Media._ID} like ?)"
+//            val albumSelectArgs = listOf(id.toString()).toTypedArray()
+//
+//            projection = musicInfoProjection
+//            limit = 1
+//            where = albumLimitation
+//            selectionArgs = albumSelectArgs
+//        }.getOrNull(0)
+//    }
+//
+//    override suspend fun getArtistInfoById(id: Long) = withContext(Dispatchers.IO) {
+//        queryArtistInfo {
+//            projection = artistInfoProjection
+//            where = "(${MediaStore.Audio.Artists._ID} like ?)"
+//            selectionArgs = listOf(id.toString()).toTypedArray()
+//        }.getOrNull(0) ?: error("invalid artist id")
+//    }
+//
+//    override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {
+//        queryAudio {
+//            val artistLimitation = "(${MediaStore.Audio.Media.ARTIST_ID} like ?)"
+//            val artistSelectArgs = listOf(id.toString()).toTypedArray()
+//
+//            projection = musicInfoProjection
+//            where = artistLimitation
+//            selectionArgs = artistSelectArgs
+//        }
+//    }
 
     override suspend fun getAllAlbumInfo() = withContext(Dispatchers.IO) {
         queryAlbumInfo {
-            projection = AlbumInfoProjection
+            projection = albumInfoProjection
         }
     }
 
     override suspend fun getAllArtistInfo() = withContext(Dispatchers.IO) {
         queryArtistInfo {
-            projection = ArtistInfoProjection
+            projection = artistInfoProjection
         }
     }
 
-    private fun queryMusicInfo(paramAdjuster: CrQueryParameter.() -> Unit): List<MusicInfo> {
+    private fun queryAudio(paramAdjuster: CrQueryParameter.() -> Unit): List<AudioData> {
         val params = CrQueryParameter()
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         params.paramAdjuster()
@@ -153,7 +154,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
         } ?: emptyList()
     }
 
-    private fun queryArtistInfo(paramAdjuster: CrQueryParameter.() -> Unit): List<ArtistInfo> {
+    private fun queryArtistInfo(paramAdjuster: CrQueryParameter.() -> Unit): List<ArtistData> {
         val params = CrQueryParameter()
         val uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
         params.paramAdjuster()
@@ -162,7 +163,7 @@ class LocalMusicRepositoryImpl @Inject constructor(
         } ?: emptyList()
     }
 
-    private fun queryAlbumInfo(paramAdjuster: CrQueryParameter.() -> Unit): List<AlbumInfo> {
+    private fun queryAlbumInfo(paramAdjuster: CrQueryParameter.() -> Unit): List<AlbumData> {
         val params = CrQueryParameter()
         val uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
         params.paramAdjuster()
@@ -171,8 +172,8 @@ class LocalMusicRepositoryImpl @Inject constructor(
         } ?: emptyList()
     }
 
-    private fun parseMusicInfoCursor(cursor: Cursor): List<MusicInfo> {
-        val itemList = mutableListOf<MusicInfo>()
+    private fun parseMusicInfoCursor(cursor: Cursor): List<AudioData> {
+        val itemList = mutableListOf<AudioData>()
 
         val idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
         val titleIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
@@ -180,15 +181,15 @@ class LocalMusicRepositoryImpl @Inject constructor(
         val dateModifiedIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED)
         val sizeIndex = cursor.getColumnIndex(MediaStore.Audio.Media.SIZE)
         val mimeTypeIndex = cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE)
-        val dataIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
         val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
         val artistIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
         val albumIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)
+        val artistIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)
         val cdTrackNumberIndex = cursor.getColumnIndex(MediaStore.Audio.Media.CD_TRACK_NUMBER)
         val discNumberIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DISC_NUMBER)
         while (cursor.moveToNext()) {
             itemList.add(
-                MusicInfo(
+                AudioData(
                     contentUri = Uri.withAppendedPath(
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                         cursor.getInt(idIndex).toString()
@@ -198,9 +199,10 @@ class LocalMusicRepositoryImpl @Inject constructor(
                     modifiedDate = cursor.getLong(dateModifiedIndex),
                     size = cursor.getInt(sizeIndex),
                     mimeType = cursor.getString(mimeTypeIndex),
-                    absolutePath = cursor.getString(dataIndex),
                     album = cursor.getString(albumIndex),
+                    albumId = cursor.getInt(albumIdIndex),
                     artist = cursor.getString(artistIndex),
+                    artistId = cursor.getInt(artistIdIndex),
                     albumUri = Uri.withAppendedPath(
                         MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                         cursor.getLong(albumIdIndex).toString()
@@ -215,15 +217,15 @@ class LocalMusicRepositoryImpl @Inject constructor(
         return itemList
     }
 
-    private fun parseArtistInfoCursor(cursor: Cursor): List<ArtistInfo> {
-        val itemList = mutableListOf<ArtistInfo>()
+    private fun parseArtistInfoCursor(cursor: Cursor): List<ArtistData> {
+        val itemList = mutableListOf<ArtistData>()
 
         val idIndex = cursor.getColumnIndex(MediaStore.Audio.Artists._ID)
         val artistIndex = cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)
         val numberOfTracksIndex = cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_TRACKS)
         while (cursor.moveToNext()) {
             itemList.add(
-                ArtistInfo(
+                ArtistData(
                     artistId = cursor.getLong(idIndex),
                     artistUri = Uri.withAppendedPath(
                         MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
@@ -239,15 +241,15 @@ class LocalMusicRepositoryImpl @Inject constructor(
         return itemList
     }
 
-    private fun parseAlbumInfoCursor(cursor: Cursor): List<AlbumInfo> {
-        val itemList = mutableListOf<AlbumInfo>()
+    private fun parseAlbumInfoCursor(cursor: Cursor): List<AlbumData> {
+        val itemList = mutableListOf<AlbumData>()
 
         val idIndex = cursor.getColumnIndex(MediaStore.Audio.Albums._ID)
         val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
         val numberOfSongsIndex = cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)
         while (cursor.moveToNext()) {
             itemList.add(
-                AlbumInfo(
+                AlbumData(
                     albumId = cursor.getLong(idIndex),
                     albumUri = Uri.withAppendedPath(
                         MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,

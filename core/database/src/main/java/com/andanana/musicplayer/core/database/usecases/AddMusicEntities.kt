@@ -1,7 +1,7 @@
 package com.andanana.musicplayer.core.database.usecases
 
 import com.andanana.musicplayer.core.database.dao.MusicDao
-import com.andanana.musicplayer.core.database.entity.Music
+import com.andanana.musicplayer.core.database.entity.MusicEntity
 import javax.inject.Inject
 
 class AddMusicEntities @Inject constructor(
@@ -9,7 +9,7 @@ class AddMusicEntities @Inject constructor(
 ) {
     suspend operator fun invoke(musicMediaId: List<Long>) {
         musicDao.insertOrIgnoreMusicEntities(
-            musicMediaId.map { Music(it) }
+            musicMediaId.map { MusicEntity(it) }
         )
     }
 }

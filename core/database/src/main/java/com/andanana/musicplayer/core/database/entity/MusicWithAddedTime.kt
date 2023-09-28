@@ -4,6 +4,6 @@ import androidx.room.Entity
 
 @Entity
 data class MusicWithAddedTime(
-    val music: Music,
+    val musicEntity: MusicEntity,
     val musicAddedDate: Long
 )

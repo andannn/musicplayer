@@ -10,13 +10,13 @@ class DeletePlayList @Inject constructor(
     private val musicDao: MusicDao
 ) {
     suspend operator fun invoke(playListId: Long) {
-        val allMusicInPlayList = musicDao.getPlayListWithMusics(playListId)?.musics
+        val allMusicInPlayList = musicDao.getPlayListWithMusics(playListId)?.musicEntities
             ?: emptyList()
         playListDao.deleteMusicInPlaylist(
             allMusicInPlayList.map {
                 PlayListMusicCrossRef(
                     playListId = playListId,
-                    musicId = it.mediaStoreId
+                    musicId = it.id
                 )
             }
         )

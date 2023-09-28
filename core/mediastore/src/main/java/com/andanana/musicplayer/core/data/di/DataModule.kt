@@ -1,7 +1,7 @@
 package com.andanana.musicplayer.core.data.di
 
-import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
-import com.andanana.musicplayer.core.data.repository.LocalMusicRepositoryImpl
+import com.andanana.musicplayer.core.data.data.MediaStoreSource
+import com.andanana.musicplayer.core.data.data.MediaStoreSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,6 +13,6 @@ interface DataModule {
 
     @Binds
     fun bindsLocalMusicRepository(
-        localMusicRepository: LocalMusicRepositoryImpl
-    ): LocalMusicRepository
+        localMusicRepository: MediaStoreSourceImpl
+    ): MediaStoreSource
 }

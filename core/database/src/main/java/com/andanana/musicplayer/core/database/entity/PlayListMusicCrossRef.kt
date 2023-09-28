@@ -16,7 +16,7 @@ import androidx.room.Index
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
-            entity = Music::class,
+            entity = MusicEntity::class,
             parentColumns = ["media_store_id"],
             childColumns = ["media_store_id"],
             onDelete = ForeignKey.CASCADE

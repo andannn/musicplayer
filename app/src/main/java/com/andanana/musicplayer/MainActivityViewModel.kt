@@ -1,11 +1,10 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
-import android.provider.MediaStore
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.FAVORITE_PLAY_LIST_ID
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -31,7 +29,7 @@ private const val TAG = "MainActivityViewModel"
 class MainActivityViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val playerRepository: PlayerRepository,
-    private val localMusicRepository: LocalMusicRepository,
+    private val mediaStoreSource: MediaStoreSource,
     private val useCases: PlayListUseCases
 ) : ViewModel(), PlayerRepository by playerRepository {
 
@@ -61,10 +59,10 @@ class MainActivityViewModel @Inject constructor(
         _mainUiState.value = MainUiState.Loading
         syncJob = viewModelScope.launch {
             // Read all audio media id from MediaStore.
-            val idList = localMusicRepository.getAllMusicMediaId()
+//            val idList = mediaStoreSource.getAllMusicMediaId()
 
             // Add all media id to data base.
-            useCases.addMusicEntities(idList)
+//            useCases.addMusicEntities(idList)
 
             // Add favorite play list entity, ignore if exist.
             useCases.addFavoritePlayListEntity(System.currentTimeMillis())
@@ -109,30 +107,37 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch {
             val uris = when (type) {
                 RequestType.ALBUM_REQUEST -> {
-                    localMusicRepository.getMusicInfoByAlbumId(id).map { info ->
-                        info.contentUri
-                    }
+//                    mediaStoreSource.getMusicInfoByAlbumId(id).map { info ->
+//                        info.contentUri
+//                    }
+                    emptyList<Uri>()
                 }
 
                 RequestType.ARTIST_REQUEST -> {
-                    localMusicRepository.getMusicInfoByArtistId(id).map { info ->
-                        info.contentUri
-                    }
+//                    mediaStoreSource.getMusicInfoByArtistId(id).map { info ->
+//                        info.contentUri
+//                    }
+                    emptyList<Uri>()
+
                 }
 
                 RequestType.MUSIC_REQUEST -> {
-                    localMusicRepository.getMusicInfoById(id)?.contentUri?.let {
-                        listOf(it)
-                    } ?: emptyList()
+//                    mediaStoreSource.getMusicInfoById(id)?.contentUri?.let {
+//                        listOf(it)
+//                    } ?: emptyList()
+                    emptyList<Uri>()
+
                 }
 
                 RequestType.PLAYLIST_REQUEST -> {
-                    useCases.getMusicInPlayList(id).first().map {
-                        Uri.withAppendedPath(
-                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                            it.music.mediaStoreId.toString()
-                        )
-                    }
+//                    useCases.getMusicInPlayList(id).first().map {
+//                        Uri.withAppendedPath(
+//                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//                            it.music.mediaStoreId.toString()
+//                        )
+//                    }
+                    emptyList<Uri>()
+
                 }
 
                 else -> emptyList()
@@ -143,7 +148,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun onToggleFavorite(uri: Uri) {
         uri.lastPathSegment?.toLong()?.let { mediaId ->
-            if (musicInFavorite.value.map { it.music.mediaStoreId }.contains(mediaId)) {
+            if (musicInFavorite.value.map { it.musicEntity.id }.contains(mediaId)) {
                 deleteMusicInFavorite(mediaId)
             } else {
                 addMusicToFavorite(mediaId)

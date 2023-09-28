@@ -3,7 +3,7 @@ package com.andanana.musicplayer.feature.player
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.model.MusicInfo
@@ -13,6 +13,7 @@ import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -27,19 +28,19 @@ private const val TAG = "PlayerStateViewModel"
 @HiltViewModel
 class PlayerStateViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
-    private val localMusicRepository: LocalMusicRepository,
+    private val mediaStoreSource: MediaStoreSource,
     private val smpPreferenceRepository: SmpPreferenceRepository,
     private val useCases: PlayListUseCases
 ) : ViewModel() {
 
-    private val interactingMusicItem: StateFlow<MusicInfo?> =
-        playerRepository.observePlayingUri()
-            .map { uri ->
-                uri?.lastPathSegment?.toLong()?.let {
-                    localMusicRepository.getMusicInfoById(it)
-                }
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val interactingMusicItem: StateFlow<MusicInfo?> = MutableStateFlow(null)
+//        playerRepository.observePlayingUri()
+//            .map { uri ->
+//                uri?.lastPathSegment?.toLong()?.let {
+//                    localMusicRepository.getMusicInfoById(it)
+//                }
+//            }
+//            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val playModeFlow = smpPreferenceRepository.userData
         .map { it.playMode }
@@ -50,7 +51,7 @@ class PlayerStateViewModel @Inject constructor(
         musicInFavorite
     ) { playingUri, favoriteList ->
         favoriteList.map {
-            it.music.mediaStoreId
+            it.musicEntity.id
         }.contains(playingUri?.lastPathSegment?.toLong())
     }
     private val updateProgressEventFlow = MutableSharedFlow<Unit>()

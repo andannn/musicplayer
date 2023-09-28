@@ -12,5 +12,5 @@ data class PlayListWithMusics(
         entityColumn = "media_store_id",
         associateBy = Junction(PlayListMusicCrossRef::class)
     )
-    val musics: List<Music>
+    val musicEntities: List<MusicEntity>
 )
