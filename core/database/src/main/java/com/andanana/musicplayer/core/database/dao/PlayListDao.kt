@@ -6,24 +6,28 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.andanana.musicplayer.core.database.Tables
+import com.andanana.musicplayer.core.database.entity.MusicColumns
 import com.andanana.musicplayer.core.database.entity.MusicWithPlayLists
-import com.andanana.musicplayer.core.database.entity.PlayList
+import com.andanana.musicplayer.core.database.entity.PlayListEntity
+import com.andanana.musicplayer.core.database.entity.PlayListColumns
 import com.andanana.musicplayer.core.database.entity.PlayListMusicCount
 import com.andanana.musicplayer.core.database.entity.PlayListMusicCrossRef
+import com.andanana.musicplayer.core.database.entity.PlayListMusicCrossRefColumns
 import com.andanana.musicplayer.core.database.entity.PlayListWithoutId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlayListDao {
 
-    @Insert(entity = PlayList::class)
+    @Insert(entity = PlayListEntity::class)
     suspend fun insertPlayListEntities(
         entities: PlayListWithoutId
     ): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPlayListEntities(
-        entities: PlayList
+        entities: PlayListEntity
     ): Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -31,28 +35,28 @@ interface PlayListDao {
         playListMusicCrossRefReferences: List<PlayListMusicCrossRef>
     )
 
-    @Query("SELECT * FROM play_list_music WHERE play_list_id = :playListId AND media_store_id = :musicId")
+    @Query("SELECT * FROM ${Tables.musicPlayListCrossRef} WHERE ${PlayListMusicCrossRefColumns.playListCrossRef} = :playListId AND ${PlayListMusicCrossRefColumns.musicCrossRef} = :musicId")
     fun getPlayListMusicCrossRef(playListId: Long, musicId: Long): PlayListMusicCrossRef
 
-    @Query("SELECT * FROM play_list")
-    fun getAllPlaylist(): Flow<List<PlayList>>
+    @Query("SELECT * FROM ${Tables.playList}")
+    fun getAllPlaylist(): Flow<List<PlayListEntity>>
 
-    @Query("SELECT * FROM play_list WHERE play_list_id = :playListId")
-    fun getPlaylistByPlayListId(playListId: Long): PlayList
+    @Query("SELECT * FROM ${Tables.playList} WHERE ${PlayListColumns.id} = :playListId")
+    fun getPlaylistByPlayListId(playListId: Long): PlayListEntity
 
     @Delete
     suspend fun deleteMusicInPlaylist(playListMusicCrossRefReferences: List<PlayListMusicCrossRef>)
 
-    @Query("DELETE FROM play_list WHERE play_list_id = :playListId")
+    @Query("DELETE FROM ${Tables.playList} WHERE ${PlayListColumns.id} = :playListId")
     suspend fun deletePlaylist(playListId: Long)
 
     @Transaction
-    @Query("SELECT * FROM music WHERE media_store_id = :mediaId")
+    @Query("SELECT * FROM ${Tables.music} WHERE ${MusicColumns.id} = :mediaId")
     fun getMusicWithPlayLists(mediaId: Long): Flow<MusicWithPlayLists?>
 
-    @Query("SELECT COUNT(*) FROM play_list_music WHERE play_list_id = :playListId")
+    @Query("SELECT COUNT(*) FROM ${Tables.musicPlayListCrossRef} WHERE ${PlayListColumns.id} = :playListId")
     fun getMusicCountByPlayListId(playListId: Long): Int
 
-    @Query("SELECT play_list_id AS playListId, COUNT(*) AS musicCount FROM play_list_music GROUP BY play_list_id")
+    @Query("SELECT ${PlayListColumns.id} AS playListId, COUNT(*) AS musicCount FROM ${Tables.musicPlayListCrossRef} GROUP BY ${PlayListColumns.id}")
     fun getAllMusicCounts(): Flow<List<PlayListMusicCount>>
 }

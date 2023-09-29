@@ -15,7 +15,7 @@ class GetMusicInPlayList @Inject constructor(
 ) {
     operator fun invoke(playListId: Long): Flow<List<MusicWithAddedTime>> {
         return musicDao.getPlayListWithMusicsFlow(playListId).map {
-            val playList = it?.playList
+            val playList = it?.playListEntity
             val musics = it?.musicEntities ?: emptyList()
             playList?.let { playList ->
                 musics.map { music ->

@@ -3,6 +3,7 @@ package com.andanana.musicplayer.core.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andanana.musicplayer.core.database.Tables
 
 object MusicColumns {
     const val id = "id"
@@ -20,13 +21,13 @@ object MusicColumns {
     const val discNumber = "disc_number"
 }
 
-@Entity(tableName = "music")
+@Entity(tableName = Tables.music)
 data class MusicEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = MusicColumns.id)
     val id: Long,
     @ColumnInfo(name = MusicColumns.title, defaultValue = "")
-    val title: String,
+    val title: String = "",
     @ColumnInfo(name = MusicColumns.duration)
     val duration: Int = -1,
     @ColumnInfo(name = MusicColumns.dateModified)

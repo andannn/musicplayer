@@ -8,9 +8,9 @@ data class MusicWithPlayLists(
     @Embedded
     val musicEntity: MusicEntity,
     @Relation(
-        parentColumn = "media_store_id",
-        entityColumn = "play_list_id",
+        parentColumn = MusicColumns.id,
+        entityColumn = PlayListColumns.id,
         associateBy = Junction(PlayListMusicCrossRef::class)
     )
-    val playList: List<PlayList>
+    val playListEntity: List<PlayListEntity>
 )

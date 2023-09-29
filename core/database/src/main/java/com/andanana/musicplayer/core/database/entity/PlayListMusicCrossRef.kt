@@ -4,33 +4,43 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.andanana.musicplayer.core.database.Tables
+
+
+object PlayListMusicCrossRefColumns {
+    const val playListCrossRef = "play_list_id"
+    const val musicCrossRef = "id"
+    const val musicAddedDate = "music_added_date"
+}
 
 @Entity(
-    tableName = "play_list_music",
-    primaryKeys = ["play_list_id", "media_store_id"],
+    tableName = Tables.musicPlayListCrossRef,
+    primaryKeys = [PlayListMusicCrossRefColumns.playListCrossRef, PlayListMusicCrossRefColumns.musicCrossRef],
     foreignKeys = [
         ForeignKey(
-            entity = PlayList::class,
-            parentColumns = ["play_list_id"],
-            childColumns = ["play_list_id"],
+            entity = PlayListEntity::class,
+            parentColumns = [PlayListColumns.id],
+            childColumns = [PlayListMusicCrossRefColumns.playListCrossRef],
             onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = MusicEntity::class,
-            parentColumns = ["media_store_id"],
-            childColumns = ["media_store_id"],
+            parentColumns = [MusicColumns.id],
+            childColumns = [PlayListMusicCrossRefColumns.musicCrossRef],
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["play_list_id"]),
-        Index(value = ["media_store_id"])
+        Index(value = [PlayListMusicCrossRefColumns.playListCrossRef]),
+        Index(value = [PlayListMusicCrossRefColumns.musicCrossRef])
     ]
 )
+
 data class PlayListMusicCrossRef(
-    @ColumnInfo(name = "play_list_id")
+    @ColumnInfo(name = PlayListMusicCrossRefColumns.playListCrossRef)
     val playListId: Long,
-    @ColumnInfo(name = "media_store_id")
+    @ColumnInfo(name = PlayListMusicCrossRefColumns.musicCrossRef)
     val musicId: Long,
+    @ColumnInfo(name = PlayListMusicCrossRefColumns.musicAddedDate)
     val musicAddedDate: Long = 0L
 )
