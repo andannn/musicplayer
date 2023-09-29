@@ -11,6 +11,7 @@ import com.andanana.musicplayer.core.database.entity.PlayListMusicCrossRef
 object Tables {
     const val music = "music_table"
     const val artist = "artist_table"
+    const val album = "album_table"
     const val playList = "play_list_table"
     const val musicPlayListCrossRef = "music_play_list_cross_ref_table"
 }

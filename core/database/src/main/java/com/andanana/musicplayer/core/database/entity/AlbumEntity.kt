@@ -11,7 +11,7 @@ object AlbumColumns {
     const val trackCount = "track_count"
 }
 
-@Entity(tableName = Tables.artist)
+@Entity(tableName = Tables.album)
 data class AlbumEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = AlbumColumns.id)
