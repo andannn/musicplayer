@@ -4,6 +4,8 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.andanana.musicplayer.core.database.dao.MusicDao
 import com.andanana.musicplayer.core.database.dao.PlayListDao
+import com.andanana.musicplayer.core.database.entity.AlbumEntity
+import com.andanana.musicplayer.core.database.entity.ArtistEntity
 import com.andanana.musicplayer.core.database.entity.MusicEntity
 import com.andanana.musicplayer.core.database.entity.PlayListEntity
 import com.andanana.musicplayer.core.database.entity.PlayListMusicCrossRef
@@ -20,6 +22,8 @@ object Tables {
     entities = [
         PlayListEntity::class,
         MusicEntity::class,
+        AlbumEntity::class,
+        ArtistEntity::class,
         PlayListMusicCrossRef::class
     ],
     version = 1

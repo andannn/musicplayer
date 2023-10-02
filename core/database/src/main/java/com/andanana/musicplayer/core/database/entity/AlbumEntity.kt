@@ -15,7 +15,7 @@ object AlbumColumns {
 data class AlbumEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = AlbumColumns.id)
-    val artistId: Int,
+    val albumId: Int,
     @ColumnInfo(name = AlbumColumns.title)
     val title: String = "",
     @ColumnInfo(name = AlbumColumns.trackCount)
