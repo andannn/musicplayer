@@ -1,6 +1,6 @@
 package com.andanana.musicplayer.feature.player.util
 
-import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.feature.player.R
 
 fun PlayMode.getIconRes() = when (this) {

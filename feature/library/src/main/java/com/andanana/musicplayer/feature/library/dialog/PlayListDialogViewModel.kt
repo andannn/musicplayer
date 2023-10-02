@@ -1,17 +1,17 @@
 package com.andanana.musicplayer.feature.library.dialog
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
 import com.andanana.musicplayer.feature.library.PlayListItem
 import com.andanana.musicplayer.feature.library.isFavoritePlayList
 import com.andanana.musicplayer.feature.library.matToUiData
 import com.andanana.musicplayer.feature.library.navigation.requestUriLastSegmentArg
-import com.andanana.musicplayer.feature.library.navigation.requestUriTypeArg
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -29,13 +29,15 @@ class PlayListDialogViewModel @Inject constructor(
 
     private val requestUriLastSegmentFlow =
         savedStateHandle.getStateFlow(requestUriLastSegmentArg, "")
-    private val requestTypeFlow =
-        savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.MUSIC_REQUEST)
+    private val musicListTypeFlow = MutableStateFlow(MusicListType.ALBUM_REQUEST)
+
+    //        savedStateHandle.getStateFlow(requestUriTypeArg, MusicListType.MUSIC_REQUEST)
     private val requestUri = combine(
-        requestTypeFlow,
+        musicListTypeFlow,
         requestUriLastSegmentFlow
     ) { type, lastSegment ->
-        type.toUri(lastSegment)
+        Uri.EMPTY
+//        type.toUri(lastSegment)
     }
 
     private val checkItemListFlow =

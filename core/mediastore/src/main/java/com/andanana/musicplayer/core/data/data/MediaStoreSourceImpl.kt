@@ -4,7 +4,6 @@ import android.app.Application
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import com.andanana.musicplayer.core.data.model.AlbumData
 import com.andanana.musicplayer.core.data.model.ArtistData
 import com.andanana.musicplayer.core.data.model.AudioData
@@ -15,7 +14,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val TAG = "LocalMusicRepositoryImp"
+private const val TAG = "MediaStoreSourceImpl"
 
 private val musicInfoProjection = listOf(
     MediaStore.Audio.Media._ID,
@@ -56,90 +55,21 @@ private val albumInfoProjection = listOf(
 class MediaStoreSourceImpl @Inject constructor(
     private val app: Application
 ) : MediaStoreSource {
-//
-//    override suspend fun getAllMusicMediaId(): List<Long> {
-//        val params = CrQueryParameter()
-//        val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-//        params.apply {
-//            projection = listOf(
-//                MediaStore.Audio.Albums._ID
-//            ).toTypedArray()
-//        }
-//        return CrQueryUtil.query(app, uri, params)?.use { cursor ->
-//            val idList = mutableListOf<Long>()
-//            val idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-//            while (cursor.moveToNext()) {
-//                idList.add(cursor.getLong(idIndex))
-//            }
-//            idList
-//        } ?: emptyList()
-//    }
-
-    override suspend fun getAllMusicInfo() = withContext(Dispatchers.IO) {
+    override suspend fun getAllMusicData() = withContext(Dispatchers.IO) {
         queryAudio {
             projection = musicInfoProjection
 //            where = MimeTypeLimitation
 //            selectionArgs = MimeTypeSelectionArg
         }
     }
-//
-//    override suspend fun getAlbumInfoById(id: Long) = withContext(Dispatchers.IO) {
-//        queryAlbumInfo {
-//            projection = albumInfoProjection
-//            where = "(${MediaStore.Audio.Albums._ID} like ?)"
-//            selectionArgs = listOf(id.toString()).toTypedArray()
-//        }.getOrNull(0) ?: error("invalid album id")
-//    }
-//
-//    override suspend fun getMusicInfoByAlbumId(id: Long) = withContext(Dispatchers.IO) {
-//        queryAudio {
-//            val albumLimitation = "(${MediaStore.Audio.Media.ALBUM_ID} like ?)"
-//            val albumSelectArgs = listOf(id.toString()).toTypedArray()
-//
-//            projection = musicInfoProjection
-//            where = albumLimitation
-//            selectionArgs = albumSelectArgs
-//        }
-//    }
-//
-//    override suspend fun getMusicInfoById(id: Long) = withContext(Dispatchers.IO) {
-//        queryAudio {
-//            val albumLimitation = "(${MediaStore.Audio.Media._ID} like ?)"
-//            val albumSelectArgs = listOf(id.toString()).toTypedArray()
-//
-//            projection = musicInfoProjection
-//            limit = 1
-//            where = albumLimitation
-//            selectionArgs = albumSelectArgs
-//        }.getOrNull(0)
-//    }
-//
-//    override suspend fun getArtistInfoById(id: Long) = withContext(Dispatchers.IO) {
-//        queryArtistInfo {
-//            projection = artistInfoProjection
-//            where = "(${MediaStore.Audio.Artists._ID} like ?)"
-//            selectionArgs = listOf(id.toString()).toTypedArray()
-//        }.getOrNull(0) ?: error("invalid artist id")
-//    }
-//
-//    override suspend fun getMusicInfoByArtistId(id: Long) = withContext(Dispatchers.IO) {
-//        queryAudio {
-//            val artistLimitation = "(${MediaStore.Audio.Media.ARTIST_ID} like ?)"
-//            val artistSelectArgs = listOf(id.toString()).toTypedArray()
-//
-//            projection = musicInfoProjection
-//            where = artistLimitation
-//            selectionArgs = artistSelectArgs
-//        }
-//    }
 
-    override suspend fun getAllAlbumInfo() = withContext(Dispatchers.IO) {
+    override suspend fun getAllAlbumData() = withContext(Dispatchers.IO) {
         queryAlbumInfo {
             projection = albumInfoProjection
         }
     }
 
-    override suspend fun getAllArtistInfo() = withContext(Dispatchers.IO) {
+    override suspend fun getAllArtistData() = withContext(Dispatchers.IO) {
         queryArtistInfo {
             projection = artistInfoProjection
         }
@@ -190,28 +120,19 @@ class MediaStoreSourceImpl @Inject constructor(
         while (cursor.moveToNext()) {
             itemList.add(
                 AudioData(
-                    contentUri = Uri.withAppendedPath(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        cursor.getInt(idIndex).toString()
-                    ),
+                    id = cursor.getLong(idIndex),
                     title = cursor.getString(titleIndex),
                     duration = cursor.getInt(durationIndex),
                     modifiedDate = cursor.getLong(dateModifiedIndex),
                     size = cursor.getInt(sizeIndex),
                     mimeType = cursor.getString(mimeTypeIndex),
                     album = cursor.getString(albumIndex),
-                    albumId = cursor.getInt(albumIdIndex),
+                    albumId = cursor.getLong(albumIdIndex),
                     artist = cursor.getString(artistIndex),
-                    artistId = cursor.getInt(artistIdIndex),
-                    albumUri = Uri.withAppendedPath(
-                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                        cursor.getLong(albumIdIndex).toString()
-                    ).toString(),
+                    artistId = cursor.getLong(artistIdIndex),
                     cdTrackNumber = cursor.getInt(cdTrackNumberIndex),
                     discNumberIndex = cursor.getInt(discNumberIndex)
-                ).also {
-                    Log.d(TAG, "parseMusicInfoCursor: $it")
-                }
+                )
             )
         }
         return itemList
@@ -227,10 +148,6 @@ class MediaStoreSourceImpl @Inject constructor(
             itemList.add(
                 ArtistData(
                     artistId = cursor.getLong(idIndex),
-                    artistUri = Uri.withAppendedPath(
-                        MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                        cursor.getLong(idIndex).toString()
-                    ),
                     name = cursor.getString(artistIndex),
                     artistCoverUri = getArtistCoverUriByName(cursor.getString(artistIndex))
                         ?: Uri.parse(""),
@@ -251,10 +168,6 @@ class MediaStoreSourceImpl @Inject constructor(
             itemList.add(
                 AlbumData(
                     albumId = cursor.getLong(idIndex),
-                    albumUri = Uri.withAppendedPath(
-                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                        cursor.getLong(idIndex).toString()
-                    ),
                     title = cursor.getString(albumIndex),
                     trackCount = cursor.getInt(numberOfSongsIndex)
                 )

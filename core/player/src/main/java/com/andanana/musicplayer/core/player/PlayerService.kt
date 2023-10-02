@@ -6,7 +6,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.annotation.RequiresApi
-import com.andanana.musicplayer.core.player.repository.PlayerRepository
+import com.andanana.musicplayer.core.player.repository.PlayerController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class PlayerService : Service() {
 
     @Inject
-    lateinit var playerRepository: PlayerRepository
+    lateinit var playerController: PlayerController
 
     @Inject
     lateinit var smpNotificationManager: SmpNotificationManager
@@ -25,7 +25,7 @@ class PlayerService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        playerRepository.initialize()
+        playerController.initialize()
 
         mediaSession = MediaSessionCompat(this, MEDIA_SESSION)
 
@@ -40,7 +40,7 @@ class PlayerService : Service() {
     }
 
     override fun onDestroy() {
-        playerRepository.release()
+        playerController.release()
     }
 
     companion object {

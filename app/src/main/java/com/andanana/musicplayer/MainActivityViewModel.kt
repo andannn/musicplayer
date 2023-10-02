@@ -5,12 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.data.MediaStoreSource
-import com.andanana.musicplayer.core.database.usecases.FAVORITE_PLAY_LIST_ID
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
-import com.andanana.musicplayer.core.player.repository.PlayerRepository
+import com.andanana.musicplayer.core.data.model.MusicListType
+import com.andanana.musicplayer.core.player.repository.PlayerController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,10 +26,10 @@ private const val TAG = "MainActivityViewModel"
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val playerRepository: PlayerRepository,
+    private val playerController: PlayerController,
     private val mediaStoreSource: MediaStoreSource,
     private val useCases: PlayListUseCases
-) : ViewModel(), PlayerRepository by playerRepository {
+) : ViewModel(), PlayerController by playerController {
 
     private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
     val mainUiState = _mainUiState.asStateFlow()
@@ -40,7 +38,8 @@ class MainActivityViewModel @Inject constructor(
 
     val interactingUri = MutableStateFlow<Uri?>(null)
     private val interactingType = interactingUri.map {
-        it?.toRequestType()
+        null
+//        it?.toRequestType()
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -72,48 +71,48 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onDrawerItemClick(item: DrawerItem) {
-        val type = interactingUri.value!!.toRequestType()
-        when (item) {
-            DrawerItem.PLAY_NEXT -> {
-                val id = interactingUri.value!!.lastPathSegment!!.toLong()
-                onPlayNextClicked(id, type)
-            }
-
-            DrawerItem.ADD_TO_FAVORITE -> {
-                if (type == RequestType.MUSIC_REQUEST) {
-                    interactingUri.value?.lastPathSegment?.toLong()?.let {
-                        addMusicToFavorite(it)
-                    }
-
-                    clearInteractingUri()
-                }
-            }
-
-            DrawerItem.DELETE -> {
-                val id = interactingUri.value!!.lastPathSegment!!.toLong()
-                if (id == FAVORITE_PLAY_LIST_ID) {
-                    return
-                }
-                viewModelScope.launch {
-                    useCases.deletePlayList(id)
-                }
-            }
-
-            else -> {}
-        }
+//        val type = interactingUri.value!!.toRequestType()
+//        when (item) {
+//            DrawerItem.PLAY_NEXT -> {
+//                val id = interactingUri.value!!.lastPathSegment!!.toLong()
+//                onPlayNextClicked(id, type)
+//            }
+//
+//            DrawerItem.ADD_TO_FAVORITE -> {
+//                if (type == MusicListType.MUSIC_REQUEST) {
+//                    interactingUri.value?.lastPathSegment?.toLong()?.let {
+//                        addMusicToFavorite(it)
+//                    }
+//
+//                    clearInteractingUri()
+//                }
+//            }
+//
+//            DrawerItem.DELETE -> {
+//                val id = interactingUri.value!!.lastPathSegment!!.toLong()
+//                if (id == FAVORITE_PLAY_LIST_ID) {
+//                    return
+//                }
+//                viewModelScope.launch {
+//                    useCases.deletePlayList(id)
+//                }
+//            }
+//
+//            else -> {}
+//        }
     }
 
-    private fun onPlayNextClicked(id: Long, type: RequestType?) {
+    private fun onPlayNextClicked(id: Long, type: MusicListType?) {
         viewModelScope.launch {
             val uris = when (type) {
-                RequestType.ALBUM_REQUEST -> {
+                MusicListType.ALBUM_REQUEST -> {
 //                    mediaStoreSource.getMusicInfoByAlbumId(id).map { info ->
 //                        info.contentUri
 //                    }
                     emptyList<Uri>()
                 }
 
-                RequestType.ARTIST_REQUEST -> {
+                MusicListType.ARTIST_REQUEST -> {
 //                    mediaStoreSource.getMusicInfoByArtistId(id).map { info ->
 //                        info.contentUri
 //                    }
@@ -121,15 +120,7 @@ class MainActivityViewModel @Inject constructor(
 
                 }
 
-                RequestType.MUSIC_REQUEST -> {
-//                    mediaStoreSource.getMusicInfoById(id)?.contentUri?.let {
-//                        listOf(it)
-//                    } ?: emptyList()
-                    emptyList<Uri>()
-
-                }
-
-                RequestType.PLAYLIST_REQUEST -> {
+                MusicListType.PLAYLIST_REQUEST -> {
 //                    useCases.getMusicInPlayList(id).first().map {
 //                        Uri.withAppendedPath(
 //                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -142,18 +133,18 @@ class MainActivityViewModel @Inject constructor(
 
                 else -> emptyList()
             }
-            playerRepository.setPlayNext(uris)
+            playerController.setPlayNext(uris)
         }
     }
 
     fun onToggleFavorite(uri: Uri) {
-        uri.lastPathSegment?.toLong()?.let { mediaId ->
-            if (musicInFavorite.value.map { it.musicEntity.id }.contains(mediaId)) {
-                deleteMusicInFavorite(mediaId)
-            } else {
-                addMusicToFavorite(mediaId)
-            }
-        }
+//        uri.lastPathSegment?.toLong()?.let { mediaId ->
+//            if (musicInFavorite.value.map { it.musicEntity.id }.contains(mediaId)) {
+//                deleteMusicInFavorite(mediaId)
+//            } else {
+//                addMusicToFavorite(mediaId)
+//            }
+//        }
     }
 
     private fun deleteMusicInFavorite(mediaId: Long) {

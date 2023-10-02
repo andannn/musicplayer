@@ -25,7 +25,7 @@ fun MiniPlayerBox(
         onPlayControlButtonClick = playerStateViewModel::togglePlayState,
         onFavoriteButtonClick = {
             (playerUiState as? PlayerUiState.Active)?.let {
-                onToggleFavorite(it.musicInfo.contentUri)
+                onToggleFavorite(it.musicModel.contentUri)
             }
         },
         onPlayNextButtonClick = playerStateViewModel::next
@@ -45,11 +45,11 @@ private fun MiniPlayerBoxContent(
     if (state is PlayerUiState.Active) {
         MiniPlayerBox(
             modifier = modifier,
-            coverUri = state.musicInfo.albumUri,
+            coverUri = state.musicModel.albumUri.toString(),
             isPlaying = state.state == PlayState.PLAYING,
             isLoading = state.state == PlayState.LOADING,
-            title = state.musicInfo.title,
-            artist = state.musicInfo.artist,
+            title = state.musicModel.title,
+            artist = state.musicModel.artist,
             progress = state.progress,
             isFavorite = state.isFavorite,
             onPlayerSheetClick = onPlayerSheetClick,

@@ -1,9 +1,8 @@
 package com.andanana.musicplayer.core.datastore.repository
 
-import android.service.autofill.UserData
 import com.andanana.musicplayer.core.datastore.SmpPreferencesDataSource
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.UserSetting
+import com.andanana.musicplayer.core.data.model.PlayMode
+import com.andanana.musicplayer.core.data.model.UserSetting
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

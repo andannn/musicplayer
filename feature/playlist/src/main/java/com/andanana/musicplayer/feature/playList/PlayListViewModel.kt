@@ -5,18 +5,18 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.data.MediaStoreSource
-import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
-import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
-import com.andanana.musicplayer.core.player.repository.PlayerRepository
-import com.andanana.musicplayer.feature.playList.navigation.requestUriLastSegmentArg
-import com.andanana.musicplayer.feature.playList.navigation.requestUriTypeArg
+import com.andanana.musicplayer.core.data.model.MusicModel
+import com.andanana.musicplayer.core.data.model.MusicListType
+import com.andanana.musicplayer.core.data.repository.MusicRepository
+import com.andanana.musicplayer.core.player.repository.PlayerController
+import com.andanana.musicplayer.feature.playList.navigation.MusicListIdKey
+import com.andanana.musicplayer.feature.playList.navigation.MusicListTypeKey
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,28 +24,63 @@ private const val TAG = "PlayListViewModel"
 
 @HiltViewModel
 class PlayListViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val repository: MediaStoreSource,
-    private val playerRepository: PlayerRepository,
-    private val useCases: PlayListUseCases
-) : ViewModel(), PlayerRepository by playerRepository {
-    private val requestTypeFlow =
-        savedStateHandle.getStateFlow(requestUriTypeArg, RequestType.ARTIST_REQUEST)
-    private val requestUriLastSegmentFlow =
-        savedStateHandle.getStateFlow(requestUriLastSegmentArg, "")
+    savedStateHandle: SavedStateHandle,
+    private val playerController: PlayerController,
+    private val musicRepository: MusicRepository,
+) : ViewModel(), PlayerController by playerController {
+    private val musicListType =
+        savedStateHandle.get<MusicListType>(MusicListTypeKey) ?: MusicListType.ARTIST_REQUEST
+    private val musicListId =
+        savedStateHandle.get<Long>(MusicListIdKey) ?: -1
 
-    private val requestUri = combine(
-        requestTypeFlow,
-        requestUriLastSegmentFlow
-    ) { type, lastSegment ->
-        type.toUri(lastSegment)
-    }
-
-    private val _playListUiStateFlow = MutableStateFlow<PlayListUiState>(PlayListUiState.Loading)
+    private val _playListUiStateFlow = MutableStateFlow(PlayListUiState())
     val playListUiStateFlow = _playListUiStateFlow.asStateFlow()
 
-    private val playListReadyState
-        get() = _playListUiStateFlow.value as? PlayListUiState.Ready
+    init {
+        // update musics
+        viewModelScope.launch {
+            val musicsFLow: Flow<List<MusicModel>> = when (musicListType) {
+                MusicListType.ALBUM_REQUEST -> {
+                    musicRepository.getMusicsInAlbum(musicListId)
+                }
+
+                MusicListType.ARTIST_REQUEST -> {
+                    musicRepository.getMusicsInArtist(musicListId)
+                }
+
+                MusicListType.PLAYLIST_REQUEST -> {
+                    //TODO:
+                    musicRepository.getMusicsInAlbum(musicListId)
+                }
+            }
+            musicsFLow.distinctUntilChanged().collect { musics ->
+                _playListUiStateFlow.update { lastState ->
+                    lastState.copy(musicItems = musics)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            val title = ""
+            when (musicListType) {
+                MusicListType.ALBUM_REQUEST -> {
+                    musicRepository.getAlbumById(musicListId).title
+                }
+
+                MusicListType.ARTIST_REQUEST -> {
+                    musicRepository.getArtistById(musicListId).name
+                }
+
+                MusicListType.PLAYLIST_REQUEST -> {
+                    //TODO:
+                    musicRepository.getAlbumById(musicListId).title
+                }
+            }
+            _playListUiStateFlow.update { lastState ->
+                lastState.copy(title = title)
+            }
+        }
+    }
 
 //    init {
 //        viewModelScope.launch {
@@ -148,15 +183,12 @@ class PlayListViewModel @Inject constructor(
     }
 }
 
-sealed interface PlayListUiState {
-    object Loading : PlayListUiState
-    data class Ready(
-        val title: String = "",
-        val type: RequestType = RequestType.PLAYLIST_REQUEST,
-        val artCoverUri: String = "",
-        val trackCount: Int = 0,
-        val musicItems: List<MusicInfo> = emptyList(),
-        val interactingUri: Uri? = null,
-        val contentUri: Uri = Uri.EMPTY
-    ) : PlayListUiState
-}
+data class PlayListUiState(
+    val title: String = "",
+    val type: MusicListType = MusicListType.PLAYLIST_REQUEST,
+    val artCoverUri: String = "",
+    val trackCount: Int = 0,
+    val musicItems: List<MusicModel> = emptyList(),
+    val interactingUri: Uri? = null,
+    val contentUri: Uri = Uri.EMPTY
+)

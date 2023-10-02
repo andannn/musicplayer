@@ -5,9 +5,9 @@ import com.andanana.musicplayer.core.data.model.ArtistData
 import com.andanana.musicplayer.core.data.model.AudioData
 
 interface MediaStoreSource {
-    suspend fun getAllMusicInfo(): List<AudioData>
+    suspend fun getAllMusicData(): List<AudioData>
 
-    suspend fun getAllAlbumInfo(): List<AlbumData>
+    suspend fun getAllAlbumData(): List<AlbumData>
 
-    suspend fun getAllArtistInfo(): List<ArtistData>
+    suspend fun getAllArtistData(): List<ArtistData>
 }

@@ -1,0 +1,224 @@
+package com.andanana.musicplayer.core.player.repository
+
+import android.net.Uri
+import android.util.Log
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Timeline
+import com.andanana.musicplayer.core.data.model.PlayMode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
+
+private const val TAG = "PlayerRepositoryImpl"
+
+@Singleton
+class PlayerControllerImpl @Inject constructor(
+    private val player: Player
+) : PlayerController {
+
+    private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
+
+    private val playingMediaItemStateFlow = MutableStateFlow<Uri?>(null)
+
+    private val playListFlow = MutableStateFlow<List<Uri>>(emptyList())
+
+    private val playerListener = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            val state = when (playbackState) {
+                Player.STATE_IDLE -> PlayerState.Idle
+                Player.STATE_BUFFERING -> PlayerState.Buffering
+                Player.STATE_READY -> {
+                    if (player.isPlaying) {
+                        PlayerState.Playing(player.currentPosition)
+                    } else {
+                        PlayerState.Paused(player.currentPosition)
+                    }
+                }
+                Player.STATE_ENDED -> PlayerState.PlayBackEnd
+                else -> error("Impossible")
+            }
+
+            playerStateFlow.update { state }
+        }
+
+        override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+            Log.d(TAG, "onPlayWhenReadyChanged: $playWhenReady  reason $reason")
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            if (isPlaying) {
+                playerStateFlow.value = PlayerState.Playing(player.currentPosition)
+            } else {
+                val suppressed =
+                    player.playbackSuppressionReason != Player.PLAYBACK_SUPPRESSION_REASON_NONE
+                val playerError = player.playerError != null
+                if (player.playbackState == Player.STATE_READY && !suppressed && !playerError) {
+                    playerStateFlow.value = PlayerState.Paused(player.currentPosition)
+                }
+            }
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+// TODO: Define exception type and send back.
+            playerStateFlow.value = PlayerState.Error(error)
+        }
+
+        override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+            Log.d(
+                TAG,
+                "onMediaItemTransition: ${mediaItem?.localConfiguration?.uri}  reason $reason"
+            )
+            Log.d(
+                TAG,
+                "onMediaItemTransition: albumArtist ${mediaItem?.mediaMetadata?.albumArtist}  "
+            )
+            playingMediaItemStateFlow.value = mediaItem?.localConfiguration?.uri
+        }
+
+        override fun onPositionDiscontinuity(
+            oldPosition: Player.PositionInfo,
+            newPosition: Player.PositionInfo,
+            reason: Int
+        ) {
+            playerStateFlow.getAndUpdate { state ->
+                when (state) {
+                    is PlayerState.Playing -> {
+                        state.copy(currentPositionMs = newPosition.contentPositionMs)
+                    }
+                    is PlayerState.Paused -> {
+                        state.copy(currentPositionMs = newPosition.contentPositionMs)
+                    }
+                    else -> state
+                }
+            }
+        }
+
+        override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+            super.onTimelineChanged(timeline, reason)
+            Log.d(TAG, "onTimelineChanged: windowCount ${timeline.windowCount}")
+            Log.d(TAG, "onTimelineChanged: reason ${reason}")
+            Log.d(TAG, "onTimelineChanged: window at 0  ${timeline.getWindow(0, Timeline.Window())}")
+            MutableList(timeline.windowCount) { index ->
+                timeline.getWindow(index, Timeline.Window()).mediaItem.let { mediaItem ->
+                    mediaItem.localConfiguration?.uri ?: error("No valid uri")
+                }
+            }.also { uriList ->
+                Log.d(TAG, "onTimelineChanged: $uriList")
+                playListFlow.value = uriList.toList()
+            }
+        }
+    }
+
+    override val currentPositionMs: Long
+        get() = player.currentPosition
+
+    override val playerState: PlayerState
+        get() = playerStateFlow.value
+
+    override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
+    override fun observePlayListQueue(): Flow<List<Uri>> = playListFlow
+
+    override fun observePlayingUri(): Flow<Uri?> = playingMediaItemStateFlow
+
+    override fun seekToMediaIndex(index: Int) {
+        player.seekToDefaultPosition(index)
+    }
+
+    override fun play() {
+        player.play()
+    }
+
+    override fun setPlayNext(uris: List<Uri>) {
+        Log.d(TAG, "setPlayNext: $uris")
+        val playingIndex = playListFlow.value.indexOfFirst { it == playingMediaItemStateFlow.value }
+
+        if (playingIndex == -1) {
+            player.setMediaItems(
+                uris.map { MediaItem.fromUri(it) }
+            )
+            player.play()
+            return
+        }
+
+        uris.reversed().onEach { uri ->
+            val targetUriIndex = playListFlow.value.indexOfFirst {
+                it == uri
+            }
+            if (targetUriIndex != -1) {
+                // Already in play list.
+                player.moveMediaItem(
+                    /* currentIndex = */ targetUriIndex,
+                    /* newIndex = */ playingIndex + 1
+                )
+            } else {
+                player.addMediaItem(
+                    /* index = */ playingIndex + 1,
+                    /* mediaItem = */ MediaItem.fromUri(uri)
+                )
+            }
+        }
+    }
+
+    override fun pause() {
+        player.pause()
+    }
+
+    override fun next() {
+        player.seekToNextMediaItem()
+        player.play()
+    }
+
+    override fun seekTo(time: Int) {
+        player.seekTo(time.toLong())
+    }
+
+    override fun previous() {
+        player.seekToPreviousMediaItem()
+        player.play()
+    }
+
+    override fun initialize() {
+        player.prepare()
+        player.addListener(playerListener)
+        setRepeatMode(PlayMode.DefaultPlayMode)
+    }
+
+    override fun release() {
+        player.clearMediaItems()
+        player.removeListener(playerListener)
+        player.stop()
+        player.release()
+    }
+
+    override fun setRepeatMode(playMode: PlayMode) {
+        Log.d(TAG, "setRepeatMode: $playMode")
+        if (playMode == PlayMode.SHUFFLE) {
+            player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
+            player.shuffleModeEnabled = true
+        } else {
+            player.repeatMode = playMode.toExoPlayerMode()
+            player.shuffleModeEnabled = false
+        }
+    }
+
+    override fun setPlayListAndStartIndex(playList: List<Uri>, startIndex: Int) {
+        when {
+            playList != this.playListFlow.value -> {
+                // Play list changed.
+                player.setMediaItems(playList.map { MediaItem.fromUri(it) })
+                player.seekToDefaultPosition(startIndex)
+                player.play()
+            }
+            startIndex != playListFlow.value.indexOf(playingMediaItemStateFlow.value) -> {
+                // Play list is same but play item changed.
+                player.seekToDefaultPosition(startIndex)
+                player.play()
+            }
+        }
+    }
+}

@@ -17,13 +17,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.andanana.musicplayer.core.designsystem.Drawer
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
-import com.andanana.musicplayer.feature.playList.navigation.playListRoute
 import com.andanana.musicplayer.navigation.TopLevelDestination
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -117,17 +115,17 @@ class SimpleMusicAppState constructor(
 
     @OptIn(ExperimentalMaterialApi::class)
     fun showDrawerByUri(uri: Uri) {
-        drawer.value = when (val type = uri.toRequestType()) {
-            RequestType.MUSIC_REQUEST,
-            RequestType.ALBUM_REQUEST,
-            RequestType.ARTIST_REQUEST,
-            RequestType.PLAYLIST_REQUEST-> type.toDrawer()
-            else -> error("Invalid Type")
-        }
-        coroutineScope.launch {
-            drawerType.value = DrawerType.OPTION_LIST
-            drawerState.open()
-        }
+//        drawer.value = when (val type = uri.toRequestType()) {
+//            MusicListType.MUSIC_REQUEST,
+//            MusicListType.ALBUM_REQUEST,
+//            MusicListType.ARTIST_REQUEST,
+//            MusicListType.PLAYLIST_REQUEST-> type.toDrawer()
+//            else -> error("Invalid Type")
+//        }
+//        coroutineScope.launch {
+//            drawerType.value = DrawerType.OPTION_LIST
+//            drawerState.open()
+//        }
     }
 
     @OptIn(ExperimentalMaterialApi::class)
@@ -150,12 +148,11 @@ class SimpleMusicAppState constructor(
     }
 }
 
-fun RequestType.toDrawer(): Drawer {
+fun MusicListType.toDrawer(): Drawer {
     return when (this) {
-        RequestType.MUSIC_REQUEST -> Drawer.MusicDrawer
-        RequestType.ALBUM_REQUEST -> Drawer.AlbumDrawer
-        RequestType.ARTIST_REQUEST -> Drawer.ArtistDrawer
-        RequestType.PLAYLIST_REQUEST -> Drawer.PlayListDrawer
+        MusicListType.ALBUM_REQUEST -> Drawer.AlbumDrawer
+        MusicListType.ARTIST_REQUEST -> Drawer.ArtistDrawer
+        MusicListType.PLAYLIST_REQUEST -> Drawer.PlayListDrawer
         else -> error("Invalid Type")
     }
 }

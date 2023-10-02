@@ -39,7 +39,7 @@ import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
-import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.feature.player.util.getIconRes
 import java.text.SimpleDateFormat
 import kotlin.math.roundToInt
@@ -80,10 +80,10 @@ private fun PlayerScreen(
                 playMode = uiState.playMode,
                 isPlaying = uiState.state == PlayState.PLAYING,
                 isLoading = uiState.state == PlayState.LOADING,
-                coverArtUri = uiState.musicInfo.albumUri,
-                title = uiState.musicInfo.title,
-                subTitle = uiState.musicInfo.album,
-                duration = uiState.musicInfo.duration,
+                coverArtUri = uiState.musicModel.albumUri.toString(),
+                title = uiState.musicModel.title,
+                subTitle = uiState.musicModel.album,
+                duration = uiState.musicModel.duration,
                 onSeekToTime = onSeekToTime,
                 onPlayButtonClick = onPlayButtonClick,
                 onPreviousButtonClick = onPreviousButtonClick,

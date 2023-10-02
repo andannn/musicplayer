@@ -12,3 +12,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
+
+dependencies {
+    implementation(project(":core:mediastore"))
+}

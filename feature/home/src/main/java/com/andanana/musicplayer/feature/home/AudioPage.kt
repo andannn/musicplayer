@@ -42,17 +42,16 @@ private fun AudioPageContent(
         }
         is AudioPageUiState.Ready -> {
             val musicInfoList = state.infoList
-
             LazyColumn(
                 modifier = modifier
             ) {
                 items(
                     items = musicInfoList,
-                    key = { it.contentUri }
+                    key = { it.id }
                 ) { info ->
                     MusicCard(
                         modifier = Modifier.padding(horizontal = 5.dp, vertical = 4.dp),
-                        albumArtUri = info.albumUri,
+                        albumArtUri = info.albumUri.toString(),
                         title = info.title,
                         artist = info.artist,
                         date = info.modifiedDate,

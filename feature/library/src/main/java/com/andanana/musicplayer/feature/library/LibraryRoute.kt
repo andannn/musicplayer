@@ -18,8 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.TabRowAndPager
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toUri
 
 enum class LibraryPage(
     @StringRes val titleResId: Int
@@ -63,11 +61,11 @@ private fun LibraryScreen(
                     onNavigateToPlayScreen(playListItem.toUri())
                 },
                 onOptionButtonClick = { item ->
-                    onOptionButtonClick(
-                        RequestType.PLAYLIST_REQUEST.toUri(
-                            item.id.toString()
-                        )
-                    )
+//                    onOptionButtonClick(
+//                        MusicListType.PLAYLIST_REQUEST.toUri(
+//                            item.id.toString()
+//                        )
+//                    )
                 }
             )
         }

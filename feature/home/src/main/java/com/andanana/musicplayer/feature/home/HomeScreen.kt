@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.designsystem.component.TabRowAndPager
 
 private const val TAG = "HomeScreen"
@@ -18,7 +19,7 @@ private const val TAG = "HomeScreen"
 fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPlayList: (Uri) -> Unit,
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     HomeScreen(
@@ -33,7 +34,7 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onPlayMusicInList: (List<Uri>, Int) -> Unit,
-    onNavigateToPlayList: (Uri) -> Unit,
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     TabRowAndPager(

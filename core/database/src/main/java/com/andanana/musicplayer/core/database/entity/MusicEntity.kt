@@ -3,6 +3,7 @@ package com.andanana.musicplayer.core.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andanana.musicplayer.core.data.model.AudioData
 import com.andanana.musicplayer.core.database.Tables
 
 object MusicColumns {
@@ -39,13 +40,28 @@ data class MusicEntity(
     @ColumnInfo(name = MusicColumns.album)
     val album: String = "",
     @ColumnInfo(name = MusicColumns.albumId)
-    val albumId: Int = -1,
+    val albumId: Long = -1,
     @ColumnInfo(name = MusicColumns.artist)
     val artist: String = "",
     @ColumnInfo(name = MusicColumns.artistId)
-    val artistId: Int = -1,
+    val artistId: Long = -1,
     @ColumnInfo(name = MusicColumns.cdTrackNumber)
     val cdTrackNumber: Int = -1,
     @ColumnInfo(name = MusicColumns.discNumber)
     val discNumber: Int = -1
+)
+
+fun AudioData.asEntity(): MusicEntity = MusicEntity(
+    id = this.id,
+    title = this.title,
+    duration = this.duration,
+    modifiedDate = this.modifiedDate,
+    size = this.size,
+    mimeType = this.mimeType,
+    album = this.album,
+    albumId = this.albumId,
+    artist = this.artist,
+    artistId = this.artistId,
+    cdTrackNumber = this.cdTrackNumber,
+    discNumber = this.discNumberIndex
 )

@@ -12,14 +12,14 @@ class DeletePlayList @Inject constructor(
     suspend operator fun invoke(playListId: Long) {
         val allMusicInPlayList = musicDao.getPlayListWithMusics(playListId)?.musicEntities
             ?: emptyList()
-        playListDao.deleteMusicInPlaylist(
-            allMusicInPlayList.map {
-                PlayListMusicCrossRef(
-                    playListId = playListId,
-                    musicId = it.id
-                )
-            }
-        )
+//        playListDao.deleteMusicInPlaylist(
+//            allMusicInPlayList.map {
+//                PlayListMusicCrossRef(
+//                    playListId = playListId,
+//                    musicId = it.id
+//                )
+//            }
+//        )
         playListDao.deletePlaylist(
             playListId = playListId
         )

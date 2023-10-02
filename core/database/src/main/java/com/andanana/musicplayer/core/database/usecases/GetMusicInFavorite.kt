@@ -21,7 +21,7 @@ class GetMusicInFavorite @Inject constructor(
                 musics.map { music ->
                     val crossRef = getPlayListMusicCrossRef(
                         playList.playListId,
-                        musicId = music.id
+                        musicId = music.id.toLong()
                     )
                     MusicWithAddedTime(
                         musicEntity = music,

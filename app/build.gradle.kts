@@ -17,11 +17,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        signingConfig = signingConfigs.getByName("debug")
     }
 
     buildTypes {
-        val release by getting {
-            isMinifyEnabled = true
+        release {
+//            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -34,7 +35,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:mediastore"))
     implementation(project(":core:player"))
-    implementation(project(":core:model"))
+    implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:datastore"))
 

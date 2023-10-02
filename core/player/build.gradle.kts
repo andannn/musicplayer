@@ -12,7 +12,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
+    implementation(project(":core:data"))
 
     // Media3
     implementation(libs.media3.exoplayer)
