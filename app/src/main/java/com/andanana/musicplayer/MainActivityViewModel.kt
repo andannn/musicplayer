@@ -8,7 +8,7 @@ import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.data.model.MusicListType
-import com.andanana.musicplayer.core.player.repository.PlayerController
+import com.andanana.musicplayer.core.player.PlayerController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow

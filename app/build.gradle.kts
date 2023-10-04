@@ -47,6 +47,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
 
+    implementation(libs.kotlinx.coroutines.guava)
+
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.accompanist.systemuicontroller)
@@ -60,4 +62,8 @@ dependencies {
 
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material)
+
+    //Media3
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
 }

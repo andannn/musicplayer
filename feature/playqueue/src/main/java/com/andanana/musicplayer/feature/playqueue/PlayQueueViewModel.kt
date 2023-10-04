@@ -3,7 +3,7 @@ package com.andanana.musicplayer.feature.playqueue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.andanana.musicplayer.core.data.data.MediaStoreSource
-import com.andanana.musicplayer.core.player.repository.PlayerController
+import com.andanana.musicplayer.core.player.PlayerController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -22,5 +22,5 @@ class PlayQueueViewModel @Inject constructor(
 //            }
 //        }
 
-    val playingUriFlow = playerController.observePlayingUri()
+    val playingMediaFlow = playerController.observePlayingMedia()
 }

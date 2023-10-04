@@ -31,11 +31,11 @@ internal fun PlayQueueScreen(
     playQueueViewModel: PlayQueueViewModel = hiltViewModel()
 ) {
 //    val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
-    val playingUri by playQueueViewModel.playingUriFlow.collectAsState(null)
+    val playingMedia by playQueueViewModel.playingMediaFlow.collectAsState(null)
 
     PlayQueueScreenContent(
         queueList = emptyList(),
-        playingUri = playingUri
+        playingUri = playingMedia?.localConfiguration?.uri
     )
 }
 

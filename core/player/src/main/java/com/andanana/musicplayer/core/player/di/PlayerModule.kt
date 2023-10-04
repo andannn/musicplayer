@@ -3,8 +3,8 @@ package com.andanana.musicplayer.core.player.di
 import android.app.Application
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.andanana.musicplayer.core.player.repository.PlayerController
-import com.andanana.musicplayer.core.player.repository.PlayerControllerImpl
+import com.andanana.musicplayer.core.player.PlayerController
+import com.andanana.musicplayer.core.player.PlayerControllerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

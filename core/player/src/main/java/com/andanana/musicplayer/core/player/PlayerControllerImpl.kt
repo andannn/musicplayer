@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.player.repository
+package com.andanana.musicplayer.core.player
 
 import android.net.Uri
 import android.util.Log
@@ -23,9 +23,9 @@ class PlayerControllerImpl @Inject constructor(
 
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
-    private val playingMediaItemStateFlow = MutableStateFlow<Uri?>(null)
+    private val playingMediaItemStateFlow = MutableStateFlow<MediaItem?>(null)
 
-    private val playListFlow = MutableStateFlow<List<Uri>>(emptyList())
+    private val playListFlow = MutableStateFlow<List<MediaItem>>(emptyList())
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
@@ -73,11 +73,7 @@ class PlayerControllerImpl @Inject constructor(
                 TAG,
                 "onMediaItemTransition: ${mediaItem?.localConfiguration?.uri}  reason $reason"
             )
-            Log.d(
-                TAG,
-                "onMediaItemTransition: albumArtist ${mediaItem?.mediaMetadata?.albumArtist}  "
-            )
-            playingMediaItemStateFlow.value = mediaItem?.localConfiguration?.uri
+            playingMediaItemStateFlow.value = mediaItem
         }
 
         override fun onPositionDiscontinuity(
@@ -100,16 +96,11 @@ class PlayerControllerImpl @Inject constructor(
 
         override fun onTimelineChanged(timeline: Timeline, reason: Int) {
             super.onTimelineChanged(timeline, reason)
-            Log.d(TAG, "onTimelineChanged: windowCount ${timeline.windowCount}")
-            Log.d(TAG, "onTimelineChanged: reason ${reason}")
-            Log.d(TAG, "onTimelineChanged: window at 0  ${timeline.getWindow(0, Timeline.Window())}")
+
             MutableList(timeline.windowCount) { index ->
-                timeline.getWindow(index, Timeline.Window()).mediaItem.let { mediaItem ->
-                    mediaItem.localConfiguration?.uri ?: error("No valid uri")
-                }
-            }.also { uriList ->
-                Log.d(TAG, "onTimelineChanged: $uriList")
-                playListFlow.value = uriList.toList()
+                timeline.getWindow(index, Timeline.Window()).mediaItem
+            }.also { mediaItems ->
+                playListFlow.value = mediaItems.toList()
             }
         }
     }
@@ -121,9 +112,10 @@ class PlayerControllerImpl @Inject constructor(
         get() = playerStateFlow.value
 
     override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
-    override fun observePlayListQueue(): Flow<List<Uri>> = playListFlow
 
-    override fun observePlayingUri(): Flow<Uri?> = playingMediaItemStateFlow
+    override fun observePlayListQueue(): Flow<List<MediaItem>> = playListFlow
+
+    override fun observePlayingMedia(): Flow<MediaItem?> = playingMediaItemStateFlow
 
     override fun seekToMediaIndex(index: Int) {
         player.seekToDefaultPosition(index)
@@ -134,34 +126,34 @@ class PlayerControllerImpl @Inject constructor(
     }
 
     override fun setPlayNext(uris: List<Uri>) {
-        Log.d(TAG, "setPlayNext: $uris")
-        val playingIndex = playListFlow.value.indexOfFirst { it == playingMediaItemStateFlow.value }
-
-        if (playingIndex == -1) {
-            player.setMediaItems(
-                uris.map { MediaItem.fromUri(it) }
-            )
-            player.play()
-            return
-        }
-
-        uris.reversed().onEach { uri ->
-            val targetUriIndex = playListFlow.value.indexOfFirst {
-                it == uri
-            }
-            if (targetUriIndex != -1) {
-                // Already in play list.
-                player.moveMediaItem(
-                    /* currentIndex = */ targetUriIndex,
-                    /* newIndex = */ playingIndex + 1
-                )
-            } else {
-                player.addMediaItem(
-                    /* index = */ playingIndex + 1,
-                    /* mediaItem = */ MediaItem.fromUri(uri)
-                )
-            }
-        }
+//        Log.d(TAG, "setPlayNext: $uris")
+//        val playingIndex = playListFlow.value.indexOfFirst { it == playingMediaItemStateFlow.value }
+//
+//        if (playingIndex == -1) {
+//            player.setMediaItems(
+//                uris.map { MediaItem.fromUri(it) }
+//            )
+//            player.play()
+//            return
+//        }
+//
+//        uris.reversed().onEach { uri ->
+//            val targetUriIndex = playListFlow.value.indexOfFirst {
+//                it == uri
+//            }
+//            if (targetUriIndex != -1) {
+//                // Already in play list.
+//                player.moveMediaItem(
+//                    /* currentIndex = */ targetUriIndex,
+//                    /* newIndex = */ playingIndex + 1
+//                )
+//            } else {
+//                player.addMediaItem(
+//                    /* index = */ playingIndex + 1,
+//                    /* mediaItem = */ MediaItem.fromUri(uri)
+//                )
+//            }
+//        }
     }
 
     override fun pause() {
@@ -206,11 +198,11 @@ class PlayerControllerImpl @Inject constructor(
         }
     }
 
-    override fun setPlayListAndStartIndex(playList: List<Uri>, startIndex: Int) {
+    override fun setPlayListAndStartIndex(playList: List<MediaItem>, startIndex: Int) {
         when {
             playList != this.playListFlow.value -> {
                 // Play list changed.
-                player.setMediaItems(playList.map { MediaItem.fromUri(it) })
+                player.setMediaItems(playList)
                 player.seekToDefaultPosition(startIndex)
                 player.play()
             }

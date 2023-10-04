@@ -1,16 +1,22 @@
-package com.andanana.musicplayer.core.player.repository
+package com.andanana.musicplayer.core.player
 
 import android.net.Uri
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import com.andanana.musicplayer.core.data.model.PlayMode
 import kotlinx.coroutines.flow.Flow
 
 sealed interface PlayerState {
     object Idle : PlayerState
+
     object Buffering : PlayerState
+
     data class Playing(val currentPositionMs: Long) : PlayerState
+
     data class Paused(val currentPositionMs: Long) : PlayerState
+
     object PlayBackEnd : PlayerState
+
     data class Error(val throwable: Throwable) : PlayerState
 }
 
@@ -23,19 +29,34 @@ fun PlayMode.toExoPlayerMode() = when (this) {
 
 interface PlayerController {
     val currentPositionMs: Long
+
     val playerState: PlayerState
+
     fun observePlayerState(): Flow<PlayerState>
-    fun observePlayListQueue(): Flow<List<Uri>>
-    fun observePlayingUri(): Flow<Uri?>
-    fun setPlayListAndStartIndex(playList: List<Uri>, startIndex: Int)
+
+    fun observePlayListQueue(): Flow<List<MediaItem>>
+
+    fun observePlayingMedia(): Flow<MediaItem?>
+
+    fun setPlayListAndStartIndex(playList: List<MediaItem>, startIndex: Int)
+
     fun seekToMediaIndex(index: Int)
+
     fun play()
+
     fun setPlayNext(uris: List<Uri>)
+
     fun pause()
+
     fun next()
+
     fun seekTo(time: Int)
+
     fun previous()
+
     fun initialize()
+
     fun release()
+
     fun setRepeatMode(playMode: PlayMode)
 }

@@ -21,7 +21,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.MusicPlayer.Splash">
             <intent-filter>
@@ -36,10 +35,12 @@
         </activity>
 
         <service
-            android:name="com.andanana.musicplayer.core.player.PlayerService"
+            android:name="com.andanana.musicplayer.PlayerService"
+            android:foregroundServiceType="mediaPlayback"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="androidx.media3.session.MediaSessionService"/>
+                <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
     </application>

@@ -26,11 +26,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
-import com.andanana.musicplayer.core.data.model.MusicModel
 import com.andanana.musicplayer.core.data.model.MusicListType
 
 private const val TAG = "PlayListScreen"
@@ -64,7 +64,7 @@ private fun PlayListScreenContent(
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<Uri>, Int) -> Unit,
+    onAudioItemClick: (List<MediaItem>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onShowPlayListItemOption: (Uri) -> Unit
 ) {
@@ -90,11 +90,11 @@ private fun PlayListContent(
     type: MusicListType,
     title: String,
     activeMusic: Uri?,
-    musicItems: List<MusicModel>,
+    musicItems: List<MediaItem>,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<Uri>, Int) -> Unit,
+    onAudioItemClick: (List<MediaItem>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onOptionButtonClick: () -> Unit
 ) {
@@ -126,11 +126,11 @@ private fun PlayListContent(
     ) {
         Column {
             Surface {
-                val imageUri = remember(coverArtUri, musicItems) {
-                    coverArtUri.ifBlank {
-                        musicItems.firstOrNull()?.albumUri ?: ""
-                    }
-                }
+//                val imageUri = remember(coverArtUri, musicItems) {
+//                    coverArtUri.ifBlank {
+//                        musicItems.firstOrNull()?.albumUri ?: ""
+//                    }
+//                }
 
                 PlayListControlBox(
                     modifier = Modifier.padding(20.dp),
@@ -150,27 +150,27 @@ private fun PlayListContent(
             ) {
                 items(
                     items = musicItems,
-                    key = { it.contentUri }
-                ) { info ->
+                    key = { it }
+                ) { item ->
                     MusicCard(
                         modifier = Modifier
                             .padding(vertical = 4.dp)
                             .animateItemPlacement(),
-                        isActive = activeMusic == info.contentUri,
-                        albumArtUri = info.albumUri.toString(),
-                        title = info.title,
+                        isActive = activeMusic == item.localConfiguration?.uri,
+                        albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                        title = item.mediaMetadata.title.toString(),
                         showTrackNum = type == MusicListType.ALBUM_REQUEST,
-                        artist = info.artist,
-                        trackNum = info.cdTrackNumber,
-                        date = info.modifiedDate,
+                        artist = item.mediaMetadata.artist.toString(),
+                        trackNum = item.mediaMetadata.trackNumber ?: 0,
+                        date = -1,
                         onMusicItemClick = {
                             onAudioItemClick(
-                                musicItems.map { it.contentUri },
-                                musicItems.indexOf(info)
+                                musicItems,
+                                musicItems.indexOf(item)
                             )
                         },
                         onOptionButtonClick = {
-                            onShowMusicItemOption(info.contentUri)
+                            item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
                         }
                     )
                 }

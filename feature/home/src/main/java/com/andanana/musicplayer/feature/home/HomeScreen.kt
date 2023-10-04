@@ -24,7 +24,8 @@ fun HomeRoute(
 ) {
     HomeScreen(
         modifier = modifier,
-        onPlayMusicInList = homeViewModel::setPlayListAndStartIndex,
+//        onPlayMusicInList = homeViewModel::setPlayListAndStartIndex,
+        onPlayMusicInList =  {_, _ ->},
         onNavigateToPlayList = onNavigateToPlayList,
         onShowMusicItemOption = onShowMusicItemOption
     )

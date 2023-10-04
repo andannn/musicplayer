@@ -5,10 +5,11 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.data.model.MusicModel
 import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.data.repository.MusicRepository
-import com.andanana.musicplayer.core.player.repository.PlayerController
+import com.andanana.musicplayer.core.player.PlayerController
 import com.andanana.musicplayer.feature.playList.navigation.MusicListIdKey
 import com.andanana.musicplayer.feature.playList.navigation.MusicListTypeKey
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,19 +41,20 @@ class PlayListViewModel @Inject constructor(
     init {
         // update musics
         viewModelScope.launch {
-            val musicsFLow: Flow<List<MusicModel>> = when (musicListType) {
-                MusicListType.ALBUM_REQUEST -> {
-                    musicRepository.getMusicsInAlbum(musicListId)
-                }
-
-                MusicListType.ARTIST_REQUEST -> {
-                    musicRepository.getMusicsInArtist(musicListId)
-                }
-
-                MusicListType.PLAYLIST_REQUEST -> {
-                    //TODO:
-                    musicRepository.getMusicsInAlbum(musicListId)
-                }
+            val musicsFLow: Flow<List<MediaItem>> = when (musicListType) {
+//                MusicListType.ALBUM_REQUEST -> {
+//                    musicRepository.getMusicsInAlbum(musicListId)
+//                }
+//
+//                MusicListType.ARTIST_REQUEST -> {
+//                    musicRepository.getMusicsInArtist(musicListId)
+//                }
+//
+//                MusicListType.PLAYLIST_REQUEST -> {
+//                    //TODO:
+//                    musicRepository.getMusicsInAlbum(musicListId)
+//                }
+                else -> flowOf(emptyList())
             }
             musicsFLow.distinctUntilChanged().collect { musics ->
                 _playListUiStateFlow.update { lastState ->
@@ -188,7 +191,7 @@ data class PlayListUiState(
     val type: MusicListType = MusicListType.PLAYLIST_REQUEST,
     val artCoverUri: String = "",
     val trackCount: Int = 0,
-    val musicItems: List<MusicModel> = emptyList(),
+    val musicItems: List<MediaItem> = emptyList(),
     val interactingUri: Uri? = null,
     val contentUri: Uri = Uri.EMPTY
 )

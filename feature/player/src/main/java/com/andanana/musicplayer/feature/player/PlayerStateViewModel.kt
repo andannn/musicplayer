@@ -8,8 +8,8 @@ import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.data.model.MusicModel
 import com.andanana.musicplayer.core.data.model.PlayMode
-import com.andanana.musicplayer.core.player.repository.PlayerController
-import com.andanana.musicplayer.core.player.repository.PlayerState
+import com.andanana.musicplayer.core.player.PlayerController
+import com.andanana.musicplayer.core.player.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
