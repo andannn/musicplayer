@@ -6,8 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.feature.library.dialog.PlayListDialog
 
 const val addPlayListDialogRoute = "play_list_dialog_route"
@@ -15,7 +14,7 @@ const val requestUriLastSegmentArg = "request_uri_lastSegment"
 const val requestUriTypeArg = "request_play_list_uri"
 
 fun NavController.navigateToAddPlayListDialog(uri: Uri) {
-    this.navigate("$addPlayListDialogRoute/${uri.lastPathSegment}/${uri.toRequestType()}")
+//    this.navigate("$addPlayListDialogRoute/${uri.lastPathSegment}/${uri.toRequestType()}")
 }
 
 fun NavGraphBuilder.addPlayListDialog(
@@ -29,7 +28,7 @@ fun NavGraphBuilder.addPlayListDialog(
                 type = NavType.StringType
             },
             navArgument(name = requestUriTypeArg) {
-                type = NavType.EnumType(RequestType::class.java)
+                type = NavType.EnumType(MusicListType::class.java)
             }
         )
     ) {

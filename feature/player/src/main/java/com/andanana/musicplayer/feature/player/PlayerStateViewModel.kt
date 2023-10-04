@@ -3,20 +3,22 @@ package com.andanana.musicplayer.feature.player
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.repository.LocalMusicRepository
+import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
-import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.player.repository.PlayerRepository
+import com.andanana.musicplayer.core.data.model.MusicModel
+import com.andanana.musicplayer.core.data.model.PlayMode
+import com.andanana.musicplayer.core.player.repository.PlayerController
 import com.andanana.musicplayer.core.player.repository.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,38 +28,39 @@ private const val TAG = "PlayerStateViewModel"
 
 @HiltViewModel
 class PlayerStateViewModel @Inject constructor(
-    private val playerRepository: PlayerRepository,
-    private val localMusicRepository: LocalMusicRepository,
+    private val playerController: PlayerController,
+    private val mediaStoreSource: MediaStoreSource,
     private val smpPreferenceRepository: SmpPreferenceRepository,
     private val useCases: PlayListUseCases
 ) : ViewModel() {
 
-    private val interactingMusicItem: StateFlow<MusicInfo?> =
-        playerRepository.observePlayingUri()
-            .map { uri ->
-                uri?.lastPathSegment?.toLong()?.let {
-                    localMusicRepository.getMusicInfoById(it)
-                }
-            }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    private val interactingMusicItem: StateFlow<MusicModel?> = MutableStateFlow(null)
+//        playerRepository.observePlayingUri()
+//            .map { uri ->
+//                uri?.lastPathSegment?.toLong()?.let {
+//                    localMusicRepository.getMusicInfoById(it)
+//                }
+//            }
+//            .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val playModeFlow = smpPreferenceRepository.userData
         .map { it.playMode }
 
     private val musicInFavorite = useCases.getMusicInFavorite.invoke()
-    private val isCurrentMusicFavorite = combine(
-        playerRepository.observePlayingUri(),
-        musicInFavorite
-    ) { playingUri, favoriteList ->
-        favoriteList.map {
-            it.music.mediaStoreId
-        }.contains(playingUri?.lastPathSegment?.toLong())
-    }
+    private val isCurrentMusicFavorite = flowOf(false)
+//        combine(
+//        playerRepository.observePlayingUri(),
+//        musicInFavorite
+//    ) { playingUri, favoriteList ->
+//        favoriteList.map {
+//            it.musicEntity.id
+//        }.contains(playingUri?.lastPathSegment?.toLong())
+//    }
     private val updateProgressEventFlow = MutableSharedFlow<Unit>()
     val playerUiStateFlow =
         combine(
             interactingMusicItem,
-            playerRepository.observePlayerState(),
+            playerController.observePlayerState(),
             playModeFlow,
             isCurrentMusicFavorite,
             updateProgressEventFlow
@@ -66,8 +69,8 @@ class PlayerStateViewModel @Inject constructor(
                 PlayerUiState.Inactive
             } else {
                 PlayerUiState.Active(
-                    musicInfo = interactingMusicItem,
-                    progress = playerRepository.currentPositionMs.div(interactingMusicItem.duration.toFloat()),
+                    musicModel = interactingMusicItem,
+                    progress = playerController.currentPositionMs.div(interactingMusicItem.duration.toFloat()),
                     playMode = playMode,
                     isFavorite = isCurrentMusicFavorite,
                     state = when (state) {
@@ -103,11 +106,11 @@ class PlayerStateViewModel @Inject constructor(
         }
         viewModelScope.launch {
             playModeFlow.collect { playMode ->
-                playerRepository.setRepeatMode(playMode)
+                playerController.setRepeatMode(playMode)
             }
         }
         viewModelScope.launch {
-            playerRepository.observePlayerState().collect { state ->
+            playerController.observePlayerState().collect { state ->
                 when (state) {
                     is PlayerState.Playing -> {
                         coroutineTicker.startTicker()
@@ -125,8 +128,8 @@ class PlayerStateViewModel @Inject constructor(
         if (state is PlayerUiState.Active) {
             playerUiStateFlow.value.let {
                 when (state.state) {
-                    PlayState.PAUSED -> playerRepository.play()
-                    PlayState.PLAYING -> playerRepository.pause()
+                    PlayState.PAUSED -> playerController.play()
+                    PlayState.PLAYING -> playerController.pause()
                     else -> Unit
                 }
             }
@@ -134,15 +137,15 @@ class PlayerStateViewModel @Inject constructor(
     }
 
     fun next() {
-        playerRepository.next()
+        playerController.next()
     }
 
     fun previous() {
-        playerRepository.previous()
+        playerController.previous()
     }
 
     fun onSeekToTime(time: Int) {
-        playerRepository.seekTo(time)
+        playerController.seekTo(time)
     }
 
     fun changePlayMode() {
@@ -163,7 +166,7 @@ sealed class PlayerUiState {
         val progress: Float = 0f,
         val isFavorite: Boolean = false,
         val playMode: PlayMode = PlayMode.REPEAT_ALL,
-        val musicInfo: MusicInfo
+        val musicModel: MusicModel
     ) : PlayerUiState()
 }
 

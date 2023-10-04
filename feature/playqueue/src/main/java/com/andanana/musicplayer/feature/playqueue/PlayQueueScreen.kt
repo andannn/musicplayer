@@ -24,17 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
-import com.andanana.musicplayer.core.model.MusicInfo
+import com.andanana.musicplayer.core.data.model.MusicModel
 
 @Composable
 internal fun PlayQueueScreen(
     playQueueViewModel: PlayQueueViewModel = hiltViewModel()
 ) {
-    val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
+//    val queueList by playQueueViewModel.playQueueFlow.collectAsState(initial = emptyList())
     val playingUri by playQueueViewModel.playingUriFlow.collectAsState(null)
 
     PlayQueueScreenContent(
-        queueList = queueList,
+        queueList = emptyList(),
         playingUri = playingUri
     )
 }
@@ -42,7 +42,7 @@ internal fun PlayQueueScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PlayQueueScreenContent(
-    queueList: List<MusicInfo>,
+    queueList: List<MusicModel>,
     playingUri: Uri?
 ) {
     LazyColumn(
@@ -74,7 +74,7 @@ private fun PlayQueueScreenContent(
                 modifier = Modifier
                     .padding(vertical = 4.dp)
                     .animateItemPlacement(),
-                albumArtUri = info.albumUri,
+                albumArtUri = info.albumUri.toString(),
                 isActive = playingUri == info.contentUri,
                 title = info.title,
                 showTrackNum = false,

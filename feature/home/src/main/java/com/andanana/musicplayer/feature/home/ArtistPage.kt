@@ -16,13 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.designsystem.component.ArtistCard
 
 @Composable
 fun ArtistPage(
     modifier: Modifier = Modifier,
     artistPageViewModel: ArtistPageViewModel = hiltViewModel(),
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
 ) {
     val state by artistPageViewModel.artistPageUiState.collectAsState()
     AlbumPageContent(
@@ -32,12 +33,11 @@ fun ArtistPage(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumPageContent(
     modifier: Modifier = Modifier,
     state: ArtistPageUiState,
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
 ) {
     when (state) {
         ArtistPageUiState.Loading -> {
@@ -58,11 +58,11 @@ private fun AlbumPageContent(
                 ) { info ->
                     ArtistCard(
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                        artistUri = info.artistCoverUri,
+                        artistUri = info.artistUri,
                         name = info.name,
                         trackCount = info.trackCount,
                         onClick = {
-                            onNavigateToPlayList.invoke(info.artistUri)
+                            onNavigateToPlayList.invoke(info.artistId, MusicListType.ARTIST_REQUEST)
                         }
                     )
                 }

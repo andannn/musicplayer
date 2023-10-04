@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.andanana.musicplayer.core.data.test", appContext.packageName)
+        assertEquals("com.andanana.musicplayer.core.model.test", appContext.packageName)
     }
 }

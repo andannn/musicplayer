@@ -6,21 +6,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.model.RequestType
-import com.andanana.musicplayer.core.model.RequestType.Companion.toRequestType
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.feature.playList.PlayListScreen
 
 private const val TAG = "PlayListNavigation"
 
-const val playListRoute = "play_list_route"
-const val requestUriTypeArg = "request_play_list_uri"
-const val requestUriLastSegmentArg = "request_play_list_lastSegment"
+const val MusicListRoute = "music_list_route"
+const val MusicListTypeKey = "music_list_type"
+const val MusicListIdKey = "music_list_id"
 
-fun NavController.navigateToPlayList(uri: Uri) {
-    uri.toRequestType()?.let { type ->
-        this.navigate("$playListRoute/${uri.lastPathSegment}/$type")
-    }
+fun NavController.navigateToPlayList(musicListId: Long, musicListType: MusicListType) {
+        this.navigate("$MusicListRoute/$musicListId/$musicListType")
 }
 
 fun NavGraphBuilder.playListScreen(
@@ -28,13 +24,13 @@ fun NavGraphBuilder.playListScreen(
     onBackPressed: () -> Unit
 ) {
     composable(
-        route = "$playListRoute/{$requestUriLastSegmentArg}/{$requestUriTypeArg}",
+        route = "$MusicListRoute/{$MusicListIdKey}/{$MusicListTypeKey}",
         arguments = listOf(
-            navArgument(name = requestUriLastSegmentArg) {
-                type = NavType.StringType
+            navArgument(name = MusicListIdKey) {
+                type = NavType.LongType
             },
-            navArgument(name = requestUriTypeArg) {
-                type = NavType.EnumType(RequestType::class.java)
+            navArgument(name = MusicListTypeKey) {
+                type = NavType.EnumType(MusicListType::class.java)
             }
         )
     ) {

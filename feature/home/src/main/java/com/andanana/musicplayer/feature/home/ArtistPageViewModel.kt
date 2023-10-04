@@ -1,13 +1,13 @@
 package com.andanana.musicplayer.feature.home
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.model.ArtistInfo
-import com.andanana.musicplayer.feature.home.usecase.GetAllArtist
+import com.andanana.musicplayer.core.data.model.ArtistModel
+import com.andanana.musicplayer.core.data.repository.MusicRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,8 +16,7 @@ private const val TAG = "ArtistPageViewModel"
 
 @HiltViewModel
 class ArtistPageViewModel @Inject constructor(
-    private val getAllArtist: GetAllArtist,
-    private val savedStateHandle: SavedStateHandle
+    musicRepository: MusicRepository
 ) : ViewModel() {
 
     private val _artistPageUiState = MutableStateFlow<ArtistPageUiState>(ArtistPageUiState.Loading)
@@ -25,15 +24,18 @@ class ArtistPageViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val artists = getAllArtist.invoke()
-            _artistPageUiState.update {
-                ArtistPageUiState.Ready(artists)
-            }
+            musicRepository.getAllArtists()
+                .distinctUntilChanged()
+                .collect { artistModels ->
+                    _artistPageUiState.update {
+                        ArtistPageUiState.Ready(artistModels)
+                    }
+                }
         }
     }
 }
 
 sealed interface ArtistPageUiState {
     object Loading : ArtistPageUiState
-    data class Ready(val infoList: List<ArtistInfo>) : ArtistPageUiState
+    data class Ready(val infoList: List<ArtistModel>) : ArtistPageUiState
 }

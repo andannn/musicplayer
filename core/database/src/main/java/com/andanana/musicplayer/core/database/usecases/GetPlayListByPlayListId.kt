@@ -1,7 +1,6 @@
 package com.andanana.musicplayer.core.database.usecases
 
 import com.andanana.musicplayer.core.database.dao.PlayListDao
-import com.andanana.musicplayer.core.database.entity.PlayList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

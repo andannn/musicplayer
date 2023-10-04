@@ -1,7 +1,5 @@
 package com.andanana.musicplayer.feature.home
 
-import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.designsystem.component.AlbumCard
 
 private const val TAG = "AlbumPage"
@@ -24,7 +23,7 @@ private const val TAG = "AlbumPage"
 fun AlbumPage(
     modifier: Modifier = Modifier,
     albumPageViewModel: AlbumPageViewModel = hiltViewModel(),
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
 ) {
     val state by albumPageViewModel.albumPageUiState.collectAsState()
 
@@ -35,12 +34,11 @@ fun AlbumPage(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumPageContent(
     modifier: Modifier = Modifier,
     state: AlbumPageUiState,
-    onNavigateToPlayList: (Uri) -> Unit
+    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
 ) {
     when (state) {
         AlbumPageUiState.Loading -> {
@@ -65,7 +63,7 @@ private fun AlbumPageContent(
                         title = info.title,
                         trackCount = info.trackCount,
                         onClick = {
-                            onNavigateToPlayList.invoke(info.albumUri)
+                            onNavigateToPlayList.invoke(info.albumId, MusicListType.ALBUM_REQUEST)
                         }
                     )
                 }

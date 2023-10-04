@@ -15,16 +15,16 @@ class GetMusicInFavorite @Inject constructor(
 ) {
     operator fun invoke(): Flow<List<MusicWithAddedTime>> {
         return musicDao.getPlayListWithMusicsFlow(FAVORITE_PLAY_LIST_ID).map {
-            val playList = it?.playList
-            val musics = it?.musics ?: emptyList()
+            val playList = it?.playListEntity
+            val musics = it?.musicEntities ?: emptyList()
             playList?.let { playList ->
                 musics.map { music ->
                     val crossRef = getPlayListMusicCrossRef(
                         playList.playListId,
-                        musicId = music.mediaStoreId
+                        musicId = music.id.toLong()
                     )
                     MusicWithAddedTime(
-                        music = music,
+                        musicEntity = music,
                         musicAddedDate = crossRef.musicAddedDate
                     )
                 }

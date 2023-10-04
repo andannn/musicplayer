@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.designsystem.component
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -19,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+
+private const val TAG = "AlbumCard"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

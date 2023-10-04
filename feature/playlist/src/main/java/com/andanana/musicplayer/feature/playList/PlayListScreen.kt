@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -33,8 +30,8 @@ import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMinHeight
 import com.andanana.musicplayer.core.designsystem.component.PlayListControlBox
-import com.andanana.musicplayer.core.model.MusicInfo
-import com.andanana.musicplayer.core.model.RequestType
+import com.andanana.musicplayer.core.data.model.MusicModel
+import com.andanana.musicplayer.core.data.model.MusicListType
 
 private const val TAG = "PlayListScreen"
 
@@ -49,12 +46,12 @@ fun PlayListScreen(
     PlayListScreenContent(
         uiState = uiState,
         onPlayAllButtonClick = {
-            (uiState as? PlayListUiState.Ready)?.let {
-                playListViewModel.setPlayListAndStartIndex(
-                    it.musicItems.map { it.contentUri },
-                    0
-                )
-            }
+//            (uiState as? PlayListUiState.Ready)?.let {
+//                playListViewModel.setPlayListAndStartIndex(
+//                    it.musicItems.map { it.contentUri },
+//                    0
+//                )
+//            }
         },
         onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
         onShowMusicItemOption = onShowMusicItemOption,
@@ -71,27 +68,18 @@ private fun PlayListScreenContent(
     onShowMusicItemOption: (Uri) -> Unit,
     onShowPlayListItemOption: (Uri) -> Unit
 ) {
-    when (uiState) {
-        PlayListUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-        }
-        is PlayListUiState.Ready -> {
-            PlayListContent(
-                coverArtUri = uiState.artCoverUri,
-                type = uiState.type,
-                title = uiState.title,
-                activeMusic = uiState.interactingUri,
-                musicItems = uiState.musicItems,
-                trackCount = uiState.trackCount,
-                onPlayAllButtonClick = onPlayAllButtonClick,
-                onAudioItemClick = onAudioItemClick,
-                onShowMusicItemOption = onShowMusicItemOption,
-                onOptionButtonClick = { onShowPlayListItemOption(uiState.contentUri) }
-            )
-        }
-    }
+    PlayListContent(
+        coverArtUri = uiState.artCoverUri,
+        type = uiState.type,
+        title = uiState.title,
+        activeMusic = uiState.interactingUri,
+        musicItems = uiState.musicItems,
+        trackCount = uiState.trackCount,
+        onPlayAllButtonClick = onPlayAllButtonClick,
+        onAudioItemClick = onAudioItemClick,
+        onShowMusicItemOption = onShowMusicItemOption,
+        onOptionButtonClick = { onShowPlayListItemOption(uiState.contentUri) }
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -99,10 +87,10 @@ private fun PlayListScreenContent(
 private fun PlayListContent(
     modifier: Modifier = Modifier,
     coverArtUri: String,
-    type: RequestType,
+    type: MusicListType,
     title: String,
     activeMusic: Uri?,
-    musicItems: List<MusicInfo>,
+    musicItems: List<MusicModel>,
     trackCount: Int,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
@@ -147,7 +135,7 @@ private fun PlayListContent(
                 PlayListControlBox(
                     modifier = Modifier.padding(20.dp),
                     height = with(LocalDensity.current) { playListControlBoxHeight.toDp() },
-                    coverArtUri = imageUri,
+                    coverArtUri = "",
                     title = title,
                     trackCount = trackCount,
                     onPlayAllButtonClick = onPlayAllButtonClick,
@@ -169,9 +157,9 @@ private fun PlayListContent(
                             .padding(vertical = 4.dp)
                             .animateItemPlacement(),
                         isActive = activeMusic == info.contentUri,
-                        albumArtUri = info.albumUri,
+                        albumArtUri = info.albumUri.toString(),
                         title = info.title,
-                        showTrackNum = type == RequestType.ALBUM_REQUEST,
+                        showTrackNum = type == MusicListType.ALBUM_REQUEST,
                         artist = info.artist,
                         trackNum = info.cdTrackNumber,
                         date = info.modifiedDate,
