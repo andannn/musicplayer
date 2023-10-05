@@ -8,7 +8,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import com.andanana.musicplayer.core.data.repository.MusicRepository
-import com.andanana.musicplayer.core.player.PlayerController
+import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -27,9 +27,6 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
 
     @Inject
     lateinit var player: Player
-
-    @Inject
-    lateinit var playerController: PlayerController
 
     @Inject
     lateinit var musicRepository: MusicRepository
@@ -53,7 +50,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
         super.onDestroy()
 
         mediaLibrarySession.release()
-        playerController.release()
+        player.release()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
@@ -109,7 +106,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
     }
 
     private fun initializeSessionAndPlayer() {
-        playerController.initialize()
+        player.prepare()
         mediaLibrarySession =
             MediaLibrarySession.Builder(this, player, librarySessionCallback)
                 .setSessionActivity(getSingleTopActivity())

@@ -3,8 +3,8 @@ package com.andanana.musicplayer.core.player.di
 import android.app.Application
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.andanana.musicplayer.core.player.PlayerController
-import com.andanana.musicplayer.core.player.PlayerControllerImpl
+import com.andanana.musicplayer.core.player.PlayerMonitor
+import com.andanana.musicplayer.core.player.PlayerMonitorImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,6 +30,6 @@ class PlayerModule {
 interface PlayerBins {
     @Binds
     fun bindsPlayerRepository(
-        playerRepositoryImpl: PlayerControllerImpl
-    ): PlayerController
+        playerRepositoryImpl: PlayerMonitorImpl
+    ): PlayerMonitor
 }

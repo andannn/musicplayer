@@ -8,7 +8,7 @@ import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.data.model.MusicModel
 import com.andanana.musicplayer.core.data.model.PlayMode
-import com.andanana.musicplayer.core.player.PlayerController
+import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.core.player.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +28,7 @@ private const val TAG = "PlayerStateViewModel"
 
 @HiltViewModel
 class PlayerStateViewModel @Inject constructor(
-    private val playerController: PlayerController,
+    private val playerMonitor: PlayerMonitor,
     private val mediaStoreSource: MediaStoreSource,
     private val smpPreferenceRepository: SmpPreferenceRepository,
     private val useCases: PlayListUseCases
@@ -60,7 +60,7 @@ class PlayerStateViewModel @Inject constructor(
     val playerUiStateFlow =
         combine(
             interactingMusicItem,
-            playerController.observePlayerState(),
+            playerMonitor.observePlayerState(),
             playModeFlow,
             isCurrentMusicFavorite,
             updateProgressEventFlow
@@ -70,7 +70,7 @@ class PlayerStateViewModel @Inject constructor(
             } else {
                 PlayerUiState.Active(
                     musicModel = interactingMusicItem,
-                    progress = playerController.currentPositionMs.div(interactingMusicItem.duration.toFloat()),
+                    progress = playerMonitor.currentPositionMs.div(interactingMusicItem.duration.toFloat()),
                     playMode = playMode,
                     isFavorite = isCurrentMusicFavorite,
                     state = when (state) {
@@ -106,11 +106,11 @@ class PlayerStateViewModel @Inject constructor(
         }
         viewModelScope.launch {
             playModeFlow.collect { playMode ->
-                playerController.setRepeatMode(playMode)
+//                playerMonitor.setRepeatMode(playMode)
             }
         }
         viewModelScope.launch {
-            playerController.observePlayerState().collect { state ->
+            playerMonitor.observePlayerState().collect { state ->
                 when (state) {
                     is PlayerState.Playing -> {
                         coroutineTicker.startTicker()
@@ -124,28 +124,28 @@ class PlayerStateViewModel @Inject constructor(
     }
 
     fun togglePlayState() {
-        val state = playerUiStateFlow.value
-        if (state is PlayerUiState.Active) {
-            playerUiStateFlow.value.let {
-                when (state.state) {
-                    PlayState.PAUSED -> playerController.play()
-                    PlayState.PLAYING -> playerController.pause()
-                    else -> Unit
-                }
-            }
-        }
+//        val state = playerUiStateFlow.value
+//        if (state is PlayerUiState.Active) {
+//            playerUiStateFlow.value.let {
+//                when (state.state) {
+//                    PlayState.PAUSED -> playerMonitor.play()
+//                    PlayState.PLAYING -> playerMonitor.pause()
+//                    else -> Unit
+//                }
+//            }
+//        }
     }
 
     fun next() {
-        playerController.next()
+//        playerMonitor.next()
     }
 
     fun previous() {
-        playerController.previous()
+//        playerMonitor.previous()
     }
 
     fun onSeekToTime(time: Int) {
-        playerController.seekTo(time)
+//        playerMonitor.seekTo(time)
     }
 
     fun changePlayMode() {

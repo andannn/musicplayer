@@ -17,9 +17,9 @@ import javax.inject.Singleton
 private const val TAG = "PlayerRepositoryImpl"
 
 @Singleton
-class PlayerControllerImpl @Inject constructor(
+class PlayerMonitorImpl @Inject constructor(
     private val player: Player
-) : PlayerController {
+) : PlayerMonitor {
 
     private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
@@ -105,6 +105,10 @@ class PlayerControllerImpl @Inject constructor(
         }
     }
 
+    init {
+        player.addListener(playerListener)
+    }
+
     override val currentPositionMs: Long
         get() = player.currentPosition
 
@@ -117,100 +121,14 @@ class PlayerControllerImpl @Inject constructor(
 
     override fun observePlayingMedia(): Flow<MediaItem?> = playingMediaItemStateFlow
 
-    override fun seekToMediaIndex(index: Int) {
-        player.seekToDefaultPosition(index)
-    }
-
-    override fun play() {
-        player.play()
-    }
-
-    override fun setPlayNext(uris: List<Uri>) {
-//        Log.d(TAG, "setPlayNext: $uris")
-//        val playingIndex = playListFlow.value.indexOfFirst { it == playingMediaItemStateFlow.value }
-//
-//        if (playingIndex == -1) {
-//            player.setMediaItems(
-//                uris.map { MediaItem.fromUri(it) }
-//            )
-//            player.play()
-//            return
+//    override fun setRepeatMode(playMode: PlayMode) {
+//        Log.d(TAG, "setRepeatMode: $playMode")
+//        if (playMode == PlayMode.SHUFFLE) {
+//            player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
+//            player.shuffleModeEnabled = true
+//        } else {
+//            player.repeatMode = playMode.toExoPlayerMode()
+//            player.shuffleModeEnabled = false
 //        }
-//
-//        uris.reversed().onEach { uri ->
-//            val targetUriIndex = playListFlow.value.indexOfFirst {
-//                it == uri
-//            }
-//            if (targetUriIndex != -1) {
-//                // Already in play list.
-//                player.moveMediaItem(
-//                    /* currentIndex = */ targetUriIndex,
-//                    /* newIndex = */ playingIndex + 1
-//                )
-//            } else {
-//                player.addMediaItem(
-//                    /* index = */ playingIndex + 1,
-//                    /* mediaItem = */ MediaItem.fromUri(uri)
-//                )
-//            }
-//        }
-    }
-
-    override fun pause() {
-        player.pause()
-    }
-
-    override fun next() {
-        player.seekToNextMediaItem()
-        player.play()
-    }
-
-    override fun seekTo(time: Int) {
-        player.seekTo(time.toLong())
-    }
-
-    override fun previous() {
-        player.seekToPreviousMediaItem()
-        player.play()
-    }
-
-    override fun initialize() {
-        player.prepare()
-        player.addListener(playerListener)
-        setRepeatMode(PlayMode.DefaultPlayMode)
-    }
-
-    override fun release() {
-        player.clearMediaItems()
-        player.removeListener(playerListener)
-        player.stop()
-        player.release()
-    }
-
-    override fun setRepeatMode(playMode: PlayMode) {
-        Log.d(TAG, "setRepeatMode: $playMode")
-        if (playMode == PlayMode.SHUFFLE) {
-            player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
-            player.shuffleModeEnabled = true
-        } else {
-            player.repeatMode = playMode.toExoPlayerMode()
-            player.shuffleModeEnabled = false
-        }
-    }
-
-    override fun setPlayListAndStartIndex(playList: List<MediaItem>, startIndex: Int) {
-        when {
-            playList != this.playListFlow.value -> {
-                // Play list changed.
-                player.setMediaItems(playList)
-                player.seekToDefaultPosition(startIndex)
-                player.play()
-            }
-            startIndex != playListFlow.value.indexOf(playingMediaItemStateFlow.value) -> {
-                // Play list is same but play item changed.
-                player.seekToDefaultPosition(startIndex)
-                player.play()
-            }
-        }
-    }
+//    }
 }

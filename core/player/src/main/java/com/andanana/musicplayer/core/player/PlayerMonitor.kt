@@ -27,7 +27,7 @@ fun PlayMode.toExoPlayerMode() = when (this) {
     PlayMode.SHUFFLE -> -1
 }
 
-interface PlayerController {
+interface PlayerMonitor {
     val currentPositionMs: Long
 
     val playerState: PlayerState
@@ -38,25 +38,5 @@ interface PlayerController {
 
     fun observePlayingMedia(): Flow<MediaItem?>
 
-    fun setPlayListAndStartIndex(playList: List<MediaItem>, startIndex: Int)
-
-    fun seekToMediaIndex(index: Int)
-
-    fun play()
-
-    fun setPlayNext(uris: List<Uri>)
-
-    fun pause()
-
-    fun next()
-
-    fun seekTo(time: Int)
-
-    fun previous()
-
-    fun initialize()
-
-    fun release()
-
-    fun setRepeatMode(playMode: PlayMode)
+//    fun setRepeatMode(playMode: PlayMode)
 }

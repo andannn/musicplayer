@@ -46,3 +46,7 @@ internal fun buildMediaItem(
         .setRequestMetadata(requestMetadata)
         .build()
 }
+
+fun MediaItem.isSameDatasource(mediaItem: MediaItem): Boolean {
+    return this.mediaId == mediaItem.mediaId
+}

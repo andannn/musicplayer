@@ -3,7 +3,6 @@ package com.andanana.musicplayer.feature.playList
 import android.app.Application
 import android.content.ComponentName
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +10,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
-import com.andanana.musicplayer.core.player.PlayerController
+import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.log
 
 private const val TAG = "PlayListViewModel"
 
@@ -29,7 +27,7 @@ private const val TAG = "PlayListViewModel"
 class PlayListViewModel @Inject constructor(
     application: Application,
     savedStateHandle: SavedStateHandle,
-    private val playerController: PlayerController,
+    private val playerMonitor: PlayerMonitor,
 ) : ViewModel() {
 
     private val mediaId =
@@ -64,15 +62,21 @@ class PlayListViewModel @Inject constructor(
                 /* params= */ null
             ).await().value!!.toList()
 
-            Log.d(TAG, ": $mediaId")
-            Log.d(TAG, ": $playableItems")
             _state.update {
-                PlayListUiState(
+                it.copy(
                     title = parentItem.mediaMetadata.title.toString(),
                     artCoverUri = parentItem.mediaMetadata.artworkUri ?: Uri.EMPTY,
                     trackCount = parentItem.mediaMetadata.totalTrackCount ?: 0,
                     musicItems = playableItems
                 )
+            }
+        }
+
+        viewModelScope.launch {
+            playerMonitor.observePlayingMedia().collect { playingMediaItem ->
+                _state.update {
+                    it.copy(playingMediaItem = playingMediaItem)
+                }
             }
         }
     }
@@ -102,6 +106,6 @@ data class PlayListUiState(
     val artCoverUri: Uri = Uri.EMPTY,
     val trackCount: Int = 0,
     val musicItems: List<MediaItem> = emptyList(),
-//    val playingMediaItem: MediaItem? = null,
+    val playingMediaItem: MediaItem? = null,
     val contentUri: Uri = Uri.EMPTY
 )
