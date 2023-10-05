@@ -1,7 +1,6 @@
 package com.andanana.musicplayer.core.designsystem.component
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,13 +20,11 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
-private const val TAG = "AlbumCard"
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumCard(
+fun LargePreviewCard(
     modifier: Modifier = Modifier,
-    albumArtUri: Uri,
+    artCoverUri: Uri,
     title: String,
     trackCount: Int,
     onClick: () -> Unit = {}
@@ -45,9 +42,10 @@ fun AlbumCard(
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(MaterialTheme.shapes.extraSmall),
-                model = albumArtUri,
+                model = artCoverUri,
                 contentDescription = ""
             )
+
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
@@ -67,7 +65,7 @@ fun AlbumCard(
 private fun AlbumCardPreview() {
     MusicPlayerTheme {
         Surface {
-            AlbumCard(albumArtUri = Uri.parse(""), title = "Title", trackCount = 3)
+            LargePreviewCard(artCoverUri = Uri.parse(""), title = "Title", trackCount = 3)
         }
     }
 }

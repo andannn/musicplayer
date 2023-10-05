@@ -64,7 +64,7 @@ fun ArtistCard(
 private fun ArtistCardPreview() {
     MusicPlayerTheme {
         Surface {
-            AlbumCard(albumArtUri = Uri.parse(""), title = "Name", trackCount = 3)
+            LargePreviewCard(artCoverUri = Uri.parse(""), title = "Name", trackCount = 3)
         }
     }
 }

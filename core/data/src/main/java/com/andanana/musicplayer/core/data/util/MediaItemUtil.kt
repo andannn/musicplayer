@@ -2,6 +2,7 @@ package com.andanana.musicplayer.core.data.util
 
 import android.net.Uri
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaItem.RequestMetadata
 import androidx.media3.common.MediaMetadata
 
 internal fun buildMediaItem(
@@ -15,7 +16,9 @@ internal fun buildMediaItem(
     artist: String? = null,
     genre: String? = null,
     sourceUri: Uri? = null,
-    imageUri: Uri? = null
+    imageUri: Uri? = null,
+    totalTrackCount: Int? = null,
+    trackNumber: Int? = null,
 ): MediaItem {
     val metadata =
         MediaMetadata.Builder()
@@ -27,12 +30,19 @@ internal fun buildMediaItem(
             .setIsPlayable(isPlayable)
             .setArtworkUri(imageUri)
             .setMediaType(mediaType)
+            .setTotalTrackCount(totalTrackCount)
+            .setTrackNumber(trackNumber)
             .build()
+
+    val requestMetadata = RequestMetadata.Builder()
+        .setMediaUri(sourceUri)
+        .build()
 
     return MediaItem.Builder()
         .setMediaId(mediaId)
         .setSubtitleConfigurations(subtitleConfigurations)
         .setMediaMetadata(metadata)
         .setUri(sourceUri)
+        .setRequestMetadata(requestMetadata)
         .build()
 }

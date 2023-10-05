@@ -70,7 +70,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun onSelectedCategoryChanged(mediaId: String) {
+    fun onSelectedCategoryChanged(mediaId: String) {
         val state = this._state.value
 
         if (state is HomeUiState.Loading) return
@@ -109,6 +109,12 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        MediaBrowser.releaseFuture(browserFuture)
+        browser?.release()
+    }
 }
 
 sealed interface HomeUiState {
@@ -121,7 +127,7 @@ sealed interface HomeUiState {
         val currentMusicItems
             get() = categoryToMediaItemsMap.getOrDefault(
                 selectedCategory,
-                defaultValue = null
+                defaultValue = emptyList()
             )
     }
 }

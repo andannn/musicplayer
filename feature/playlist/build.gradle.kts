@@ -23,6 +23,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
 
+    implementation(libs.kotlinx.coroutines.guava)
+
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material)
 
@@ -34,5 +36,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Media3
-    implementation(libs.androidx.media3.common)
+    implementation(libs.androidx.media3.session)
 }

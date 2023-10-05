@@ -6,17 +6,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.feature.playList.PlayListScreen
 
 private const val TAG = "PlayListNavigation"
 
 const val MusicListRoute = "music_list_route"
-const val MusicListTypeKey = "music_list_type"
-const val MusicListIdKey = "music_list_id"
+const val MediaIdKey = "music_list_id"
 
-fun NavController.navigateToPlayList(musicListId: Long, musicListType: MusicListType) {
-        this.navigate("$MusicListRoute/$musicListId/$musicListType")
+fun NavController.navigateToPlayList(mediaId: String) {
+        this.navigate("$MusicListRoute/$mediaId")
 }
 
 fun NavGraphBuilder.playListScreen(
@@ -24,14 +22,11 @@ fun NavGraphBuilder.playListScreen(
     onBackPressed: () -> Unit
 ) {
     composable(
-        route = "$MusicListRoute/{$MusicListIdKey}/{$MusicListTypeKey}",
+        route = "$MusicListRoute/{$MediaIdKey}",
         arguments = listOf(
-            navArgument(name = MusicListIdKey) {
-                type = NavType.LongType
+            navArgument(name = MediaIdKey) {
+                type = NavType.StringType
             },
-            navArgument(name = MusicListTypeKey) {
-                type = NavType.EnumType(MusicListType::class.java)
-            }
         )
     ) {
         PlayListScreen(

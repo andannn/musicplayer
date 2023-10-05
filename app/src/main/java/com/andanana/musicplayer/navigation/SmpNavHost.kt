@@ -31,8 +31,8 @@ fun SmpNavHost(
         modifier = modifier
     ) {
         homeScreen(
-            onNavigateToPlayList = { mediaListId, mediaListType ->
-                navHostController.navigateToPlayList(musicListId = mediaListId, musicListType = mediaListType)
+            onNavigateToPlayList = { mediaId ->
+                navHostController.navigateToPlayList(mediaId = mediaId)
             },
             onShowMusicItemOption = onShowMusicItemOption
         )

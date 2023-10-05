@@ -2,6 +2,7 @@ plugins {
     id("musicplayer.android.library")
     id("musicplayer.android.hilt")
     id("musicplayer.android.room")
+    id("musicplayer.android.testing")
 }
 
 android {

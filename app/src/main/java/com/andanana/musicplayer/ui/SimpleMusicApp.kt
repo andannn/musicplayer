@@ -10,13 +10,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,15 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hierarchy
 import com.andanana.musicplayer.MainActivityViewModel
+import com.andanana.musicplayer.R
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.component.SmpBottomDrawer
@@ -46,7 +41,6 @@ import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.PlayerRoute
 import com.andanana.musicplayer.feature.playqueue.navigation.navigateToPlayQueue
 import com.andanana.musicplayer.navigation.SmpNavHost
-import com.andanana.musicplayer.navigation.TopLevelDestination
 
 private const val TAG = "SimpleMusicApp"
 
@@ -82,15 +76,9 @@ fun SimpleMusicApp(
             )
         },
         topBar = {
-            val titleRes = appState.currentTopLevelDestination?.titleTextId
-            val title = titleRes?.let { stringResource(id = it) } ?: ""
-
-            val visible = remember(appState.currentNavDestination) {
-                !appState.isTopBarHide
-            }
             SmpCenterAlignedTopAppBar(
-                visible = visible,
-                title = title
+                visible = appState.currentNavDestination?.route == homeRoute,
+                title = stringResource(id = R.string.app_name)
             )
         }
     ) {
@@ -153,15 +141,6 @@ fun SimpleMusicApp(
                         },
                         onToggleFavorite = mainViewModel::onToggleFavorite
                     )
-                    val isNavigationBarVisible = remember(appState.currentNavDestination) {
-                        !appState.isNavigationBarHide
-                    }
-                    SimpleMusicNavigationBar(
-                        visible = isNavigationBarVisible,
-                        destinations = appState.topLevelDestinations,
-                        onNavigateToDestination = appState::navigateToTopLevelDestination,
-                        currentDestination = appState.currentNavDestination
-                    )
                 }
             }
         }
@@ -206,6 +185,7 @@ private fun onDrawerItemClick(
                 mainViewModel.interactingUri.value!!
             )
         }
+
         else -> Unit
     }
     appState.closeDrawer()
@@ -234,53 +214,6 @@ private fun SmpCenterAlignedTopAppBar(
     }
 }
 
-@Composable
-fun SimpleMusicNavigationBar(
-    modifier: Modifier = Modifier,
-    visible: Boolean,
-    destinations: List<TopLevelDestination>,
-    onNavigateToDestination: (TopLevelDestination) -> Unit,
-    currentDestination: NavDestination?
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = expandVertically(),
-        exit = shrinkVertically()
-    ) {
-        NavigationBar(
-            modifier = modifier
-        ) {
-            destinations.forEach { destination ->
-                val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
-                SmpNavigationBarItem(
-                    selected = selected,
-                    onClick = { onNavigateToDestination(destination) },
-                    icon = {
-                        val icon = if (selected) {
-                            destination.selectedIcon
-                        } else {
-                            destination.unSelectedIcon
-                        }
-                        when (icon) {
-                            is Icon.ImageVectorIcon -> {
-                                Icon(imageVector = icon.imageVector, contentDescription = "")
-                            }
-                        }
-                    },
-                    label = {
-                        Text(stringResource(id = destination.iconTextId))
-                    }
-                )
-            }
-        }
-    }
-}
-
-private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
-    this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
-    } ?: false
-
 private fun getSnackBarPaddingBottom(
     appState: SimpleMusicAppState,
     isMusicBoxShowing: Boolean
@@ -298,33 +231,5 @@ private fun getSnackBarPaddingBottom(
         navigationBarHeight + playerBoxHeight
     } else {
         0.dp
-    }
-}
-
-@Preview
-@Composable
-private fun SimpleMusicNavigationBarPreview() {
-    MusicPlayerTheme {
-        Surface {
-            SimpleMusicNavigationBar(
-                visible = true,
-                destinations = TopLevelDestination.values().toList(),
-                onNavigateToDestination = {},
-                currentDestination = null
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun SmpCenterAlignedTopAppBarPreview() {
-    MusicPlayerTheme {
-        Surface {
-            SmpCenterAlignedTopAppBar(
-                visible = true,
-                title = "Title"
-            )
-        }
     }
 }
