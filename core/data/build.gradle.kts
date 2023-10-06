@@ -2,6 +2,7 @@ plugins {
     id("musicplayer.android.library")
     id("musicplayer.android.hilt")
     id("musicplayer.android.room")
+    id("musicplayer.android.testing")
 }
 
 android {
@@ -15,4 +16,7 @@ android {
 dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:mediastore"))
+
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
 }

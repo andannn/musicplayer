@@ -34,4 +34,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Media3
+    implementation(libs.androidx.media3.common)
 }

@@ -1,10 +1,12 @@
 package com.andanana.musicplayer
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -21,9 +23,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.core.player.PlayerService
 import com.andanana.musicplayer.ui.SimpleMusicApp
+import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
@@ -96,10 +100,22 @@ class MainActivity : ComponentActivity() {
             } else {
                 LaunchedEffect(Unit) {
                     val context = this@MainActivity
-                    val intent = Intent(context, PlayerService::class.java)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        context.startForegroundService(intent)
-                    }
+//                    val intent = Intent(context, PlayerService::class.java)
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                        context.startForegroundService(intent)
+//                    }
+                    val sessionToken = SessionToken(this@MainActivity, ComponentName(this@MainActivity, PlayerService::class.java))
+                    val controllerFuture = MediaController.Builder(this@MainActivity, sessionToken).buildAsync()
+                    controllerFuture.addListener(
+                        {
+                            // Call controllerFuture.get() to retrieve the MediaController.
+                            // MediaController implements the Player interface, so it can be
+                            // attached to the PlayerView UI component.
+//                            playerView.setPlayer(controllerFuture.get())
+                            Log.d(TAG, "onCreate:  controllerFuture ${controllerFuture.get()}")
+                        },
+                        MoreExecutors.directExecutor()
+                    )
                 }
             }
 

@@ -15,7 +15,7 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-    onNavigateToPlayList: (mediaListId: Long, musicListType: MusicListType) -> Unit,
+    onNavigateToPlayList: (mediaId: String) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit
 ) {
     composable(route = homeRoute) {

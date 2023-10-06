@@ -4,11 +4,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.data.model.MusicListType
-import com.andanana.musicplayer.core.player.repository.PlayerController
+import com.andanana.musicplayer.core.data.repository.MusicRepository
+import com.andanana.musicplayer.core.player.PlayerMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,10 +26,10 @@ private const val TAG = "MainActivityViewModel"
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val playerController: PlayerController,
-    private val mediaStoreSource: MediaStoreSource,
-    private val useCases: PlayListUseCases
-) : ViewModel(), PlayerController by playerController {
+    private val playerMonitor: PlayerMonitor,
+    private val useCases: PlayListUseCases,
+    private val musicRepository: MusicRepository
+) : ViewModel(), PlayerMonitor by playerMonitor {
 
     private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
     val mainUiState = _mainUiState.asStateFlow()
@@ -50,6 +50,9 @@ class MainActivityViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
+        viewModelScope.launch {
+            musicRepository.sync()
+        }
         syncMediaStore()
     }
 
@@ -133,7 +136,7 @@ class MainActivityViewModel @Inject constructor(
 
                 else -> emptyList()
             }
-            playerController.setPlayNext(uris)
+//            playerMonitor.setPlayNext(uris)
         }
     }
 

@@ -39,7 +39,7 @@ jobs:
 
       # Run Tests Build
       - name: Run gradle tests
-        run: ./gradlew test
+        run: ./gradlew testDebugUnitTest
 
       # Run Build Project
       - name: Build gradle project

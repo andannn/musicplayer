@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.core.data.repository
 
+import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.data.model.AlbumModel
 import com.andanana.musicplayer.core.data.model.ArtistModel
 import com.andanana.musicplayer.core.data.model.MusicModel
@@ -21,4 +22,10 @@ interface MusicRepository {
     suspend fun getAlbumById(albumId: Long): AlbumModel
 
     suspend fun getArtistById(artistId: Long): ArtistModel
+
+    fun getLibraryRoot(): MediaItem
+
+    suspend fun getChildren(mediaId: String): List<MediaItem>
+
+    suspend fun getMediaItem(mediaId: String): MediaItem?
 }

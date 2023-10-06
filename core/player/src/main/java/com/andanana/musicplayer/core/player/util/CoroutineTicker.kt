@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 class CoroutineTicker(
-    private val delayMs: Long = 1000 / 60L,
+    private val delayMs: Long = 1000 / 30L,
     val action: () -> Unit
 ) : CoroutineScope {
     private var jobTracker: Job? = null

@@ -79,11 +79,10 @@ private fun PlayerScreen(
                 progress = uiState.progress,
                 playMode = uiState.playMode,
                 isPlaying = uiState.state == PlayState.PLAYING,
-                isLoading = uiState.state == PlayState.LOADING,
-                coverArtUri = uiState.musicModel.albumUri.toString(),
-                title = uiState.musicModel.title,
-                subTitle = uiState.musicModel.album,
-                duration = uiState.musicModel.duration,
+                coverArtUri = uiState.mediaItem.mediaMetadata.artworkUri.toString(),
+                title = uiState.mediaItem.mediaMetadata.title.toString(),
+                subTitle = uiState.mediaItem.mediaMetadata.albumTitle.toString(),
+                duration = 1000,
                 onSeekToTime = onSeekToTime,
                 onPlayButtonClick = onPlayButtonClick,
                 onPreviousButtonClick = onPreviousButtonClick,
@@ -101,7 +100,6 @@ private fun PlayerScreenContent(
     progress: Float,
     playMode: PlayMode,
     isPlaying: Boolean,
-    isLoading: Boolean,
     coverArtUri: String,
     title: String,
     subTitle: String,
@@ -184,22 +182,13 @@ private fun PlayerScreenContent(
                 } else {
                     Icons.Rounded.PlayArrow
                 }
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(10.dp)
-                            .aspectRatio(1f).clip(CircleShape)
-                    )
-                } else {
-                    SmpMainIconButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f),
-                        onClick = onPlayButtonClick,
-                        imageVector = image
-                    )
-                }
+                SmpMainIconButton(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(1f),
+                    onClick = onPlayButtonClick,
+                    imageVector = image
+                )
                 SmpSubIconButton(
                     modifier = Modifier
                         .weight(1f)
@@ -226,7 +215,6 @@ private fun PlayerScreenContentPreview() {
     PlayerScreenContent(
         progress = 0.7f,
         isPlaying = false,
-        isLoading = true,
         coverArtUri = "",
         title = "Title",
         subTitle = "subTitle",

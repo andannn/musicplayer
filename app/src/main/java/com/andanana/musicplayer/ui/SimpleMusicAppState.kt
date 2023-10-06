@@ -22,7 +22,6 @@ import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.home.navigation.navigateToHome
 import com.andanana.musicplayer.feature.library.navigation.libraryRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
-import com.andanana.musicplayer.navigation.TopLevelDestination
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
@@ -66,8 +65,6 @@ class SimpleMusicAppState constructor(
 ) {
     val drawerType: MutableState<DrawerType> = mutableStateOf(DrawerType.OPTION_LIST)
 
-    val topLevelDestinations = TopLevelDestination.values().toList()
-
     val currentBackStackEntry
         @Composable get() = navController.currentBackStackEntryAsState()
 
@@ -82,36 +79,29 @@ class SimpleMusicAppState constructor(
     val isNavigationBarHide
         get() = isPlayListRoute
 
-    val currentTopLevelDestination
-        @Composable get() = when (currentNavDestination?.route) {
-            homeRoute -> TopLevelDestination.HOME
-            libraryRoute -> TopLevelDestination.LIBRARY
-            else -> null
-        }
-
     val drawer: MutableState<Drawer?> = mutableStateOf(null)
-
-    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        val topLevelNavOptions = navOptions {
-            // Pop up to the start destination of the graph to
-            // avoid building up a large stack of destinations
-            // on the back stack as users select items
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            // Avoid multiple copies of the same destination when
-            // reselecting the same item
-            launchSingleTop = true
-            // Restore state when reselecting a previously selected item
-            restoreState = true
-        }
-
-        when (topLevelDestination) {
-            TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
-            TopLevelDestination.LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
-            else -> {}
-        }
-    }
+//
+//    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
+//        val topLevelNavOptions = navOptions {
+//            // Pop up to the start destination of the graph to
+//            // avoid building up a large stack of destinations
+//            // on the back stack as users select items
+//            popUpTo(navController.graph.findStartDestination().id) {
+//                saveState = true
+//            }
+//            // Avoid multiple copies of the same destination when
+//            // reselecting the same item
+//            launchSingleTop = true
+//            // Restore state when reselecting a previously selected item
+//            restoreState = true
+//        }
+//
+//        when (topLevelDestination) {
+//            TopLevelDestination.HOME -> navController.navigateToHome(topLevelNavOptions)
+//            TopLevelDestination.LIBRARY -> navController.navigateToLibrary(topLevelNavOptions)
+//            else -> {}
+//        }
+//    }
 
     @OptIn(ExperimentalMaterialApi::class)
     fun showDrawerByUri(uri: Uri) {

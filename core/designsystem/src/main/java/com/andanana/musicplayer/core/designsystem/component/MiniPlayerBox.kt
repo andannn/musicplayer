@@ -46,13 +46,11 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
 private const val TAG = "BottomPlayerSheet"
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MiniPlayerBox(
     modifier: Modifier = Modifier,
     coverUri: String,
     isPlaying: Boolean = false,
-    isLoading: Boolean = false,
     isFavorite: Boolean = false,
     title: String = "",
     artist: String = "",
@@ -68,7 +66,6 @@ fun MiniPlayerBox(
             .heightIn(min = 50.dp, max = 70.dp),
         shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         shadowElevation = 10.dp,
-        enabled = !isLoading,
         onClick = onPlayerSheetClick
     ) {
         Column(
@@ -116,9 +113,7 @@ fun MiniPlayerBox(
                         modifier = Modifier.size(30.dp).scale(1.2f),
                         onClick = onPlayControlButtonClick
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator()
-                        } else if (isPlaying) {
+                        if (isPlaying) {
                             Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
                         } else {
                             Icon(imageVector = Icons.Rounded.PlayArrow, contentDescription = "")
