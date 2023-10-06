@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    steps:
       - uses: actions/checkout@v3
 
       # Set Current Date As Env Variable
