@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:mediastore"))
 
+    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.androidx.core.ktx)
 
     api(libs.androidx.compose.material3)
@@ -37,5 +38,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Media3
-    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.session)
 }

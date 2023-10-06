@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.data.model.MusicListType
+import com.andanana.musicplayer.core.data.repository.MusicRepository
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -27,8 +27,8 @@ private const val TAG = "MainActivityViewModel"
 class MainActivityViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val playerMonitor: PlayerMonitor,
-    private val mediaStoreSource: MediaStoreSource,
-    private val useCases: PlayListUseCases
+    private val useCases: PlayListUseCases,
+    private val musicRepository: MusicRepository
 ) : ViewModel(), PlayerMonitor by playerMonitor {
 
     private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
@@ -50,6 +50,9 @@ class MainActivityViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
+        viewModelScope.launch {
+            musicRepository.sync()
+        }
         syncMediaStore()
     }
 
