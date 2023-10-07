@@ -86,21 +86,16 @@ class MusicRepositoryImpl @Inject constructor(
                 getMediaItem(category.mediaId)
             }
         } else if (mediaId == LibraryRootCategory.ALL_MUSIC.mediaId) {
-// TODO:
-            emptyList()
+            dataBase.musicDao().getAllMusics().toMusicModels().map { music ->
+                buildMusicMediaItem(music)
+            }
         } else if (mediaId == LibraryRootCategory.ALBUM.mediaId) {
             dataBase.musicDao().getAllAlbums().toAlbumModels().map { album ->
                 buildAlbumMediaItem(album)
             }
         } else if (mediaId == LibraryRootCategory.ARTIST.mediaId) {
             dataBase.musicDao().getAllArtists().toArtistModels().map { artist ->
-                buildMediaItem(
-                    title = artist.name,
-                    mediaId = LibraryRootCategory.ARTIST.childrenPrefix + artist.artistId,
-                    isPlayable = false,
-                    isBrowsable = true,
-                    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
-                )
+                buildArtistMediaItem(artist)
             }
         } else if (mediaId == LibraryRootCategory.MINE_PLAYLIST.mediaId) {
 // TODO:
@@ -108,18 +103,22 @@ class MusicRepositoryImpl @Inject constructor(
         } else if (LibraryRootCategory.getMatchedChildTypeAndId(mediaId) != null) {
             val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
             when (category) {
-                LibraryRootCategory.ALL_MUSIC -> TODO()
                 LibraryRootCategory.ALBUM -> {
                     dataBase.musicDao().getMusicsInAlbum(id).toMusicModels().map { music ->
                         buildMusicMediaItem(music)
                     }
                 }
 
-                LibraryRootCategory.ARTIST -> TODO()
+                LibraryRootCategory.ARTIST -> {
+                    dataBase.musicDao().getMusicsInArtist(id).toMusicModels().map { music ->
+                        buildMusicMediaItem(music)
+                    }
+                }
+
                 LibraryRootCategory.MINE_PLAYLIST -> TODO()
+                else -> emptyList()
             }
         } else {
-// TODO:
             emptyList()
         }
     }
@@ -145,15 +144,20 @@ class MusicRepositoryImpl @Inject constructor(
         } else if (LibraryRootCategory.getMatchedChildTypeAndId(mediaId) != null) {
             val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
             when (category) {
-                LibraryRootCategory.ALL_MUSIC -> TODO()
                 LibraryRootCategory.ALBUM -> {
                     dataBase.musicDao().getAlbumById(id).toAlbumModel().let { album ->
                         buildAlbumMediaItem(album)
                     }
                 }
 
-                LibraryRootCategory.ARTIST -> TODO()
+                LibraryRootCategory.ARTIST -> {
+                    dataBase.musicDao().getArtistById(id).toArtistModel().let { artist ->
+                        buildArtistMediaItem(artist)
+                    }
+                }
+
                 LibraryRootCategory.MINE_PLAYLIST -> TODO()
+                else -> null
             }
         } else {
             null
@@ -170,6 +174,15 @@ class MusicRepositoryImpl @Inject constructor(
         mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
     )
 
+    private fun buildArtistMediaItem(artist: ArtistModel): MediaItem = buildMediaItem(
+        title = artist.name,
+        mediaId = LibraryRootCategory.ARTIST.childrenPrefix + artist.artistId,
+        imageUri = artist.artistUri,
+        totalTrackCount = artist.trackCount,
+        isPlayable = false,
+        isBrowsable = true,
+        mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED
+    )
 
     private fun buildMusicMediaItem(music: MusicModel): MediaItem = buildMediaItem(
         title = music.title,
@@ -180,8 +193,8 @@ class MusicRepositoryImpl @Inject constructor(
         trackNumber = music.discNumberIndex,
         album = music.album,
         artist = music.artist,
-        isPlayable = false,
-        isBrowsable = true,
+        isPlayable = true,
+        isBrowsable = false,
         mediaType = MediaMetadata.MEDIA_TYPE_MUSIC
     )
 }

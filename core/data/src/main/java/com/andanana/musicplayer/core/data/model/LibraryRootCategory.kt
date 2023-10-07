@@ -22,8 +22,8 @@ enum class LibraryRootCategory(
 ) {
     ALL_MUSIC(
         mediaId = ALL_MUSIC_ID,
-        childrenPrefix = PLAYABLE_MEDIA_ITEM_PREFIX,
-        childrenMatchRegex = "$PLAYABLE_MEDIA_ITEM_PREFIX\\d+"
+        childrenPrefix = "",
+        childrenMatchRegex = ""
     ),
     ALBUM(
         mediaId = ALBUM_ID,

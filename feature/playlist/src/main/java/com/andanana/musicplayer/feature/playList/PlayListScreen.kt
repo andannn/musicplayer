@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import com.andanana.musicplayer.core.data.model.LibraryRootCategory
 import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayBoxMaxHeight
@@ -122,7 +123,7 @@ private fun PlayListScreenContent(
                         isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                         albumArtUri = item.mediaMetadata.artworkUri.toString(),
                         title = item.mediaMetadata.title.toString(),
-                        showTrackNum = false,
+                        showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
                         artist = item.mediaMetadata.artist.toString(),
                         trackNum = item.mediaMetadata.trackNumber ?: 0,
                         date = -1,
@@ -136,9 +137,6 @@ private fun PlayListScreenContent(
                             item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
                         }
                     )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(300.dp))
                 }
             }
         }

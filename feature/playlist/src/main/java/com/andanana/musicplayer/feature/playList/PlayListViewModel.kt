@@ -10,6 +10,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
+import com.andanana.musicplayer.core.data.model.LibraryRootCategory
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
 import com.google.common.util.concurrent.ListenableFuture
@@ -55,6 +56,9 @@ class PlayListViewModel @Inject constructor(
 
             val parentItem = browser.getItem(mediaId).await().value ?: return@launch
 
+            val (type, _) = LibraryRootCategory.getMatchedChildTypeAndId(parentItem.mediaId)
+                ?: return@launch
+
             val playableItems = browser.getChildren(
                 mediaId,
                 /* page= */ 0,
@@ -64,6 +68,7 @@ class PlayListViewModel @Inject constructor(
 
             _state.update {
                 it.copy(
+                    playListType = type,
                     title = parentItem.mediaMetadata.title.toString(),
                     artCoverUri = parentItem.mediaMetadata.artworkUri ?: Uri.EMPTY,
                     trackCount = parentItem.mediaMetadata.totalTrackCount ?: 0,
@@ -102,6 +107,7 @@ class PlayListViewModel @Inject constructor(
 }
 
 data class PlayListUiState(
+    val playListType: LibraryRootCategory = LibraryRootCategory.MINE_PLAYLIST,
     val title: String = "",
     val artCoverUri: Uri = Uri.EMPTY,
     val trackCount: Int = 0,

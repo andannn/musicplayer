@@ -1,11 +1,15 @@
 package com.andanana.musicplayer.feature.home
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -21,8 +25,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import com.andanana.musicplayer.core.data.model.ALBUM_ID
+import com.andanana.musicplayer.core.data.model.ALL_MUSIC_ID
+import com.andanana.musicplayer.core.data.model.ARTIST_ID
+import com.andanana.musicplayer.core.data.model.LibraryRootCategory
+import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
+import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.feature.home.util.ResourceUtil
 
 private const val TAG = "HomeScreen"
@@ -37,6 +47,8 @@ fun HomeRoute(
     fun onMediaItemClick(mediaItem: MediaItem) {
         if (mediaItem.mediaMetadata.isBrowsable == true) {
             onNavigateToPlayList(mediaItem.mediaId)
+        } else {
+            homeViewModel.playMusic(mediaItem)
         }
     }
 
@@ -56,6 +68,7 @@ fun HomeRoute(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -101,24 +114,64 @@ private fun HomeScreen(
             }
         }
 
-        LazyVerticalStaggeredGrid(
-            modifier = modifier,
-            columns = StaggeredGridCells.Fixed(2)
-        ) {
-            items(
-                items = state.currentMusicItems,
-                key = { it.mediaId }
-            ) { media ->
-                LargePreviewCard(
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                    artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                    title = media.mediaMetadata.title.toString(),
-                    trackCount = media.mediaMetadata.totalTrackCount ?: 0,
-                    onClick = {
-                        onMediaItemClick.invoke(media)
+        when (state.selectedCategory) {
+            ALL_MUSIC_ID -> {
+                LazyColumn(
+                    modifier = Modifier,
+                    contentPadding = PaddingValues(horizontal = 5.dp)
+                ) {
+                    items(
+                        items = state.currentMusicItems,
+                        key = { it.mediaId }
+                    ) { item ->
+                        MusicCard(
+                            modifier = Modifier
+                                .padding(vertical = 4.dp)
+                                .animateItemPlacement(),
+                            isActive = false,
+                            albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                            title = item.mediaMetadata.title.toString(),
+                            showTrackNum = false,
+                            artist = item.mediaMetadata.artist.toString(),
+                            trackNum = item.mediaMetadata.trackNumber ?: 0,
+                            date = -1,
+                            onMusicItemClick = {
+                                onMediaItemClick.invoke(item)
+                            },
+                            onOptionButtonClick = {
+//                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                            }
+                        )
                     }
-                )
+                }
+            }
+
+            ALBUM_ID -> {
+                LazyVerticalStaggeredGrid(
+                    modifier = modifier,
+                    columns = StaggeredGridCells.Fixed(2)
+                ) {
+                    items(
+                        items = state.currentMusicItems,
+                        key = { it.mediaId }
+                    ) { media ->
+                        LargePreviewCard(
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                            artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
+                            title = media.mediaMetadata.title.toString(),
+                            trackCount = media.mediaMetadata.totalTrackCount ?: 0,
+                            onClick = {
+                                onMediaItemClick.invoke(media)
+                            }
+                        )
+                    }
+                }
+            }
+
+            ARTIST_ID -> {
+
             }
         }
+
     }
 }

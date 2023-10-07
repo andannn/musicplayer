@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
@@ -107,6 +108,25 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun playMusic(mediaItem: MediaItem) {
+        val state = this._state.value
+        if (state is HomeUiState.Loading) return
+        val readyState = state as HomeUiState.Ready
+
+        browser?.run {
+            setMediaItems(
+                readyState.currentMusicItems,
+                /* startIndex= */
+                readyState.currentMusicItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
+                /* startPositionMs= */
+                C.TIME_UNSET
+            )
+            shuffleModeEnabled = false
+            prepare()
+            play()
         }
     }
 
