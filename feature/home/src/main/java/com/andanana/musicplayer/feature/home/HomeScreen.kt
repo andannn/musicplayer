@@ -10,17 +10,20 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
+import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
+import com.andanana.musicplayer.feature.home.util.ResourceUtil
 
 private const val TAG = "HomeScreen"
 
@@ -68,24 +71,33 @@ private fun HomeScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        ScrollableTabRow(
+        CenterTabLayout(
             modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = selectedIndex
+            paddingVertical = 5.dp,
+            selectedIndex = selectedIndex,
+            onScrollFinishToSelectIndex = { index ->
+                if (index != selectedIndex) {
+                    onTabClicked.invoke(categories[index])
+                }
+            }
         ) {
             categories.forEachIndexed { index, item ->
                 Tab(
+                    modifier = Modifier,
                     selected = index == selectedIndex,
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurface,
+                    text = @Composable {
+                        Text(
+                            text = stringResource(id = ResourceUtil.getCategoryResource(item))
+                        )
+                    },
                     onClick = {
                         if (index != selectedIndex) {
                             onTabClicked.invoke(categories[index])
                         }
                     }
-                ) {
-                    Text(
-                        modifier = modifier.padding(vertical = 10.dp),
-                        text = item
-                    )
-                }
+                )
             }
         }
 

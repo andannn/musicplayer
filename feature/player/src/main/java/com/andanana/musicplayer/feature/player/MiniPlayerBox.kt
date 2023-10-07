@@ -41,7 +41,6 @@ private fun MiniPlayerBoxContent(
     onFavoriteButtonClick: () -> Unit = {},
     onPlayNextButtonClick: () -> Unit = {}
 ) {
-    Log.d(TAG, "MiniPlayerBoxContent:$state")
     if (state is PlayerUiState.Active) {
         MiniPlayerBox(
             modifier = modifier,

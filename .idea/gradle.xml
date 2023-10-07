@@ -33,7 +33,6 @@
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/core/mediastore" />
             <option value="$PROJECT_DIR$/core/player" />
-            <option value="$PROJECT_DIR$/datastore" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/library" />

@@ -122,16 +122,15 @@ class PlayerStateViewModel @Inject constructor(
     }
 
     fun togglePlayState() {
-//        val state = playerUiStateFlow.value
-//        if (state is PlayerUiState.Active) {
-//            playerUiStateFlow.value.let {
-//                when (state.state) {
-//                    PlayState.PAUSED -> playerMonitor.play()
-//                    PlayState.PLAYING -> playerMonitor.pause()
-//                    else -> Unit
-//                }
-//            }
-//        }
+        val state = playerUiStateFlow.value
+        if (state is PlayerUiState.Active) {
+            playerUiStateFlow.value.let {
+                when (state.state) {
+                    PlayState.PAUSED -> browser?.play()
+                    PlayState.PLAYING -> browser?.pause()
+                }
+            }
+        }
     }
 
     fun next() {

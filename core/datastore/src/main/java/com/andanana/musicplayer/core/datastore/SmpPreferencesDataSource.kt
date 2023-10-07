@@ -9,6 +9,9 @@ import javax.inject.Inject
 class SmpPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>
 ) {
+    fun  getdata() {
+        userPreferences.data
+    }
     val userDate = userPreferences.data
         .map {
             UserSetting(

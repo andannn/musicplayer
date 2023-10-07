@@ -4,4 +4,5 @@
     <string name="audio_page_title">All</string>
     <string name="album_page_title">Album</string>
     <string name="artist_page_title">Artist</string>
+    <string name="play_list_page_title">PlayList</string>
 </resources>
