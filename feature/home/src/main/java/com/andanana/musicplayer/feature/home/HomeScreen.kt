@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.feature.home
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,13 +14,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,6 +39,8 @@ import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.feature.home.util.ResourceUtil
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 private const val TAG = "HomeScreen"
 
@@ -52,14 +61,10 @@ fun HomeRoute(
 
     val state by homeViewModel.state.collectAsState()
 
-    if (state is HomeUiState.Loading) {
-        Box(modifier = modifier.fillMaxSize()) {
-            CircularProgressIndicator()
-        }
-    } else {
+    if (state.categories.isNotEmpty()) {
         HomeScreen(
             modifier = modifier,
-            state = state as HomeUiState.Ready,
+            state = state,
             onTabClicked = homeViewModel::onSelectedCategoryChanged,
             onMediaItemClick = ::onMediaItemClick
         )
@@ -70,14 +75,33 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    state: HomeUiState.Ready,
+    state: HomeUiState,
     onMediaItemClick: (MediaItem) -> Unit,
     onTabClicked: (String) -> Unit
 ) {
     val categories = state.categories.map {
         it.mediaId
     }
-    val selectedIndex = categories.indexOf(state.selectedCategory)
+
+    val categoryPageContents = remember(state) {
+        state.categoryPageContents
+    }
+
+    val pageState = rememberPagerState(pageCount = { categories.size })
+
+    val selectedIndex = pageState.currentPage
+
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key1 = Unit) {
+        Log.d(TAG, "HomeScreen: LaunchedEffect ${pageState.currentPage}")
+        snapshotFlow {
+            pageState.currentPage
+        }.collect {
+            Log.d(TAG, "HomeScreen: request ${categories[it]}")
+            onTabClicked.invoke(categories[it])
+        }
+    }
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -87,8 +111,8 @@ private fun HomeScreen(
             paddingVertical = 5.dp,
             selectedIndex = selectedIndex,
             onScrollFinishToSelectIndex = { index ->
-                if (index != selectedIndex) {
-                    onTabClicked.invoke(categories[index])
+                scope.launch {
+                    pageState.animateScrollToPage(index)
                 }
             }
         ) {
@@ -104,72 +128,74 @@ private fun HomeScreen(
                         )
                     },
                     onClick = {
-                        if (index != selectedIndex) {
-                            onTabClicked.invoke(categories[index])
+                        scope.launch {
+                            pageState.animateScrollToPage(index)
                         }
                     }
                 )
             }
         }
 
-        when (state.selectedCategory) {
-            ALL_MUSIC_ID -> {
-                LazyColumn(
-                    modifier = Modifier,
-                    contentPadding = PaddingValues(horizontal = 5.dp)
-                ) {
-                    items(
-                        items = state.currentMusicItems,
-                        key = { it.mediaId }
-                    ) { item ->
-                        MusicCard(
-                            modifier = Modifier
-                                .padding(vertical = 4.dp)
-                                .animateItemPlacement(),
-                            isActive = false,
-                            albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                            title = item.mediaMetadata.title.toString(),
-                            showTrackNum = false,
-                            artist = item.mediaMetadata.artist.toString(),
-                            trackNum = item.mediaMetadata.trackNumber ?: 0,
-                            date = -1,
-                            onMusicItemClick = {
-                                onMediaItemClick.invoke(item)
-                            },
-                            onOptionButtonClick = {
+        HorizontalPager(state = pageState) { index ->
+            val mediaItems = categoryPageContents[index]
+            when (categories[index]) {
+                ALL_MUSIC_ID -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(horizontal = 5.dp)
+                    ) {
+                        items(
+                            items = mediaItems,
+                            key = { it.mediaId }
+                        ) { item ->
+                            MusicCard(
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                                    .animateItemPlacement(),
+                                isActive = false,
+                                albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                                title = item.mediaMetadata.title.toString(),
+                                showTrackNum = false,
+                                artist = item.mediaMetadata.artist.toString(),
+                                trackNum = item.mediaMetadata.trackNumber ?: 0,
+                                date = -1,
+                                onMusicItemClick = {
+                                    onMediaItemClick.invoke(item)
+                                },
+                                onOptionButtonClick = {
 //                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
-                            }
-                        )
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            ALBUM_ID -> {
-                LazyVerticalStaggeredGrid(
-                    modifier = modifier,
-                    columns = StaggeredGridCells.Fixed(2)
-                ) {
-                    items(
-                        items = state.currentMusicItems,
-                        key = { it.mediaId }
-                    ) { media ->
-                        LargePreviewCard(
-                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                            artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                            title = media.mediaMetadata.title.toString(),
-                            trackCount = media.mediaMetadata.totalTrackCount ?: 0,
-                            onClick = {
-                                onMediaItemClick.invoke(media)
-                            }
-                        )
+                ALBUM_ID -> {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.fillMaxSize(),
+                        columns = StaggeredGridCells.Fixed(2)
+                    ) {
+                        items(
+                            items = mediaItems,
+                            key = { it.mediaId }
+                        ) { media ->
+                            LargePreviewCard(
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                                artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
+                                title = media.mediaMetadata.title.toString(),
+                                trackCount = media.mediaMetadata.totalTrackCount ?: 0,
+                                onClick = {
+                                    onMediaItemClick.invoke(media)
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            ARTIST_ID -> {
+                ARTIST_ID -> {
 
+                }
             }
         }
-
     }
 }
