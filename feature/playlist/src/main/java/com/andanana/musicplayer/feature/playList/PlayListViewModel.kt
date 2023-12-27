@@ -1,7 +1,5 @@
 package com.andanana.musicplayer.feature.playList
 
-import android.app.Application
-import android.content.ComponentName
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
-import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.model.LibraryRootCategory
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
@@ -26,7 +23,7 @@ private const val TAG = "PlayListViewModel"
 
 @HiltViewModel
 class PlayListViewModel @Inject constructor(
-    application: Application,
+    private val browserFuture: ListenableFuture<MediaBrowser>,
     savedStateHandle: SavedStateHandle,
     private val playerMonitor: PlayerMonitor,
 ) : ViewModel() {
@@ -36,15 +33,6 @@ class PlayListViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(PlayListUiState())
     val state = _state.asStateFlow()
-
-    private var browserFuture: ListenableFuture<MediaBrowser> = MediaBrowser.Builder(
-        application,
-        SessionToken(
-            application,
-            ComponentName(application, "com.andanana.musicplayer.PlayerService")
-        )
-    )
-        .buildAsync()
 
     private val browser: MediaBrowser?
         get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null

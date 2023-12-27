@@ -24,16 +24,8 @@ private const val TAG = "HomeViewModel"
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    application: Application,
+    private val browserFuture: ListenableFuture<MediaBrowser>
 ) : ViewModel() {
-    private var browserFuture: ListenableFuture<MediaBrowser> = MediaBrowser.Builder(
-        application,
-        SessionToken(
-            application,
-            ComponentName(application, "com.andanana.musicplayer.PlayerService")
-        )
-    )
-        .buildAsync()
 
     private val browser: MediaBrowser?
         get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null

@@ -32,19 +32,11 @@ private const val TAG = "PlayerStateViewModel"
 
 @HiltViewModel
 class PlayerStateViewModel @Inject constructor(
-    application: Application,
+    private val browserFuture: ListenableFuture<MediaBrowser>,
     private val playerMonitor: PlayerMonitor,
     private val smpPreferenceRepository: SmpPreferenceRepository,
 //    private val useCases: PlayListUseCases
 ) : ViewModel() {
-    private var browserFuture: ListenableFuture<MediaBrowser> = MediaBrowser.Builder(
-        application,
-        SessionToken(
-            application,
-            ComponentName(application, "com.andanana.musicplayer.PlayerService")
-        )
-    )
-        .buildAsync()
 
     private val browser: MediaBrowser?
         get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
