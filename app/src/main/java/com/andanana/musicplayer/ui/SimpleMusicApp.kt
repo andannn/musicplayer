@@ -14,27 +14,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.andanana.musicplayer.MainActivityViewModel
-import com.andanana.musicplayer.R
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.component.SmpBottomDrawer
-import com.andanana.musicplayer.core.designsystem.component.SmpNavigationBarItem
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.feature.home.navigation.homeRoute
 import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayListDialog
 import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
@@ -44,17 +38,17 @@ import com.andanana.musicplayer.navigation.SmpNavHost
 
 private const val TAG = "SimpleMusicApp"
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SimpleMusicApp(
-    appState: SimpleMusicAppState = rememberSimpleMusicAppState()
-) {
-    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-        "No view model store owner"
-    }
-    val mainViewModel: MainActivityViewModel = remember(viewModelStoreOwner) {
-        ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
-    }
+fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()) {
+    val viewModelStoreOwner =
+        checkNotNull(LocalViewModelStoreOwner.current) {
+            "No view model store owner"
+        }
+    val mainViewModel: MainActivityViewModel =
+        remember(viewModelStoreOwner) {
+            ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
+        }
 
     Scaffold(
         snackbarHost = {
@@ -63,24 +57,18 @@ fun SimpleMusicApp(
             val snackBarPaddingBottom =
                 remember(
                     appState.currentNavDestination,
-                    interactingItem
+                    interactingItem,
                 ) {
                     getSnackBarPaddingBottom(
                         appState = appState,
-                        isMusicBoxShowing = interactingItem != null
+                        isMusicBoxShowing = interactingItem != null,
                     )
                 }
             SnackbarHost(
                 modifier = Modifier.padding(bottom = snackBarPaddingBottom),
-                hostState = appState.snackbarHostState
+                hostState = appState.snackbarHostState,
             )
         },
-        topBar = {
-            SmpCenterAlignedTopAppBar(
-                visible = appState.currentNavDestination?.route == homeRoute,
-                title = stringResource(id = R.string.app_name)
-            )
-        }
     ) {
         appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
@@ -105,19 +93,19 @@ fun SimpleMusicApp(
                             onDrawerItemClick(
                                 appState = appState,
                                 mainViewModel = mainViewModel,
-                                index = index
+                                index = index,
                             )
-                        }
+                        },
                     )
                 } else {
                     PlayerRoute(
                         onNavigateToPlayQueue = {
                             appState.closeDrawer()
                             appState.navController.navigateToPlayQueue()
-                        }
+                        },
                     )
                 }
-            }
+            },
         ) {
             Box(modifier = Modifier.padding(it)) {
                 Column {
@@ -132,14 +120,14 @@ fun SimpleMusicApp(
                         onNewPlayListButtonClick = {
                             appState.navController.navigateToNewPlayListDialog()
                         },
-                        onCreateButtonClick = mainViewModel::onNewPlaylist
+                        onCreateButtonClick = mainViewModel::onNewPlaylist,
                     )
 
                     MiniPlayerBox(
                         onNavigateToPlayer = {
                             appState.showPlayerDrawer()
                         },
-                        onToggleFavorite = mainViewModel::onToggleFavorite
+                        onToggleFavorite = mainViewModel::onToggleFavorite,
                     )
                 }
             }
@@ -150,21 +138,22 @@ fun SimpleMusicApp(
 @Composable
 private fun DrawerItemsList(
     items: List<DrawerItem>,
-    onItemClick: (Int) -> Unit
+    onItemClick: (Int) -> Unit,
 ) {
     items.forEachIndexed { index, item ->
-        val imageVector = when (val icon = item.icon) {
-            is Icon.ImageVectorIcon -> {
-                icon.imageVector
+        val imageVector =
+            when (val icon = item.icon) {
+                is Icon.ImageVectorIcon -> {
+                    icon.imageVector
+                }
             }
-        }
         DrawerItemView(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
             icon = imageVector,
             text = item.text,
             onClick = {
                 onItemClick(index)
-            }
+            },
         )
         if (index != items.lastIndex) {
             Divider()
@@ -175,14 +164,14 @@ private fun DrawerItemsList(
 private fun onDrawerItemClick(
     appState: SimpleMusicAppState,
     mainViewModel: MainActivityViewModel,
-    index: Int
+    index: Int,
 ) {
     val drawerItem = appState.drawer.value?.itemList?.get(index)!!
     mainViewModel.onDrawerItemClick(drawerItem)
     when (drawerItem) {
         DrawerItem.ADD_TO_PLAY_LIST -> {
             appState.navController.navigateToAddPlayListDialog(
-                mainViewModel.interactingUri.value!!
+                mainViewModel.interactingUri.value!!,
             )
         }
 
@@ -196,40 +185,41 @@ private fun onDrawerItemClick(
 private fun SmpCenterAlignedTopAppBar(
     modifier: Modifier = Modifier,
     visible: Boolean,
-    title: String
+    title: String,
 ) {
     AnimatedVisibility(
         visible = visible,
         enter = expandVertically(),
-        exit = shrinkVertically()
+        exit = shrinkVertically(),
     ) {
         CenterAlignedTopAppBar(
             modifier = modifier,
             title = {
                 Text(
-                    text = title
+                    text = title,
                 )
-            }
+            },
         )
     }
 }
 
 private fun getSnackBarPaddingBottom(
     appState: SimpleMusicAppState,
-    isMusicBoxShowing: Boolean
+    isMusicBoxShowing: Boolean,
 ): Dp {
     val navigationBarHeight = 80.0.dp
     val playerBoxHeight = 70.dp
     val snackBarPaddingBottom = 10.dp
 
     val isNavigationBarVisible = !appState.isNavigationBarHide
-    return snackBarPaddingBottom + if (isNavigationBarVisible && !isMusicBoxShowing) {
-        navigationBarHeight
-    } else if (!isNavigationBarVisible && isMusicBoxShowing) {
-        playerBoxHeight
-    } else if (isNavigationBarVisible && isMusicBoxShowing) {
-        navigationBarHeight + playerBoxHeight
-    } else {
-        0.dp
-    }
+    return snackBarPaddingBottom +
+        if (isNavigationBarVisible && !isMusicBoxShowing) {
+            navigationBarHeight
+        } else if (!isNavigationBarVisible && isMusicBoxShowing) {
+            playerBoxHeight
+        } else if (isNavigationBarVisible && isMusicBoxShowing) {
+            navigationBarHeight + playerBoxHeight
+        } else {
+            0.dp
+        }
 }

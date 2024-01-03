@@ -3,7 +3,6 @@ package com.andanana.musicplayer.feature.home
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +15,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +50,7 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
     onNavigateToPlayList: (mediaId: String) -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit
+    onShowMusicItemOption: (Uri) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItem) {
         if (mediaItem.mediaMetadata.isBrowsable == true) {
@@ -66,26 +67,28 @@ fun HomeRoute(
             modifier = modifier,
             state = state,
             onTabClicked = homeViewModel::onSelectedCategoryChanged,
-            onMediaItemClick = ::onMediaItemClick
+            onMediaItemClick = ::onMediaItemClick,
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeUiState,
     onMediaItemClick: (MediaItem) -> Unit,
-    onTabClicked: (String) -> Unit
+    onTabClicked: (String) -> Unit,
 ) {
-    val categories = state.categories.map {
-        it.mediaId
-    }
+    val categories =
+        state.categories.map {
+            it.mediaId
+        }
 
-    val categoryPageContents = remember(state) {
-        state.categoryPageContents
-    }
+    val categoryPageContents =
+        remember(state) {
+            state.categoryPageContents
+        }
 
     val pageState = rememberPagerState(pageCount = { categories.size })
 
@@ -103,97 +106,111 @@ private fun HomeScreen(
         }
     }
 
-    Column(
-        modifier = modifier.fillMaxSize()
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = "Smp")
+                },
+            )
+        },
     ) {
-        CenterTabLayout(
-            modifier = Modifier.fillMaxWidth(),
-            paddingVertical = 5.dp,
-            selectedIndex = selectedIndex,
-            onScrollFinishToSelectIndex = { index ->
-                scope.launch {
-                    pageState.animateScrollToPage(index)
-                }
-            }
+        Column(
+            modifier =
+                Modifier
+                    .padding(it)
+                    .fillMaxSize(),
         ) {
-            categories.forEachIndexed { index, item ->
-                Tab(
-                    modifier = Modifier,
-                    selected = index == selectedIndex,
-                    selectedContentColor = MaterialTheme.colorScheme.primary,
-                    unselectedContentColor = MaterialTheme.colorScheme.onSurface,
-                    text = @Composable {
-                        Text(
-                            text = stringResource(id = ResourceUtil.getCategoryResource(item))
-                        )
-                    },
-                    onClick = {
-                        scope.launch {
-                            pageState.animateScrollToPage(index)
-                        }
+            CenterTabLayout(
+                modifier = Modifier.fillMaxWidth(),
+                paddingVertical = 5.dp,
+                selectedIndex = selectedIndex,
+                onScrollFinishToSelectIndex = { index ->
+                    scope.launch {
+                        pageState.animateScrollToPage(index)
                     }
-                )
+                },
+            ) {
+                categories.forEachIndexed { index, item ->
+                    Tab(
+                        modifier = Modifier,
+                        selected = index == selectedIndex,
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurface,
+                        text = @Composable {
+                            Text(
+                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
+                            )
+                        },
+                        onClick = {
+                            scope.launch {
+                                pageState.animateScrollToPage(index)
+                            }
+                        },
+                    )
+                }
             }
-        }
 
-        HorizontalPager(state = pageState) { index ->
-            val mediaItems = categoryPageContents[index]
-            when (categories[index]) {
-                ALL_MUSIC_ID -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 5.dp)
-                    ) {
-                        items(
-                            items = mediaItems,
-                            key = { it.mediaId }
-                        ) { item ->
-                            MusicCard(
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
-                                    .animateItemPlacement(),
-                                isActive = false,
-                                albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                                title = item.mediaMetadata.title.toString(),
-                                showTrackNum = false,
-                                artist = item.mediaMetadata.artist.toString(),
-                                trackNum = item.mediaMetadata.trackNumber ?: 0,
-                                date = -1,
-                                onMusicItemClick = {
-                                    onMediaItemClick.invoke(item)
-                                },
-                                onOptionButtonClick = {
+            HorizontalPager(state = pageState) { index ->
+                val mediaItems = categoryPageContents[index]
+                when (categories[index]) {
+                    ALL_MUSIC_ID -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 5.dp),
+                        ) {
+                            items(
+                                items = mediaItems,
+                                key = { it.mediaId },
+                            ) { item ->
+                                MusicCard(
+                                    modifier =
+                                        Modifier
+                                            .padding(vertical = 4.dp)
+                                            .animateItemPlacement(),
+                                    isActive = false,
+                                    albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                                    title = item.mediaMetadata.title.toString(),
+                                    showTrackNum = false,
+                                    artist = item.mediaMetadata.artist.toString(),
+                                    trackNum = item.mediaMetadata.trackNumber ?: 0,
+                                    date = -1,
+                                    onMusicItemClick = {
+                                        onMediaItemClick.invoke(item)
+                                    },
+                                    onOptionButtonClick = {
 //                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
-                                }
-                            )
+                                    },
+                                )
+                            }
                         }
                     }
-                }
 
-                ALBUM_ID -> {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Fixed(2)
-                    ) {
-                        items(
-                            items = mediaItems,
-                            key = { it.mediaId }
-                        ) { media ->
-                            LargePreviewCard(
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                                artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                                title = media.mediaMetadata.title.toString(),
-                                trackCount = media.mediaMetadata.totalTrackCount ?: 0,
-                                onClick = {
-                                    onMediaItemClick.invoke(media)
-                                }
-                            )
+                    ALBUM_ID -> {
+                        LazyVerticalStaggeredGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = StaggeredGridCells.Fixed(2),
+                        ) {
+                            items(
+                                items = mediaItems,
+                                key = { it.mediaId },
+                            ) { media ->
+                                LargePreviewCard(
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                                    artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
+                                    title = media.mediaMetadata.title.toString(),
+                                    trackCount = media.mediaMetadata.totalTrackCount ?: 0,
+                                    onClick = {
+                                        onMediaItemClick.invoke(media)
+                                    },
+                                )
+                            }
                         }
                     }
-                }
 
-                ARTIST_ID -> {
-
+                    ARTIST_ID -> {
+                    }
                 }
             }
         }

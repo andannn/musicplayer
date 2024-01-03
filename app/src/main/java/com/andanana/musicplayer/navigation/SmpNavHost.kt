@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.andanana.musicplayer.feature.home.navigation.homeRoute
+import com.andanana.musicplayer.feature.home.navigation.HOME_ROUTE
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.library.navigation.addPlayListDialog
 import com.andanana.musicplayer.feature.library.navigation.libraryScreen
@@ -23,36 +23,36 @@ fun SmpNavHost(
     onBackPressed: () -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
     onNewPlayListButtonClick: () -> Unit,
-    onCreateButtonClick: (name: String) -> Unit
+    onCreateButtonClick: (name: String) -> Unit,
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = homeRoute,
-        modifier = modifier
+        startDestination = HOME_ROUTE,
+        modifier = modifier,
     ) {
         homeScreen(
             onNavigateToPlayList = { mediaId ->
                 navHostController.navigateToPlayList(mediaId = mediaId)
             },
-            onShowMusicItemOption = onShowMusicItemOption
+            onShowMusicItemOption = onShowMusicItemOption,
         )
         libraryScreen(
             onNavigateToPlayScreen = {
 //                navHostController.navigateToPlayList(it)
             },
-            onOptionButtonClick = onShowMusicItemOption
+            onOptionButtonClick = onShowMusicItemOption,
         )
         playListScreen(
             onShowMusicItemOption = onShowMusicItemOption,
-            onBackPressed = onBackPressed
+            onBackPressed = onBackPressed,
         )
         addPlayListDialog(
             onNewPlayListButtonClick = onNewPlayListButtonClick,
-            onNavigateBack = onBackPressed
+            onNavigateBack = onBackPressed,
         )
         newPlayListDialog(
             onNavigateBack = onBackPressed,
-            onCreateButtonClick = onCreateButtonClick
+            onCreateButtonClick = onCreateButtonClick,
         )
         playQueueScreen(
             onBackPressed = onBackPressed,

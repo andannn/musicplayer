@@ -63,10 +63,7 @@ class MainActivity : ComponentActivity() {
         }
 
         splashScreen.setKeepOnScreenCondition {
-            when (mainUiState) {
-                MainUiState.Loading -> true
-                MainUiState.Ready -> false
-            }
+            mainUiState is MainUiState.Loading
         }
 
         setContent {
@@ -87,35 +84,15 @@ class MainActivity : ComponentActivity() {
             )
 
             if (!permissionGranted) {
-                SideEffect {
+                LaunchedEffect(Unit) {
                     runTimePermissions.filter {
                         ContextCompat.checkSelfPermission(
-                            /* context = */ this,
+                            /* context = */ this@MainActivity,
                             /* permission = */ it
                         ) == PackageManager.PERMISSION_DENIED
                     }.let {
                         launcher.launch(it.toTypedArray())
                     }
-                }
-            } else {
-                LaunchedEffect(Unit) {
-                    val context = this@MainActivity
-//                    val intent = Intent(context, PlayerService::class.java)
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                        context.startForegroundService(intent)
-//                    }
-                    val sessionToken = SessionToken(this@MainActivity, ComponentName(this@MainActivity, PlayerService::class.java))
-                    val controllerFuture = MediaController.Builder(this@MainActivity, sessionToken).buildAsync()
-                    controllerFuture.addListener(
-                        {
-                            // Call controllerFuture.get() to retrieve the MediaController.
-                            // MediaController implements the Player interface, so it can be
-                            // attached to the PlayerView UI component.
-//                            playerView.setPlayer(controllerFuture.get())
-                            Log.d(TAG, "onCreate:  controllerFuture ${controllerFuture.get()}")
-                        },
-                        MoreExecutors.directExecutor()
-                    )
                 }
             }
 

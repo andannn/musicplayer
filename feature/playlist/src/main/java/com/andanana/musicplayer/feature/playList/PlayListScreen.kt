@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,7 +40,7 @@ fun PlayListScreen(
     modifier: Modifier = Modifier,
     playListViewModel: PlayListViewModel = hiltViewModel(),
     onShowMusicItemOption: (Uri) -> Unit,
-    onShowPlayListItemOption: (Uri) -> Unit
+    onShowPlayListItemOption: (Uri) -> Unit,
 ) {
     val uiState by playListViewModel.state.collectAsState()
 
@@ -49,11 +48,10 @@ fun PlayListScreen(
         modifier = modifier,
         uiState = uiState,
         onPlayAllButtonClick = {
-
         },
         onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
         onShowMusicItemOption = onShowMusicItemOption,
-        onShowPlayListItemOption = onShowPlayListItemOption
+        onShowPlayListItemOption = onShowPlayListItemOption,
     )
 }
 
@@ -66,33 +64,40 @@ private fun PlayListScreenContent(
     onAddButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit,
     onShowMusicItemOption: (Uri) -> Unit,
-    onShowPlayListItemOption: (Uri) -> Unit
+    onShowPlayListItemOption: (Uri) -> Unit,
 ) {
-    val playListControlBoxMaxHeightPx = with(LocalDensity.current) {
-        PlayBoxMaxHeight.toPx()
-    }
-    val playListControlBoxMinHeightPx = with(LocalDensity.current) {
-        PlayBoxMinHeight.toPx()
-    }
+    val playListControlBoxMaxHeightPx =
+        with(LocalDensity.current) {
+            PlayBoxMaxHeight.toPx()
+        }
+    val playListControlBoxMinHeightPx =
+        with(LocalDensity.current) {
+            PlayBoxMinHeight.toPx()
+        }
     var playListControlBoxHeight by remember {
         mutableFloatStateOf(playListControlBoxMaxHeightPx)
     }
 
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val newOffset = playListControlBoxHeight + available.y.div(6f)
-                playListControlBoxHeight =
-                    newOffset.coerceIn(playListControlBoxMinHeightPx, playListControlBoxMaxHeightPx)
-                return super.onPreScroll(available, source)
+    val nestedScrollConnection =
+        remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(
+                    available: Offset,
+                    source: NestedScrollSource,
+                ): Offset {
+                    val newOffset = playListControlBoxHeight + available.y.div(6f)
+                    playListControlBoxHeight =
+                        newOffset.coerceIn(playListControlBoxMinHeightPx, playListControlBoxMaxHeightPx)
+                    return super.onPreScroll(available, source)
+                }
             }
         }
-    }
 
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .nestedScroll(nestedScrollConnection)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .nestedScroll(nestedScrollConnection),
     ) {
         Column {
             Surface {
@@ -104,22 +109,23 @@ private fun PlayListScreenContent(
                     trackCount = uiState.trackCount,
                     onPlayAllButtonClick = onPlayAllButtonClick,
                     onAddToPlayListButtonClick = {},
-                    onOptionButtonClick = { }
+                    onOptionButtonClick = { },
                 )
             }
 
             LazyColumn(
                 modifier = modifier,
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
             ) {
                 items(
                     items = uiState.musicItems,
-                    key = { it.mediaId }
+                    key = { it.mediaId },
                 ) { item ->
                     MusicCard(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .animateItemPlacement(),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 4.dp)
+                                .animateItemPlacement(),
                         isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                         albumArtUri = item.mediaMetadata.artworkUri.toString(),
                         title = item.mediaMetadata.title.toString(),
@@ -130,12 +136,12 @@ private fun PlayListScreenContent(
                         onMusicItemClick = {
                             onAudioItemClick(
                                 uiState.musicItems,
-                                uiState.musicItems.indexOf(item)
+                                uiState.musicItems.indexOf(item),
                             )
                         },
                         onOptionButtonClick = {
                             item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
-                        }
+                        },
                     )
                 }
             }

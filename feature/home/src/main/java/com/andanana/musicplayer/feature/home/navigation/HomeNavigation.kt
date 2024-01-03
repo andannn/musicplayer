@@ -1,27 +1,20 @@
 package com.andanana.musicplayer.feature.home.navigation
 
 import android.net.Uri
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.feature.home.HomeRoute
 
-const val homeRoute = "home_route"
-
-fun NavController.navigateToHome(navOptions: NavOptions? = null) {
-    this.navigate(homeRoute, navOptions)
-}
+const val HOME_ROUTE = "home_route"
 
 fun NavGraphBuilder.homeScreen(
     onNavigateToPlayList: (mediaId: String) -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit
+    onShowMusicItemOption: (Uri) -> Unit,
 ) {
-    composable(route = homeRoute) {
+    composable(route = HOME_ROUTE) {
         HomeRoute(
             onNavigateToPlayList = onNavigateToPlayList,
-            onShowMusicItemOption = onShowMusicItemOption
+            onShowMusicItemOption = onShowMusicItemOption,
         )
     }
 }

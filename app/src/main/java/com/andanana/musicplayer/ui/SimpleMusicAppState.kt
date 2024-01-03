@@ -11,17 +11,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
-import com.andanana.musicplayer.core.designsystem.Drawer
 import com.andanana.musicplayer.core.data.model.MusicListType
-import com.andanana.musicplayer.feature.home.navigation.homeRoute
-import com.andanana.musicplayer.feature.home.navigation.navigateToHome
-import com.andanana.musicplayer.feature.library.navigation.libraryRoute
-import com.andanana.musicplayer.feature.library.navigation.navigateToLibrary
+import com.andanana.musicplayer.core.designsystem.Drawer
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
@@ -36,21 +30,21 @@ fun rememberSimpleMusicAppState(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     drawerState: BottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed),
     navController: NavHostController = rememberNavController(),
-    systemUiController: SystemUiController = rememberSystemUiController()
+    systemUiController: SystemUiController = rememberSystemUiController(),
 ): SimpleMusicAppState {
     return remember(
         navController,
         coroutineScope,
         systemUiController,
         drawerState,
-        snackbarHostState
+        snackbarHostState,
     ) {
         SimpleMusicAppState(
             navController,
             coroutineScope,
             systemUiController,
             drawerState,
-            snackbarHostState
+            snackbarHostState,
         )
     }
 }
@@ -61,7 +55,7 @@ class SimpleMusicAppState constructor(
     val coroutineScope: CoroutineScope,
     val systemUiController: SystemUiController,
     val drawerState: BottomDrawerState,
-    val snackbarHostState: SnackbarHostState
+    val snackbarHostState: SnackbarHostState,
 ) {
     val drawerType: MutableState<DrawerType> = mutableStateOf(DrawerType.OPTION_LIST)
 
@@ -149,5 +143,5 @@ fun MusicListType.toDrawer(): Drawer {
 
 enum class DrawerType {
     PLAYER,
-    OPTION_LIST
+    OPTION_LIST,
 }
