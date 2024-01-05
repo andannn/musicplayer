@@ -1,17 +1,14 @@
 package com.andanana.musicplayer
 
 import android.net.Uri
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andanana.musicplayer.core.data.Syncer
 import com.andanana.musicplayer.core.data.model.MusicListType
-import com.andanana.musicplayer.core.data.repository.MusicRepository
 import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,16 +25,12 @@ private const val TAG = "MainActivityViewModel"
 class MainActivityViewModel
     @Inject
     constructor(
-        private val savedStateHandle: SavedStateHandle,
         private val playerMonitor: PlayerMonitor,
         private val useCases: PlayListUseCases,
-        private val musicRepository: MusicRepository,
         private val syncer: Syncer,
     ) : ViewModel(), PlayerMonitor by playerMonitor {
         private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
         val mainUiState = _mainUiState.asStateFlow()
-
-        var syncJob: Job? = null
 
         val interactingUri = MutableStateFlow<Uri?>(null)
         private val interactingType =
@@ -129,39 +122,8 @@ class MainActivityViewModel
             }
         }
 
-        fun onToggleFavorite(uri: Uri) {
-//        uri.lastPathSegment?.toLong()?.let { mediaId ->
-//            if (musicInFavorite.value.map { it.musicEntity.id }.contains(mediaId)) {
-//                deleteMusicInFavorite(mediaId)
-//            } else {
-//                addMusicToFavorite(mediaId)
-//            }
-//        }
-        }
-
-        private fun deleteMusicInFavorite(mediaId: Long) {
-            viewModelScope.launch {
-                useCases.deleteMusicInFavorite(mediaId)
-                _snackBarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
-            }
-        }
-
-        private fun addMusicToFavorite(mediaId: Long) {
-            viewModelScope.launch {
-                useCases.addMusicToFavorite(
-                    mediaId,
-                    addedDate = System.currentTimeMillis(),
-                )
-                _snackBarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
-            }
-        }
-
         fun setCurrentInteractingUri(uri: Uri) {
             interactingUri.value = uri
-        }
-
-        private fun clearInteractingUri() {
-            interactingUri.value = null
         }
 
         fun onNewPlaylist(name: String) {
