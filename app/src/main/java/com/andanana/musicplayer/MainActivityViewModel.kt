@@ -172,6 +172,10 @@ class MainActivityViewModel
                 )
             }
         }
+
+        fun onPermissionStateChanged(hasPermission: Boolean) {
+            syncer.audioPermissionChanged(hasPermission)
+        }
     }
 
 sealed interface MainUiState {

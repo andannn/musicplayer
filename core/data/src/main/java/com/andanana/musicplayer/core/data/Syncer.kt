@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 private const val TAG = "Syncer"
@@ -19,6 +20,8 @@ interface Syncer {
     val isSyncing: Boolean
 
     suspend fun observingMediaContent()
+
+    fun audioPermissionChanged(hasPermission: Boolean)
 
     fun observeIsSyncing(): Flow<Boolean>
 }
@@ -57,19 +60,29 @@ class SyncerImpl
             }
 
         private val isSyncingState = MutableStateFlow(false)
+        private val audioPermissionState = MutableStateFlow(false)
 
         override val isSyncing: Boolean
             get() = isSyncingState.value
 
         override fun observeIsSyncing() = isSyncingState
 
+        override fun audioPermissionChanged(hasPermission: Boolean) {
+            audioPermissionState.value = hasPermission
+        }
+
         override suspend fun observingMediaContent() {
-            audioChangedEventFlow.collectLatest {
-                Log.d(TAG, "mediaStoreChanged: sync start")
-                isSyncingState.value = true
-                mediaRepository.sync()
-                isSyncingState.value = false
-                Log.d(TAG, "mediaStoreChanged: sync finished")
+            combine(
+                audioPermissionState,
+                audioChangedEventFlow,
+            ) { hasPermission, _ -> hasPermission }.collectLatest { hasPermission ->
+                if (hasPermission) {
+                    Log.d(TAG, "mediaStoreChanged: sync start")
+                    isSyncingState.value = true
+                    mediaRepository.sync()
+                    isSyncingState.value = false
+                    Log.d(TAG, "mediaStoreChanged: sync finished")
+                }
             }
         }
     }
