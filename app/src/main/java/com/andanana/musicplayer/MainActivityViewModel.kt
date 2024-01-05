@@ -4,10 +4,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
-import com.andanana.musicplayer.core.designsystem.DrawerItem
+import com.andanana.musicplayer.core.data.Syncer
 import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.data.repository.MusicRepository
+import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
+import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -24,56 +25,42 @@ import javax.inject.Inject
 private const val TAG = "MainActivityViewModel"
 
 @HiltViewModel
-class MainActivityViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val playerMonitor: PlayerMonitor,
-    private val useCases: PlayListUseCases,
-    private val musicRepository: MusicRepository
-) : ViewModel(), PlayerMonitor by playerMonitor {
+class MainActivityViewModel
+    @Inject
+    constructor(
+        private val savedStateHandle: SavedStateHandle,
+        private val playerMonitor: PlayerMonitor,
+        private val useCases: PlayListUseCases,
+        private val musicRepository: MusicRepository,
+        private val syncer: Syncer,
+    ) : ViewModel(), PlayerMonitor by playerMonitor {
+        private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
+        val mainUiState = _mainUiState.asStateFlow()
 
-    private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
-    val mainUiState = _mainUiState.asStateFlow()
+        var syncJob: Job? = null
 
-    var syncJob: Job? = null
-
-    val interactingUri = MutableStateFlow<Uri?>(null)
-    private val interactingType = interactingUri.map {
-        null
+        val interactingUri = MutableStateFlow<Uri?>(null)
+        private val interactingType =
+            interactingUri.map {
+                null
 //        it?.toRequestType()
-    }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+            }
+                .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-    private val _snackBarEvent = MutableSharedFlow<SnackBarEvent>()
-    val snackBarEvent = _snackBarEvent.asSharedFlow()
+        private val _snackBarEvent = MutableSharedFlow<SnackBarEvent>()
+        val snackBarEvent = _snackBarEvent.asSharedFlow()
 
-    private val musicInFavorite = useCases.getMusicInFavorite.invoke()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+        private val musicInFavorite =
+            useCases.getMusicInFavorite.invoke()
+                .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    init {
-        viewModelScope.launch {
-            musicRepository.sync()
+        init {
+            viewModelScope.launch {
+                syncer.observingMediaContent()
+            }
         }
-        syncMediaStore()
-    }
 
-    fun syncMediaStore() {
-        syncJob?.cancel()
-        _mainUiState.value = MainUiState.Loading
-        syncJob = viewModelScope.launch {
-            // Read all audio media id from MediaStore.
-//            val idList = mediaStoreSource.getAllMusicMediaId()
-
-            // Add all media id to data base.
-//            useCases.addMusicEntities(idList)
-
-            // Add favorite play list entity, ignore if exist.
-            useCases.addFavoritePlayListEntity(System.currentTimeMillis())
-
-            _mainUiState.value = MainUiState.Ready
-        }
-    }
-
-    fun onDrawerItemClick(item: DrawerItem) {
+        fun onDrawerItemClick(item: DrawerItem) {
 //        val type = interactingUri.value!!.toRequestType()
 //        when (item) {
 //            DrawerItem.PLAY_NEXT -> {
@@ -103,44 +90,46 @@ class MainActivityViewModel @Inject constructor(
 //
 //            else -> {}
 //        }
-    }
+        }
 
-    private fun onPlayNextClicked(id: Long, type: MusicListType?) {
-        viewModelScope.launch {
-            val uris = when (type) {
-                MusicListType.ALBUM_REQUEST -> {
+        private fun onPlayNextClicked(
+            id: Long,
+            type: MusicListType?,
+        ) {
+            viewModelScope.launch {
+                val uris =
+                    when (type) {
+                        MusicListType.ALBUM_REQUEST -> {
 //                    mediaStoreSource.getMusicInfoByAlbumId(id).map { info ->
 //                        info.contentUri
 //                    }
-                    emptyList<Uri>()
-                }
+                            emptyList<Uri>()
+                        }
 
-                MusicListType.ARTIST_REQUEST -> {
+                        MusicListType.ARTIST_REQUEST -> {
 //                    mediaStoreSource.getMusicInfoByArtistId(id).map { info ->
 //                        info.contentUri
 //                    }
-                    emptyList<Uri>()
+                            emptyList<Uri>()
+                        }
 
-                }
-
-                MusicListType.PLAYLIST_REQUEST -> {
+                        MusicListType.PLAYLIST_REQUEST -> {
 //                    useCases.getMusicInPlayList(id).first().map {
 //                        Uri.withAppendedPath(
 //                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 //                            it.music.mediaStoreId.toString()
 //                        )
 //                    }
-                    emptyList<Uri>()
+                            emptyList<Uri>()
+                        }
 
-                }
-
-                else -> emptyList()
-            }
+                        else -> emptyList()
+                    }
 //            playerMonitor.setPlayNext(uris)
+            }
         }
-    }
 
-    fun onToggleFavorite(uri: Uri) {
+        fun onToggleFavorite(uri: Uri) {
 //        uri.lastPathSegment?.toLong()?.let { mediaId ->
 //            if (musicInFavorite.value.map { it.musicEntity.id }.contains(mediaId)) {
 //                deleteMusicInFavorite(mediaId)
@@ -148,44 +137,45 @@ class MainActivityViewModel @Inject constructor(
 //                addMusicToFavorite(mediaId)
 //            }
 //        }
-    }
+        }
 
-    private fun deleteMusicInFavorite(mediaId: Long) {
-        viewModelScope.launch {
-            useCases.deleteMusicInFavorite(mediaId)
-            _snackBarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
+        private fun deleteMusicInFavorite(mediaId: Long) {
+            viewModelScope.launch {
+                useCases.deleteMusicInFavorite(mediaId)
+                _snackBarEvent.emit(SnackBarEvent.MUSIC_REMOVED)
+            }
+        }
+
+        private fun addMusicToFavorite(mediaId: Long) {
+            viewModelScope.launch {
+                useCases.addMusicToFavorite(
+                    mediaId,
+                    addedDate = System.currentTimeMillis(),
+                )
+                _snackBarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
+            }
+        }
+
+        fun setCurrentInteractingUri(uri: Uri) {
+            interactingUri.value = uri
+        }
+
+        private fun clearInteractingUri() {
+            interactingUri.value = null
+        }
+
+        fun onNewPlaylist(name: String) {
+            viewModelScope.launch {
+                useCases.addPlayListEntity(
+                    playListName = name,
+                    createdDate = System.currentTimeMillis(),
+                )
+            }
         }
     }
-
-    private fun addMusicToFavorite(mediaId: Long) {
-        viewModelScope.launch {
-            useCases.addMusicToFavorite(
-                mediaId,
-                addedDate = System.currentTimeMillis()
-            )
-            _snackBarEvent.emit(SnackBarEvent.SAVED_TO_FAVORITE_COMPLETE)
-        }
-    }
-
-    fun setCurrentInteractingUri(uri: Uri) {
-        interactingUri.value = uri
-    }
-
-    private fun clearInteractingUri() {
-        interactingUri.value = null
-    }
-
-    fun onNewPlaylist(name: String) {
-        viewModelScope.launch {
-            useCases.addPlayListEntity(
-                playListName = name,
-                createdDate = System.currentTimeMillis()
-            )
-        }
-    }
-}
 
 sealed interface MainUiState {
     object Loading : MainUiState
+
     object Ready : MainUiState
 }
