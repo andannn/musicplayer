@@ -13,13 +13,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:database"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:player"))
 
 // TODO: remove this dependency.
-    implementation(project(":core:database"))
     implementation(project(":core:datastore"))
     implementation(project(":core:mediastore"))
 

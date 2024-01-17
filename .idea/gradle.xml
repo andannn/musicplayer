@@ -26,16 +26,13 @@
             <option value="$PROJECT_DIR$/build-logic/android-plugins" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/data" />
-            <option value="$PROJECT_DIR$/core/database" />
             <option value="$PROJECT_DIR$/core/datastore" />
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/core/mediastore" />
             <option value="$PROJECT_DIR$/core/player" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/home" />
-            <option value="$PROJECT_DIR$/feature/library" />
             <option value="$PROJECT_DIR$/feature/player" />
-            <option value="$PROJECT_DIR$/feature/playlist" />
             <option value="$PROJECT_DIR$/feature/playqueue" />
           </set>
         </option>

@@ -26,10 +26,10 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-//            isMinifyEnabled = true
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -40,13 +40,10 @@ dependencies {
     implementation(project(":core:mediastore"))
     implementation(project(":core:player"))
     implementation(project(":core:data"))
-    implementation(project(":core:database"))
     implementation(project(":core:datastore"))
 
     implementation(project(":feature:home"))
-    implementation(project(":feature:library"))
     implementation(project(":feature:player"))
-    implementation(project(":feature:playlist"))
     implementation(project(":feature:playqueue"))
 
     implementation(libs.androidx.core.ktx)
@@ -67,7 +64,7 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material)
 
-    //Media3
+    // Media3
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
 }

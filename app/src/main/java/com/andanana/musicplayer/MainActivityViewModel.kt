@@ -3,9 +3,8 @@ package com.andanana.musicplayer
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.Syncer
+import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
 import com.andanana.musicplayer.core.data.model.MusicListType
-import com.andanana.musicplayer.core.database.usecases.PlayListUseCases
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +25,7 @@ class MainActivityViewModel
     @Inject
     constructor(
         private val playerMonitor: PlayerMonitor,
-        private val useCases: PlayListUseCases,
-        private val syncer: Syncer,
+        private val contentChangeFlowProvider: ContentChangeFlowProvider,
     ) : ViewModel(), PlayerMonitor by playerMonitor {
         private val _mainUiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
         val mainUiState = _mainUiState.asStateFlow()
@@ -42,16 +40,6 @@ class MainActivityViewModel
 
         private val _snackBarEvent = MutableSharedFlow<SnackBarEvent>()
         val snackBarEvent = _snackBarEvent.asSharedFlow()
-
-        private val musicInFavorite =
-            useCases.getMusicInFavorite.invoke()
-                .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-        init {
-            viewModelScope.launch {
-                syncer.observingMediaContent()
-            }
-        }
 
         fun onDrawerItemClick(item: DrawerItem) {
 //        val type = interactingUri.value!!.toRequestType()
@@ -124,19 +112,6 @@ class MainActivityViewModel
 
         fun setCurrentInteractingUri(uri: Uri) {
             interactingUri.value = uri
-        }
-
-        fun onNewPlaylist(name: String) {
-            viewModelScope.launch {
-                useCases.addPlayListEntity(
-                    playListName = name,
-                    createdDate = System.currentTimeMillis(),
-                )
-            }
-        }
-
-        fun onPermissionStateChanged(hasPermission: Boolean) {
-            syncer.audioPermissionChanged(hasPermission)
         }
     }
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
-import com.andanana.musicplayer.core.data.Syncer
+import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
 import com.andanana.musicplayer.core.data.model.ALL_MUSIC_ID
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,7 @@ class HomeViewModel
     @Inject
     constructor(
         private val browserFuture: ListenableFuture<MediaBrowser>,
-        private val syncer: Syncer,
+        private val contentChangeFlowProvider: ContentChangeFlowProvider,
     ) : ViewModel() {
         private val browser: MediaBrowser?
             get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
@@ -59,10 +59,8 @@ class HomeViewModel
                     )
                 }
 
-                syncer.observeIsSyncing().collect { isSyncing ->
-                    if (!isSyncing) {
-                        getMediaItemsAndUpdateState(currentMediaCategoryId)
-                    }
+                contentChangeFlowProvider.audioChangedEventFlow.collect { isSyncing ->
+                    getMediaItemsAndUpdateState(currentMediaCategoryId)
                 }
             }
         }
