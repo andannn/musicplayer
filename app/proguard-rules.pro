@@ -29,3 +29,6 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+-keep class com.andanana.musicplayer.core.datastore.UserPreferences { *; }
+-keep class com.andanana.musicplayer.core.datastore.PlayMode { *; }

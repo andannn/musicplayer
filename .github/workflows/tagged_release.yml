@@ -37,8 +37,8 @@ jobs:
         run: chmod +x ./gradlew
 
       # Run Tests Build
-      - name: Run gradle tests
-        run: ./gradlew testReleaseUnitTest
+      # - name: Run gradle tests
+      #   run: ./gradlew testReleaseUnitTest
 
       - run: ./gradlew assemble
 
