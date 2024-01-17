@@ -3,7 +3,6 @@ package com.andanana.musicplayer.feature.playqueue.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.andanana.musicplayer.feature.playqueue.PlayQueueScreen
 
 private const val TAG = "PlayListNavigation"
 
@@ -13,12 +12,10 @@ fun NavController.navigateToPlayQueue() {
     this.navigate(playingQueueRoute)
 }
 
-fun NavGraphBuilder.playQueueScreen(
-    onBackPressed: () -> Unit
-) {
+fun NavGraphBuilder.playQueueScreen(onBackPressed: () -> Unit) {
     composable(
-        route = playingQueueRoute
+        route = playingQueueRoute,
     ) {
-        PlayQueueScreen()
+//        PlayQueueScreen()
     }
 }

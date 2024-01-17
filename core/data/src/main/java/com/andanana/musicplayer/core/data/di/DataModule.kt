@@ -4,8 +4,7 @@ import android.app.Application
 import android.content.ComponentName
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
-import com.andanana.musicplayer.core.data.Syncer
-import com.andanana.musicplayer.core.data.SyncerImpl
+import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
 import com.andanana.musicplayer.core.data.repository.MusicRepository
 import com.andanana.musicplayer.core.data.repository.MusicRepositoryImpl
 import com.google.common.util.concurrent.ListenableFuture
@@ -14,17 +13,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface DataModule {
     @Binds
     fun bindsMusicRepository(musicRepository: MusicRepositoryImpl): MusicRepository
-
-    @Binds
-    @Singleton
-    fun bindsSyncer(syncer: SyncerImpl): Syncer
 }
 
 @Module
@@ -40,5 +34,10 @@ object DataModuleProvider {
             ),
         )
             .buildAsync()
+    }
+
+    @Provides
+    fun provideContentChangeFlowProvider(application: Application): ContentChangeFlowProvider {
+        return ContentChangeFlowProvider(application)
     }
 }

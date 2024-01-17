@@ -91,10 +91,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            LaunchedEffect(permissionGranted) {
-                mainViewModel.onPermissionStateChanged(permissionGranted)
-            }
-
             MusicPlayerTheme {
                 if (permissionGranted) {
                     SimpleMusicApp()

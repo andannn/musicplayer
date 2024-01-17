@@ -6,5 +6,5 @@ data class ArtistData(
     val artistId: Long,
     val artistCoverUri: Uri,
     val name: String,
-    val trackCount: Int = 0
+    val trackCount: Int = 0,
 )

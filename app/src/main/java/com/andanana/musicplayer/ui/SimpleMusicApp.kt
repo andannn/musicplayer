@@ -29,8 +29,6 @@ import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.component.SmpBottomDrawer
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.feature.library.navigation.navigateToAddPlayListDialog
-import com.andanana.musicplayer.feature.library.navigation.navigateToNewPlayListDialog
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
 import com.andanana.musicplayer.feature.player.PlayerRoute
 import com.andanana.musicplayer.feature.playqueue.navigation.navigateToPlayQueue
@@ -118,16 +116,17 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
                             appState.showDrawerByUri(it)
                         },
                         onNewPlayListButtonClick = {
-                            appState.navController.navigateToNewPlayListDialog()
+//                            appState.navController.navigateToNewPlayListDialog()
                         },
-                        onCreateButtonClick = mainViewModel::onNewPlaylist,
+                        onCreateButtonClick = {
+                        },
                     )
 
                     MiniPlayerBox(
                         onNavigateToPlayer = {
                             appState.showPlayerDrawer()
                         },
-                        onToggleFavorite = mainViewModel::onToggleFavorite,
+                        onToggleFavorite = {},
                     )
                 }
             }
@@ -170,9 +169,9 @@ private fun onDrawerItemClick(
     mainViewModel.onDrawerItemClick(drawerItem)
     when (drawerItem) {
         DrawerItem.ADD_TO_PLAY_LIST -> {
-            appState.navController.navigateToAddPlayListDialog(
-                mainViewModel.interactingUri.value!!,
-            )
+//            appState.navController.navigateToAddPlayListDialog(
+//                mainViewModel.interactingUri.value!!,
+//            )
         }
 
         else -> Unit

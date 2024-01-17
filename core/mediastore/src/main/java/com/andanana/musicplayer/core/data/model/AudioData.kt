@@ -12,5 +12,5 @@ data class AudioData(
     val artist: String = "",
     val artistId: Long = -1,
     val cdTrackNumber: Int = -1,
-    val discNumberIndex: Int = -1
+    val discNumberIndex: Int = -1,
 )
