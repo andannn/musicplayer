@@ -49,10 +49,11 @@ class MusicRepositoryImpl
                 val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
                 when (category) {
                     LibraryRootCategory.ALBUM -> {
-                        emptyList()
-//                        dataBase.musicDao().getMusicsInAlbum(id).toMusicModels().map { music ->
-//                            buildMusicMediaItem(music)
-//                        }
+                        val list =
+                            mediaStoreSource.getAudioInAlbum(id).map { music ->
+                                buildMusicMediaItem(music)
+                            }
+                        list
                     }
 
                     LibraryRootCategory.ARTIST -> {
@@ -91,10 +92,7 @@ class MusicRepositoryImpl
                 val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
                 when (category) {
                     LibraryRootCategory.ALBUM -> {
-                        null
-//                        dataBase.musicDao().getAlbumById(id).toAlbumModel().let { album ->
-//                            buildAlbumMediaItem(album)
-//                        }
+                        buildAlbumMediaItem(mediaStoreSource.getAlbumById(id))
                     }
 
                     LibraryRootCategory.ARTIST -> {
@@ -157,8 +155,7 @@ private fun buildMusicMediaItem(music: AudioData): MediaItem =
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 music.albumId.toString(),
             ),
-        totalTrackCount = music.cdTrackNumber,
-        trackNumber = music.discNumberIndex,
+        trackNumber = music.cdTrackNumber,
         album = music.album,
         artist = music.artist,
         isPlayable = true,

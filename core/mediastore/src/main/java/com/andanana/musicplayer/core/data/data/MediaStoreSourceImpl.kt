@@ -12,6 +12,7 @@ import com.andanana.musicplayer.core.data.model.ArtistData
 import com.andanana.musicplayer.core.data.model.AudioData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,6 +41,28 @@ class MediaStoreSourceImpl
                 uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
             )?.use { cursor ->
                 parseArtistInfoCursor(cursor)
+            } ?: emptyList()
+
+        override suspend fun getArtistById(id: Long): ArtistData? {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun getAlbumById(id: Long): AlbumData =
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Media._ID} = ?",
+                selectionArgs = listOf(id.toString()).toTypedArray(),
+            )?.use { cursor ->
+                parseAlbumInfoCursor(cursor)
+            }?.first() ?: throw IllegalArgumentException("id invalid $id")
+
+        override suspend fun getAudioInAlbum(id: Long) =
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Media.ALBUM_ID} = ?",
+                selectionArgs = listOf(id.toString()).toTypedArray(),
+            )?.use { cursor ->
+                parseMusicInfoCursor(cursor)
             } ?: emptyList()
 
         private fun parseMusicInfoCursor(cursor: Cursor): List<AudioData> {
