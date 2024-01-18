@@ -15,9 +15,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -61,6 +61,7 @@ fun HomeRoute(
 
     val state by homeViewModel.state.collectAsState()
 
+    Log.d(TAG, "-1: ")
     if (state.categories.isNotEmpty()) {
         HomeScreen(
             modifier = modifier,
@@ -91,8 +92,6 @@ private fun HomeScreen(
 
     val pageState = rememberPagerState(pageCount = { categories.size })
 
-    val selectedIndex = pageState.currentPage
-
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit) {
@@ -105,16 +104,7 @@ private fun HomeScreen(
         }
     }
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "Smp")
-                },
-            )
-        },
-    ) {
+    Scaffold {
         Column(
             modifier =
                 Modifier
@@ -124,7 +114,7 @@ private fun HomeScreen(
             CenterTabLayout(
                 modifier = Modifier.fillMaxWidth(),
                 paddingVertical = 5.dp,
-                selectedIndex = selectedIndex,
+                selectedIndex = pageState.currentPage,
                 onScrollFinishToSelectIndex = { index ->
                     scope.launch {
                         pageState.animateScrollToPage(index)
@@ -134,7 +124,7 @@ private fun HomeScreen(
                 categories.forEachIndexed { index, item ->
                     Tab(
                         modifier = Modifier,
-                        selected = index == selectedIndex,
+                        selected = index == pageState.currentPage,
                         selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
@@ -155,35 +145,12 @@ private fun HomeScreen(
                 val mediaItems = categoryPageContents[index]
                 when (categories[index]) {
                     ALL_MUSIC_ID -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 5.dp),
-                        ) {
-                            items(
-                                items = mediaItems,
-                                key = { it.mediaId },
-                            ) { item ->
-                                MusicCard(
-                                    modifier =
-                                        Modifier
-                                            .padding(vertical = 4.dp)
-                                            .animateItemPlacement(),
-                                    isActive = false,
-                                    albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                                    title = item.mediaMetadata.title.toString(),
-                                    showTrackNum = false,
-                                    artist = item.mediaMetadata.artist.toString(),
-                                    trackNum = item.mediaMetadata.trackNumber ?: 0,
-                                    date = -1,
-                                    onMusicItemClick = {
-                                        onMediaItemClick.invoke(item)
-                                    },
-                                    onOptionButtonClick = {
-//                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
-                                    },
-                                )
-                            }
-                        }
+                        LazyAllAudioContent(
+                            modifier =
+                                Modifier.fillMaxSize(),
+                            mediaItems = mediaItems,
+                            onMusicItemClick = onMediaItemClick,
+                        )
                     }
 
                     ALBUM_ID -> {
@@ -212,6 +179,44 @@ private fun HomeScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun LazyAllAudioContent(
+    modifier: Modifier = Modifier,
+    mediaItems: List<MediaItem>,
+    onMusicItemClick: (MediaItem) -> Unit,
+) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 5.dp),
+    ) {
+        items(
+            items = mediaItems,
+            key = { it.mediaId },
+        ) { item ->
+            MusicCard(
+                modifier =
+                    Modifier
+                        .padding(vertical = 4.dp)
+                        .animateItemPlacement(),
+                isActive = false,
+                albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                title = item.mediaMetadata.title.toString(),
+                showTrackNum = false,
+                artist = item.mediaMetadata.artist.toString(),
+                trackNum = item.mediaMetadata.trackNumber ?: 0,
+                date = -1,
+                onMusicItemClick = {
+                    onMusicItemClick.invoke(item)
+                },
+                onOptionButtonClick = {
+//                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                },
+            )
         }
     }
 }

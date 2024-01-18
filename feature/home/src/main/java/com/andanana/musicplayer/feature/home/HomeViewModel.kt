@@ -37,6 +37,11 @@ class HomeViewModel
 
         init {
             viewModelScope.launch {
+                state.collect {
+                    Log.d(TAG, "$it: ")
+                }
+            }
+            viewModelScope.launch {
                 // wait browser build complete.
                 val browser = browserFuture.await()
 

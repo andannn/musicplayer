@@ -3,23 +3,22 @@ package com.andanana.musicplayer.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -27,11 +26,8 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
-import com.andanana.musicplayer.core.designsystem.component.SmpBottomDrawer
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.feature.player.MiniPlayerBox
-import com.andanana.musicplayer.feature.player.PlayerRoute
-import com.andanana.musicplayer.feature.playqueue.navigation.navigateToPlayQueue
 import com.andanana.musicplayer.navigation.SmpNavHost
 
 private const val TAG = "SimpleMusicApp"
@@ -48,89 +44,41 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
             ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
         }
 
-    Scaffold(
-        snackbarHost = {
-            val interactingItem by mainViewModel.interactingUri.collectAsState()
+    appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
-            val snackBarPaddingBottom =
-                remember(
-                    appState.currentNavDestination,
-                    interactingItem,
-                ) {
-                    getSnackBarPaddingBottom(
-                        appState = appState,
-                        isMusicBoxShowing = interactingItem != null,
-                    )
-                }
-            SnackbarHost(
-                modifier = Modifier.padding(bottom = snackBarPaddingBottom),
-                hostState = appState.snackbarHostState,
-            )
-        },
-    ) {
-        appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
+    appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
 
-        appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
-
-        LaunchedEffect(key1 = Unit) {
-            mainViewModel.snackBarEvent.collect { event ->
-                event.let {
-                    appState.snackbarHostState.showSnackbar(it.message, it.actionLabel)
-                }
+    LaunchedEffect(key1 = Unit) {
+        mainViewModel.snackBarEvent.collect { event ->
+            event.let {
+                appState.snackbarHostState.showSnackbar(it.message, it.actionLabel)
             }
         }
-        SmpBottomDrawer(
-            state = appState.drawerState,
-            scope = appState.coroutineScope,
-            gesturesEnabled = appState.drawerState.isOpen,
-            drawerContent = {
-                if (appState.drawerType.value == DrawerType.OPTION_LIST) {
-                    DrawerItemsList(
-                        items = appState.drawer.value?.itemList ?: emptyList(),
-                        onItemClick = { index ->
-                            onDrawerItemClick(
-                                appState = appState,
-                                mainViewModel = mainViewModel,
-                                index = index,
-                            )
-                        },
-                    )
-                } else {
-                    PlayerRoute(
-                        onNavigateToPlayQueue = {
-                            appState.closeDrawer()
-                            appState.navController.navigateToPlayQueue()
-                        },
-                    )
-                }
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        SmpNavHost(
+            modifier = Modifier.weight(1f),
+            navHostController = appState.navController,
+            onBackPressed = appState::onBackPressed,
+            onShowMusicItemOption = {
+                mainViewModel.setCurrentInteractingUri(it)
+                appState.showDrawerByUri(it)
             },
-        ) {
-            Box(modifier = Modifier.padding(it)) {
-                Column {
-                    SmpNavHost(
-                        navHostController = appState.navController,
-                        modifier = Modifier.weight(1f),
-                        onBackPressed = appState::onBackPressed,
-                        onShowMusicItemOption = {
-                            mainViewModel.setCurrentInteractingUri(it)
-                            appState.showDrawerByUri(it)
-                        },
-                        onNewPlayListButtonClick = {
+            onNewPlayListButtonClick = {
 //                            appState.navController.navigateToNewPlayListDialog()
-                        },
-                        onCreateButtonClick = {
-                        },
-                    )
+            },
+            onCreateButtonClick = {
+            },
+        )
 
-                    MiniPlayerBox(
-                        onNavigateToPlayer = {
-                            appState.showPlayerDrawer()
-                        },
-                        onToggleFavorite = {},
-                    )
-                }
-            }
-        }
+        MiniPlayerBox(
+            modifier = Modifier.navigationBarsPadding(),
+            onNavigateToPlayer = {
+                appState.showPlayerDrawer()
+            },
+            onToggleFavorite = {},
+        )
     }
 }
 

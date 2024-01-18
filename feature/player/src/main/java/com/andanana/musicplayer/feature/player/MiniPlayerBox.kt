@@ -1,7 +1,6 @@
 package com.andanana.musicplayer.feature.player
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -13,13 +12,15 @@ private const val TAG = "MiniPlayerBox"
 
 @Composable
 fun MiniPlayerBox(
+    modifier: Modifier = Modifier,
     playerStateViewModel: PlayerStateViewModel = hiltViewModel(),
     onNavigateToPlayer: () -> Unit,
-    onToggleFavorite: (Uri) -> Unit
+    onToggleFavorite: (Uri) -> Unit,
 ) {
     val playerUiState by playerStateViewModel.playerUiStateFlow.collectAsState()
 
     MiniPlayerBoxContent(
+        modifier = modifier,
         state = playerUiState,
         onPlayerSheetClick = onNavigateToPlayer,
         onPlayControlButtonClick = playerStateViewModel::togglePlayState,
@@ -28,7 +29,7 @@ fun MiniPlayerBox(
 //                onToggleFavorite(it.mediaItem.contentUri)
 //            }
         },
-        onPlayNextButtonClick = playerStateViewModel::next
+        onPlayNextButtonClick = playerStateViewModel::next,
     )
 }
 
@@ -39,7 +40,7 @@ private fun MiniPlayerBoxContent(
     onPlayerSheetClick: () -> Unit = {},
     onPlayControlButtonClick: () -> Unit = {},
     onFavoriteButtonClick: () -> Unit = {},
-    onPlayNextButtonClick: () -> Unit = {}
+    onPlayNextButtonClick: () -> Unit = {},
 ) {
     if (state is PlayerUiState.Active) {
         MiniPlayerBox(
@@ -53,7 +54,7 @@ private fun MiniPlayerBoxContent(
             onPlayerSheetClick = onPlayerSheetClick,
             onPlayNextButtonClick = onPlayNextButtonClick,
             onPlayControlButtonClick = onPlayControlButtonClick,
-            onFavoriteButtonClick = onFavoriteButtonClick
+            onFavoriteButtonClick = onFavoriteButtonClick,
         )
     }
 }
