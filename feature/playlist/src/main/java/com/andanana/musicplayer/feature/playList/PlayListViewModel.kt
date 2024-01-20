@@ -25,86 +25,102 @@ import javax.inject.Inject
 private const val TAG = "PlayListViewModel"
 
 @HiltViewModel
-class PlayListViewModel @Inject constructor(
-    application: Application,
-    savedStateHandle: SavedStateHandle,
-    private val playerMonitor: PlayerMonitor,
-) : ViewModel() {
+class PlayListViewModel
+    @Inject
+    constructor(
+        application: Application,
+        savedStateHandle: SavedStateHandle,
+        private val playerMonitor: PlayerMonitor,
+    ) : ViewModel() {
+        private val mediaId =
+            savedStateHandle.get<String>(MediaIdKey) ?: ""
 
-    private val mediaId =
-        savedStateHandle.get<String>(MediaIdKey) ?: ""
+        private val _state = MutableStateFlow(PlayListUiState())
+        val state = _state.asStateFlow()
 
-    private val _state = MutableStateFlow(PlayListUiState())
-    val state = _state.asStateFlow()
+        private var browserFuture: ListenableFuture<MediaBrowser> =
+            MediaBrowser.Builder(
+                application,
+                SessionToken(
+                    application,
+                    ComponentName(application, "com.andanana.musicplayer.PlayerService"),
+                ),
+            )
+                .buildAsync()
 
-    private var browserFuture: ListenableFuture<MediaBrowser> = MediaBrowser.Builder(
-        application,
-        SessionToken(
-            application,
-            ComponentName(application, "com.andanana.musicplayer.PlayerService")
-        )
-    )
-        .buildAsync()
+        private val browser: MediaBrowser?
+            get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
 
-    private val browser: MediaBrowser?
-        get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
+        init {
+            viewModelScope.launch {
+                // wait browser build complete.
+                val browser = browserFuture.await()
 
-    init {
-        viewModelScope.launch {
-            // wait browser build complete.
-            val browser = browserFuture.await()
+                val parentItem = browser.getItem(mediaId).await().value ?: return@launch
 
-            val parentItem = browser.getItem(mediaId).await().value ?: return@launch
+                val (type, _) =
+                    LibraryRootCategory.getMatchedChildTypeAndId(parentItem.mediaId)
+                        ?: return@launch
 
-            val (type, _) = LibraryRootCategory.getMatchedChildTypeAndId(parentItem.mediaId)
-                ?: return@launch
+                val playableItems =
+                    browser.getChildren(
+                        mediaId,
+                        // page=
+                        0,
+                        // pageSize=
+                        Int.MAX_VALUE,
+                        // params=
+                        null,
+                    ).await().value!!.toList().run {
+                        sortedBy {
+                            it.mediaMetadata.trackNumber
+                        }
+                    }
 
-            val playableItems = browser.getChildren(
-                mediaId,
-                /* page= */ 0,
-                /* pageSize= */ Int.MAX_VALUE,
-                /* params= */ null
-            ).await().value!!.toList()
-
-            _state.update {
-                it.copy(
-                    playListType = type,
-                    title = parentItem.mediaMetadata.title.toString(),
-                    artCoverUri = parentItem.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                    trackCount = parentItem.mediaMetadata.totalTrackCount ?: 0,
-                    musicItems = playableItems
-                )
-            }
-        }
-
-        viewModelScope.launch {
-            playerMonitor.observePlayingMedia().collect { playingMediaItem ->
                 _state.update {
-                    it.copy(playingMediaItem = playingMediaItem)
+                    it.copy(
+                        playListType = type,
+                        title = parentItem.mediaMetadata.title.toString(),
+                        artCoverUri = parentItem.mediaMetadata.artworkUri ?: Uri.EMPTY,
+                        trackCount = parentItem.mediaMetadata.totalTrackCount ?: 0,
+                        musicItems = playableItems,
+                    )
+                }
+            }
+
+            viewModelScope.launch {
+                playerMonitor.observePlayingMedia().collect { playingMediaItem ->
+                    _state.update {
+                        it.copy(playingMediaItem = playingMediaItem)
+                    }
                 }
             }
         }
-    }
 
-    override fun onCleared() {
-        super.onCleared()
-        MediaBrowser.releaseFuture(browserFuture)
-        browser?.release()
-    }
+        override fun onCleared() {
+            super.onCleared()
+            MediaBrowser.releaseFuture(browserFuture)
+            browser?.release()
+        }
 
-    fun setPlayListAndStartIndex(mediaItems: List<MediaItem>, index: Int) {
-        browser?.run {
-            setMediaItems(
-                mediaItems,
-                /* startIndex= */ index,
-                /* startPositionMs= */ C.TIME_UNSET
-            )
-            shuffleModeEnabled = false
-            prepare()
-            play()
+        fun setPlayListAndStartIndex(
+            mediaItems: List<MediaItem>,
+            index: Int,
+        ) {
+            browser?.run {
+                setMediaItems(
+                    mediaItems,
+                    // startIndex=
+                    index,
+                    // startPositionMs=
+                    C.TIME_UNSET,
+                )
+                shuffleModeEnabled = false
+                prepare()
+                play()
+            }
         }
     }
-}
 
 data class PlayListUiState(
     val playListType: LibraryRootCategory = LibraryRootCategory.MINE_PLAYLIST,
@@ -113,5 +129,5 @@ data class PlayListUiState(
     val trackCount: Int = 0,
     val musicItems: List<MediaItem> = emptyList(),
     val playingMediaItem: MediaItem? = null,
-    val contentUri: Uri = Uri.EMPTY
+    val contentUri: Uri = Uri.EMPTY,
 )

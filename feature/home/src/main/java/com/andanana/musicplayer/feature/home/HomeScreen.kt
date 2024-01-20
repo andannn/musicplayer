@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -17,7 +18,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -61,7 +61,6 @@ fun HomeRoute(
 
     val state by homeViewModel.state.collectAsState()
 
-    Log.d(TAG, "-1: ")
     if (state.categories.isNotEmpty()) {
         HomeScreen(
             modifier = modifier,
@@ -104,11 +103,14 @@ private fun HomeScreen(
         }
     }
 
-    Scaffold {
+    Scaffold(modifier = modifier) {
+        // ignore waring.
+        it
+
         Column(
             modifier =
                 Modifier
-                    .padding(it)
+                    .statusBarsPadding()
                     .fillMaxSize(),
         ) {
             CenterTabLayout(

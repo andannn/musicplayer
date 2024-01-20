@@ -21,7 +21,7 @@ fun SmpTextButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     imageVector: ImageVector? = null,
-    text: String,
+    text: String? = null,
     enabled: Boolean = true,
     textAlpha: Float = 1f
 ) {
@@ -34,13 +34,16 @@ fun SmpTextButton(
         if (imageVector != null) {
             Icon(imageVector = imageVector, contentDescription = null)
         }
-        Spacer(modifier = Modifier.width(5.dp))
-        Text(
-            modifier = Modifier.alpha(textAlpha),
-            text = text,
-            style = MaterialTheme.typography.bodySmall,
-            maxLines = 1
-        )
+
+        if (text != null) {
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                modifier = Modifier.alpha(textAlpha),
+                text = text,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1
+            )
+        }
     }
 }
 

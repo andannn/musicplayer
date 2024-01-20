@@ -3,6 +3,7 @@ package com.andanana.musicplayer.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
@@ -91,13 +92,9 @@ class HomeViewModel
 
                     val children =
                         browser.getChildren(
-                            // parentId =
                             mediaId,
-                            // page =
                             0,
-                            // pageSize =
                             Int.MAX_VALUE,
-                            // params =
                             null,
                         ).await().value!!
 
@@ -114,16 +111,14 @@ class HomeViewModel
         }
 
         fun playMusic(mediaItem: MediaItem) {
-            val state = this._state.value
+            val mediaItems = this._state.value.categoryToMediaItemsMap[currentMediaCategoryId] ?: return
 
             browser?.run {
-//            setMediaItems(
-//                state.currentMusicItems,
-//                /* startIndex= */
-//                state.currentMusicItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
-//                /* startPositionMs= */
-//                C.TIME_UNSET
-//            )
+                setMediaItems(
+                    mediaItems,
+                    mediaItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
+                    C.TIME_UNSET,
+                )
                 shuffleModeEnabled = false
                 prepare()
                 play()
