@@ -5,7 +5,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.RequestMetadata
 import androidx.media3.common.MediaMetadata
 
-internal fun buildMediaItem(
+fun buildMediaItem(
     title: String,
     mediaId: String,
     isPlayable: Boolean,

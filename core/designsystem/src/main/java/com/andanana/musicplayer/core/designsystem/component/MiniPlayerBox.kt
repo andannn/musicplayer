@@ -21,8 +21,6 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,60 +56,56 @@ fun MiniPlayerBox(
     onPlayerSheetClick: () -> Unit = {},
     onPlayControlButtonClick: () -> Unit = {},
     onPlayNextButtonClick: () -> Unit = {},
-    onFavoriteButtonClick: () -> Unit = {}
+    onFavoriteButtonClick: () -> Unit = {},
 ) {
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = 50.dp, max = 70.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = 50.dp, max = 70.dp),
         shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         shadowElevation = 10.dp,
-        onClick = onPlayerSheetClick
+        onClick = onPlayerSheetClick,
     ) {
         Column(
             modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Row(
                 modifier = Modifier.padding(5.dp).weight(1f),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(shape = CircleShape)
-                        .border(
-                            shape = CircleShape,
-                            border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary)
-                        ),
+                CircleImage(
+                    modifier =
+                        Modifier
+                            .size(60.dp),
                     model = coverUri,
-                    contentDescription = ""
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Row(
                     modifier = Modifier.padding(top = 15.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        verticalArrangement = Arrangement.SpaceBetween
+                        verticalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
                             text = title,
                             maxLines = 1,
                             style = MaterialTheme.typography.bodyLarge,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
                         )
                         Spacer(modifier = Modifier.height(3.dp))
                         Text(
                             text = artist,
                             maxLines = 1,
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
                         )
                     }
                     IconButton(
                         modifier = Modifier.size(30.dp).scale(1.2f),
-                        onClick = onPlayControlButtonClick
+                        onClick = onPlayControlButtonClick,
                     ) {
                         if (isPlaying) {
                             Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
@@ -122,28 +116,28 @@ fun MiniPlayerBox(
                     Spacer(modifier = Modifier.width(10.dp))
                     IconButton(
                         modifier = Modifier.size(30.dp).padding(5.dp).rotate(180f),
-                        onClick = onPlayNextButtonClick
+                        onClick = onPlayNextButtonClick,
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.music_music_player_player_previous_icon),
-                            contentDescription = ""
+                            contentDescription = "",
                         )
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     IconButton(
                         modifier = Modifier.size(30.dp),
-                        onClick = onFavoriteButtonClick
+                        onClick = onFavoriteButtonClick,
                     ) {
                         if (isFavorite) {
                             Icon(
                                 imageVector = Icons.Rounded.Favorite,
                                 tint = Color.Red,
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                         } else {
                             Icon(
                                 imageVector = Icons.Rounded.FavoriteBorder,
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                         }
                     }
@@ -151,31 +145,52 @@ fun MiniPlayerBox(
                 }
             }
             Spacer(
-                modifier = Modifier
-                    .fillMaxWidth(fraction = progress).height(3.dp)
-                    .background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.secondary
-                            )
-                        )
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxWidth(fraction = progress).height(3.dp)
+                        .background(
+                            brush =
+                                Brush.horizontalGradient(
+                                    colors =
+                                        listOf(
+                                            MaterialTheme.colorScheme.primary,
+                                            MaterialTheme.colorScheme.secondary,
+                                        ),
+                                ),
+                        ),
             )
         }
     }
 }
 
+@Composable
+fun CircleImage(
+    modifier: Modifier = Modifier,
+    model: String,
+) {
+    AsyncImage(
+        modifier =
+            modifier
+                .clip(shape = CircleShape)
+                .border(
+                    shape = CircleShape,
+                    border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary),
+                ),
+        model = model,
+        contentDescription = "",
+    )
+}
+
 @Preview(name = "Dark")
 @Composable
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
-    MusicPlayerTheme() {
+    MusicPlayerTheme {
         MiniPlayerBox(
             coverUri = "",
             title = "Song name",
             artist = "Artist name",
             isFavorite = true,
-            isPlaying = true
+            isPlaying = true,
         )
     }
 }
@@ -187,7 +202,7 @@ fun DarkBottomPlayerSheetPreview() {
         MiniPlayerBox(
             coverUri = "",
             title = "Song name",
-            artist = "Artist name"
+            artist = "Artist name",
         )
     }
 }
@@ -199,7 +214,7 @@ fun LightBottomPlayerSheetPreview() {
         MiniPlayerBox(
             coverUri = "",
             title = "Song name",
-            artist = "Artist name"
+            artist = "Artist name",
         )
     }
 }

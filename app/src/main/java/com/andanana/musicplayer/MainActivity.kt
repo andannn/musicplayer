@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -40,6 +41,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
@@ -54,10 +56,6 @@ class MainActivity : ComponentActivity() {
                     .collect()
             }
         }
-
-//        splashScreen.setKeepOnScreenCondition {
-//            mainUiState is MainUiState.Loading
-//        }
 
         setContent {
             var permissionGranted by remember {
