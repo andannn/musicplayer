@@ -22,12 +22,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -40,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
@@ -69,20 +70,97 @@ fun PlayListScreen(
 ) {
     val uiState by playListViewModel.state.collectAsState()
 
-    PlayListScreenContent(
+    val isAlbumType =
+        remember(uiState.playListType) {
+            uiState.playListType == LibraryRootCategory.ALBUM
+        }
+
+    if (isAlbumType) {
+        AlbumPlayListContent(
+            modifier = modifier,
+            uiState = uiState,
+            onPlayAllButtonClick = {
+            },
+            onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
+            onShowMusicItemOption = onShowMusicItemOption,
+            onShowPlayListItemOption = onShowPlayListItemOption,
+        )
+    } else {
+        CommonPlayListContent(
+            modifier = modifier,
+            uiState = uiState,
+            onPlayAllButtonClick = {
+            },
+            onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
+            onShowMusicItemOption = onShowMusicItemOption,
+            onShowPlayListItemOption = onShowPlayListItemOption,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun CommonPlayListContent(
+    modifier: Modifier = Modifier,
+    uiState: PlayListUiState,
+    onPlayAllButtonClick: () -> Unit = {},
+    onAddButtonClick: () -> Unit = {},
+    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { list, index -> },
+    onShowMusicItemOption: (Uri) -> Unit = {},
+    onShowPlayListItemOption: (Uri) -> Unit = {},
+) {
+    Scaffold(
         modifier = modifier,
-        uiState = uiState,
-        onPlayAllButtonClick = {
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = uiState.title)
+                },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "Back",
+                        )
+                    }
+                },
+            )
         },
-        onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
-        onShowMusicItemOption = onShowMusicItemOption,
-        onShowPlayListItemOption = onShowPlayListItemOption,
-    )
+    ) {
+        LazyColumn(modifier = Modifier.padding(top = it.calculateTopPadding())) {
+            items(
+                items = uiState.musicItems,
+                key = { it.mediaId },
+            ) { item ->
+                MusicCard(
+                    modifier =
+                        Modifier
+                            .padding(vertical = 4.dp, horizontal = 10.dp),
+                    isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
+                    albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                    title = item.mediaMetadata.title.toString(),
+                    showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
+                    artist = item.mediaMetadata.artist.toString(),
+                    trackNum = item.mediaMetadata.trackNumber ?: 0,
+                    date = -1,
+                    onMusicItemClick = {
+                        onAudioItemClick(
+                            uiState.musicItems,
+                            uiState.musicItems.indexOf(item),
+                        )
+                    },
+                    onOptionButtonClick = {
+                        item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                    },
+                )
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PlayListScreenContent(
+private fun AlbumPlayListContent(
     modifier: Modifier = Modifier,
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
@@ -167,9 +245,9 @@ private fun PlayListScreenContent(
 
     Scaffold(
         modifier = modifier,
-    ) {
+    ) { padding ->
         // ignore warning.
-        it
+        padding
 
         LazyColumn(
             state = lazyListState,
@@ -208,8 +286,7 @@ private fun PlayListScreenContent(
                 MusicCard(
                     modifier =
                         Modifier
-                            .padding(vertical = 4.dp, horizontal = 10.dp)
-                            .animateItemPlacement(),
+                            .padding(vertical = 4.dp, horizontal = 10.dp),
                     isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
@@ -288,7 +365,7 @@ private fun CustomAppTopBar(
 @Composable
 private fun PlayListScreenContentPreview() {
     MusicPlayerTheme {
-        PlayListScreenContent(
+        AlbumPlayListContent(
             uiState =
                 PlayListUiState(
                     title = "Title",

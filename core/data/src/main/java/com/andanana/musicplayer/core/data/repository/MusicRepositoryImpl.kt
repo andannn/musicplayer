@@ -2,6 +2,7 @@ package com.andanana.musicplayer.core.data.repository
 
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.andanana.musicplayer.core.data.data.MediaStoreSource
@@ -32,6 +33,7 @@ class MusicRepositoryImpl
         }
 
         override suspend fun getChildren(mediaId: String): List<MediaItem> {
+            Log.d(TAG, "getChildren: mediaId $mediaId")
             return if (mediaId == ROOT_ID) {
                 LibraryRootCategory.values().mapNotNull { category ->
                     getMediaItem(category.mediaId)
@@ -49,18 +51,15 @@ class MusicRepositoryImpl
                 val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
                 when (category) {
                     LibraryRootCategory.ALBUM -> {
-                        val list =
-                            mediaStoreSource.getAudioInAlbum(id).map { music ->
-                                buildMusicMediaItem(music)
-                            }
-                        list
+                        mediaStoreSource.getAudioInAlbum(id).map { music ->
+                            buildMusicMediaItem(music)
+                        }
                     }
 
                     LibraryRootCategory.ARTIST -> {
-                        emptyList()
-//                        dataBase.musicDao().getMusicsInArtist(id).toMusicModels().map { music ->
-//                            buildMusicMediaItem(music)
-//                        }
+                        mediaStoreSource.getAudioOfArtist(id).map { music ->
+                            buildMusicMediaItem(music)
+                        }
                     }
 
                     LibraryRootCategory.MINE_PLAYLIST -> TODO()
@@ -72,6 +71,7 @@ class MusicRepositoryImpl
         }
 
         override suspend fun getMediaItem(mediaId: String): MediaItem? {
+            Log.d(TAG, "getMediaItem: mediaId $mediaId")
             return if (mediaId == ROOT_ID) {
                 buildMediaItem(
                     title = "ROOT",
@@ -96,10 +96,7 @@ class MusicRepositoryImpl
                     }
 
                     LibraryRootCategory.ARTIST -> {
-                        null
-//                        dataBase.musicDao().getArtistById(id).toArtistModel().let { artist ->
-//                            buildArtistMediaItem(artist)
-//                        }
+                        buildArtistMediaItem(mediaStoreSource.getArtistById(id))
                     }
 
                     LibraryRootCategory.MINE_PLAYLIST -> TODO()

@@ -43,11 +43,16 @@ class MediaStoreSourceImpl
                 parseArtistInfoCursor(cursor)
             } ?: emptyList()
 
-        override suspend fun getArtistById(id: Long): ArtistData? {
-            TODO("Not yet implemented")
-        }
+        override suspend fun getArtistById(id: Long) =
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Artists._ID} = ?",
+                selectionArgs = listOf(id.toString()).toTypedArray(),
+            )?.use { cursor ->
+                parseArtistInfoCursor(cursor)
+            }?.first() ?: throw IllegalArgumentException("id invalid $id")
 
-        override suspend fun getAlbumById(id: Long): AlbumData =
+        override suspend fun getAlbumById(id: Long) =
             app.contentResolver.query2(
                 uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                 selection = "${MediaStore.Audio.Media._ID} = ?",
@@ -60,6 +65,15 @@ class MediaStoreSourceImpl
             app.contentResolver.query2(
                 uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 selection = "${MediaStore.Audio.Media.ALBUM_ID} = ?",
+                selectionArgs = listOf(id.toString()).toTypedArray(),
+            )?.use { cursor ->
+                parseMusicInfoCursor(cursor)
+            } ?: emptyList()
+
+        override suspend fun getAudioOfArtist(id: Long) =
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Media.ARTIST_ID} = ?",
                 selectionArgs = listOf(id.toString()).toTypedArray(),
             )?.use { cursor ->
                 parseMusicInfoCursor(cursor)

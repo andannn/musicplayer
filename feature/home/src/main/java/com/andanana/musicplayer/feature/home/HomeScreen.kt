@@ -3,6 +3,7 @@ package com.andanana.musicplayer.feature.home
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +33,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -103,9 +110,9 @@ private fun HomeScreen(
         }
     }
 
-    Scaffold(modifier = modifier) {
+    Scaffold(modifier = modifier) { padding ->
         // ignore waring.
-        it
+        padding
 
         Column(
             modifier =
@@ -178,6 +185,30 @@ private fun HomeScreen(
                     }
 
                     ARTIST_ID -> {
+                        LazyVerticalStaggeredGrid(
+                            modifier = Modifier.fillMaxSize(),
+                            columns = StaggeredGridCells.Fixed(2),
+                        ) {
+                            items(
+                                items = mediaItems,
+                                key = { it.mediaId },
+                            ) { media ->
+                                LargePreviewCard(
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                                    imageModifier =
+                                        Modifier.clip(shape = CircleShape)
+                                            .alpha(0.4f)
+                                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
+                                    placeholder = rememberVectorPainter(Icons.Rounded.Person),
+                                    artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
+                                    title = media.mediaMetadata.title.toString(),
+                                    trackCount = media.mediaMetadata.totalTrackCount ?: 0,
+                                    onClick = {
+                                        onMediaItemClick.invoke(media)
+                                    },
+                                )
+                            }
+                        }
                     }
                 }
             }

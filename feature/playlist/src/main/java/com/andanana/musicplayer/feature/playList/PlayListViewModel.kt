@@ -65,11 +65,8 @@ class PlayListViewModel
                 val playableItems =
                     browser.getChildren(
                         mediaId,
-                        // page=
                         0,
-                        // pageSize=
                         Int.MAX_VALUE,
-                        // params=
                         null,
                     ).await().value!!.toList().run {
                         sortedBy {
