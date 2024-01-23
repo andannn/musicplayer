@@ -24,5 +24,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     // Compose pager
-    implementation("com.google.accompanist:accompanist-pager:0.25.1")
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
 }
