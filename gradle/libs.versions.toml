@@ -1,6 +1,6 @@
 [versions]
 ksp = "1.8.10-1.0.9"
-hilt = "2.47"
+hilt = "2.50"
 protobufPlugin = "0.9.4"
 hiltExt = "1.0.0"
 kotlin = "1.8.10"
