@@ -1,5 +1,5 @@
 [versions]
-ksp = "1.9.0-1.0.12"
+ksp = "1.9.22-1.0.17"
 hilt = "2.50"
 protobufPlugin = "0.9.4"
 hiltExt = "1.1.0"
