@@ -3,6 +3,7 @@ package com.andanana.musicplayer.core.designsystem.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,12 +61,9 @@ fun MiniPlayerBox(
 ) {
     Surface(
         modifier =
-            modifier
-                .fillMaxWidth()
-                .heightIn(min = 50.dp, max = 70.dp),
+            modifier.fillMaxWidth(),
         shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         shadowElevation = 10.dp,
-        onClick = onPlayerSheetClick,
     ) {
         Column(
             modifier = Modifier.fillMaxHeight(),
@@ -186,6 +184,7 @@ fun CircleImage(
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme {
         MiniPlayerBox(
+            modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",
             artist = "Artist name",
@@ -200,6 +199,7 @@ fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
 fun DarkBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = true) {
         MiniPlayerBox(
+            modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",
             artist = "Artist name",
@@ -212,6 +212,7 @@ fun DarkBottomPlayerSheetPreview() {
 fun LightBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = false) {
         MiniPlayerBox(
+            modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",
             artist = "Artist name",
