@@ -228,6 +228,7 @@ private fun ShrinkablePlayBox(
                     .clickable {
                         animatedToggle()
                     },
+            heightPxRange = minHeight..maxHeight,
             coverUri = state.mediaItem.mediaMetadata.artworkUri.toString(),
             isPlaying = state.state == PlayState.PLAYING,
             title = state.mediaItem.mediaMetadata.title.toString(),
