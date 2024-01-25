@@ -1,9 +1,8 @@
-package com.andanana.musicplayer.core.designsystem.component
+package com.andanana.musicplayer.feature.player
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,7 +44,7 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 private const val TAG = "BottomPlayerSheet"
 
 @Composable
-fun MiniPlayerBox(
+fun FlexiblePlayerLayout(
     modifier: Modifier = Modifier,
     coverUri: String,
     isPlaying: Boolean = false,
@@ -183,7 +181,7 @@ fun CircleImage(
 @Composable
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme {
-        MiniPlayerBox(
+        FlexiblePlayerLayout(
             modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",
@@ -198,7 +196,7 @@ fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
 @Composable
 fun DarkBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = true) {
-        MiniPlayerBox(
+        FlexiblePlayerLayout(
             modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",
@@ -211,7 +209,7 @@ fun DarkBottomPlayerSheetPreview() {
 @Composable
 fun LightBottomPlayerSheetPreview() {
     MusicPlayerTheme(darkTheme = false) {
-        MiniPlayerBox(
+        FlexiblePlayerLayout(
             modifier = Modifier.height(70.dp),
             coverUri = "",
             title = "Song name",

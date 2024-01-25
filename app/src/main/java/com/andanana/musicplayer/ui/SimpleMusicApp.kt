@@ -25,7 +25,7 @@ import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.feature.player.MiniPlayerBox
+import com.andanana.musicplayer.feature.player.MusicPlayerBox
 import com.andanana.musicplayer.navigation.SmpNavHost
 
 private const val TAG = "SimpleMusicApp"
@@ -70,7 +70,7 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
             },
         )
 
-        MiniPlayerBox(
+        MusicPlayerBox(
             onNavigateToPlayer = {
                 appState.showPlayerDrawer()
             },
