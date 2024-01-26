@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -28,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -121,11 +119,14 @@ private fun ShrinkablePlayBox(
             currentState = PlayBoxState.EXPANDING
             animation.snapTo(playerHeight)
             animation.animateTo(
-                maxHeight,
+                targetValue = maxHeight,
                 animationSpec = TweenSpec(durationMillis = 300, easing = EaseIn),
-            )
+            ) {
+                Log.d(TAG, "Animation effecting the player height $playerHeight")
+                playerHeight = this.value
+            }
             currentState = PlayBoxState.EXPAND
-            Log.d(TAG, "expandAnimation: X")
+            Log.d(TAG, "expandAnimation: X $maxHeight")
         }
 
         suspend fun shrinkAnimation() {
@@ -135,7 +136,10 @@ private fun ShrinkablePlayBox(
             animation.animateTo(
                 minHeight,
                 animationSpec = TweenSpec(durationMillis = 300, easing = EaseOut),
-            )
+            ) {
+                Log.d(TAG, "Animation effecting the player height $playerHeight")
+                playerHeight = this.value
+            }
             currentState = PlayBoxState.SHRINK
             Log.d(TAG, "shrinkAnimation: X")
         }
@@ -191,17 +195,6 @@ private fun ShrinkablePlayBox(
                 },
             )
 
-        LaunchedEffect(animation.isRunning) {
-            snapshotFlow {
-                animation.value
-            }.collect {
-                if (animation.isRunning) {
-                    Log.d(TAG, "Animation effecting the player height $it")
-                    playerHeight = it
-                }
-            }
-        }
-
         BackHandler(enabled = currentState.isExpand()) {
             if (currentState.isExpand()) {
                 animatedToggle()
@@ -225,19 +218,21 @@ private fun ShrinkablePlayBox(
                     .height(with(LocalDensity.current) { playerHeight.toDp() })
                     .align(BiasAlignment(0f, verticalBias))
                     .then(draggable)
-                    .clickable {
+                    .clickable(
+                        enabled = currentState == PlayBoxState.SHRINK,
+                    ) {
                         animatedToggle()
                     },
             heightPxRange = minHeight..maxHeight,
             coverUri = state.mediaItem.mediaMetadata.artworkUri.toString(),
             isPlaying = state.state == PlayState.PLAYING,
+            isFavorite = state.isFavorite,
             title = state.mediaItem.mediaMetadata.title.toString(),
             artist = state.mediaItem.mediaMetadata.artist.toString(),
             progress = state.progress,
-            isFavorite = state.isFavorite,
             onPlayerSheetClick = onPlayerSheetClick,
-            onPlayNextButtonClick = onPlayNextButtonClick,
             onPlayControlButtonClick = onPlayControlButtonClick,
+            onPlayNextButtonClick = onPlayNextButtonClick,
             onFavoriteButtonClick = onFavoriteButtonClick,
         )
     }
