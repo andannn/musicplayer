@@ -232,10 +232,7 @@ fun LazyAllAudioContent(
             key = { it.mediaId },
         ) { item ->
             MusicCard(
-                modifier =
-                    Modifier
-                        .padding(vertical = 4.dp)
-                        .animateItemPlacement(),
+                modifier = Modifier.padding(vertical = 4.dp).animateItemPlacement(),
                 isActive = false,
                 albumArtUri = item.mediaMetadata.artworkUri.toString(),
                 title = item.mediaMetadata.title.toString(),

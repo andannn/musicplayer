@@ -70,20 +70,22 @@ fun CenterTabLayout(
     indicator: @Composable (tabPositions: List<TabPosition>, centerPosition: Int) -> Unit =
         @Composable { tabPositions, centerPosition ->
             Indicator(
-                modifier = Modifier
-                    .tabIndicatorOffset(tabPositions[centerPosition]),
-                paddingValues = PaddingValues(horizontal = 10.dp, vertical = 5.dp)
+                modifier =
+                    Modifier
+                        .tabIndicatorOffset(tabPositions[centerPosition]),
+                paddingValues = PaddingValues(horizontal = 10.dp, vertical = 5.dp),
             )
         },
-    tabs: @Composable () -> Unit
+    tabs: @Composable () -> Unit,
 ) {
     val onScrollFinishToSelectIndexState = rememberUpdatedState(onScrollFinishToSelectIndex)
 
-    val layoutState = rememberCenterTabLayoutState(
-        coroutineScope = coroutineScope,
-        scrollState = scrollState,
-        initialSelectedIndex = selectedIndex
-    )
+    val layoutState =
+        rememberCenterTabLayoutState(
+            coroutineScope = coroutineScope,
+            scrollState = scrollState,
+            initialSelectedIndex = selectedIndex,
+        )
 
     val centerIndex by layoutState.centerItemIndex.collectAsState()
     // Side effect to do when drag finish.
@@ -110,33 +112,39 @@ fun CenterTabLayout(
     }
 
     BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(align = CenterVertically)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight(align = CenterVertically),
     ) {
-        val containerWidth = with(LocalDensity.current) {
-            this@BoxWithConstraints.maxWidth.toPx().roundToInt()
-        }
+        val containerWidth =
+            with(LocalDensity.current) {
+                this@BoxWithConstraints.maxWidth.toPx().roundToInt()
+            }
         SubcomposeLayout(
-            modifier = Modifier
-                .horizontalScroll(layoutState.scrollState)
-                .padding(vertical = paddingVertical)
+            modifier =
+                Modifier
+                    .horizontalScroll(layoutState.scrollState)
+                    .padding(vertical = paddingVertical),
         ) { constraints ->
             val tabMeasurables = subcompose("TABS", tabs)
 
-            val layoutHeight = tabMeasurables.fold(0) { acc, measurable ->
-                maxOf(acc, measurable.maxIntrinsicHeight(Constraints.Infinity))
-            }
+            val layoutHeight =
+                tabMeasurables.fold(0) { acc, measurable ->
+                    maxOf(acc, measurable.maxIntrinsicHeight(Constraints.Infinity))
+                }
 
             val tabConstraints = constraints.copy(minWidth = 50, minHeight = layoutHeight)
 
-            val tabPlaceables = tabMeasurables.map {
-                it.measure(tabConstraints)
-            }
+            val tabPlaceables =
+                tabMeasurables.map {
+                    it.measure(tabConstraints)
+                }
 
-            val accTabsWidth = tabPlaceables.fold(0) { acc, placeable ->
-                acc + placeable.width
-            }
+            val accTabsWidth =
+                tabPlaceables.fold(0) { acc, placeable ->
+                    acc + placeable.width
+                }
 
             // Make first item can be center of container when scroll 0.
             val startPadding = (containerWidth - tabPlaceables.first().width).div(2)
@@ -167,7 +175,7 @@ fun CenterTabLayout(
                 layoutState.onLaidOut(
                     totalTabRowWidth = layoutWidth,
                     visibleWidth = containerWidth,
-                    tabPositions = tabPositions
+                    tabPositions = tabPositions,
                 )
             }
         }
@@ -181,41 +189,42 @@ fun CenterTabLayout(
  * @param currentTabPosition [TabPosition] of the currently selected tab. This is used to
  * calculate the offset of the indicator this modifier is applied to, as well as its width.
  */
-fun Modifier.tabIndicatorOffset(
-    currentTabPosition: TabPosition
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo {
-        name = "tabIndicatorOffset"
-        value = currentTabPosition
+fun Modifier.tabIndicatorOffset(currentTabPosition: TabPosition): Modifier =
+    composed(
+        inspectorInfo =
+            debugInspectorInfo {
+                name = "tabIndicatorOffset"
+                value = currentTabPosition
+            },
+    ) {
+        val currentTabWidth by animateDpAsState(
+            targetValue = with(LocalDensity.current) { currentTabPosition.width.toDp() },
+            animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
+        )
+        val indicatorOffset by animateDpAsState(
+            targetValue = with(LocalDensity.current) { currentTabPosition.left.toDp() },
+            animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
+        )
+        fillMaxWidth()
+            .wrapContentSize(Alignment.CenterStart)
+            .offset(x = indicatorOffset)
+            .width(currentTabWidth)
     }
-) {
-    val currentTabWidth by animateDpAsState(
-        targetValue = with(LocalDensity.current) { currentTabPosition.width.toDp() },
-        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
-    )
-    val indicatorOffset by animateDpAsState(
-        targetValue = with(LocalDensity.current) { currentTabPosition.left.toDp() },
-        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
-    )
-    fillMaxWidth()
-        .wrapContentSize(Alignment.CenterStart)
-        .offset(x = indicatorOffset)
-        .width(currentTabWidth)
-}
 
 @Composable
 fun Indicator(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues
+    paddingValues: PaddingValues,
 ) {
     Spacer(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = CircleShape
-            )
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = CircleShape,
+                ),
     )
 }
 
@@ -227,17 +236,20 @@ private fun CenterTabLayoutPreview() {
             mutableIntStateOf(2)
         }
         CenterTabLayout(
-            modifier = Modifier.fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
             selectedIndex = selectedIndex,
             onScrollFinishToSelectIndex = {
                 selectedIndex = it
-            }
+            },
         ) {
             repeat(6) { index ->
                 Tab(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                        .clip(CircleShape),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                            .clip(CircleShape),
                     selected = index == selectedIndex,
                     selectedContentColor = MaterialTheme.colorScheme.primary,
                     unselectedContentColor = MaterialTheme.colorScheme.onSurface,
@@ -246,7 +258,7 @@ private fun CenterTabLayoutPreview() {
                     },
                     text = @Composable {
                         Text(text = "item $index")
-                    }
+                    },
                 )
             }
         }

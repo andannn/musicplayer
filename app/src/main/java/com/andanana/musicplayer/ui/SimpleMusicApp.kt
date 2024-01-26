@@ -3,13 +3,11 @@ package com.andanana.musicplayer.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +25,7 @@ import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.feature.player.MiniPlayerBox
+import com.andanana.musicplayer.feature.player.MusicPlayerBox
 import com.andanana.musicplayer.navigation.SmpNavHost
 
 private const val TAG = "SimpleMusicApp"
@@ -56,9 +54,9 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         SmpNavHost(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth(),
             navHostController = appState.navController,
             onBackPressed = appState::onBackPressed,
             onShowMusicItemOption = {
@@ -72,10 +70,7 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
             },
         )
 
-        MiniPlayerBox(
-            modifier =
-                Modifier.navigationBarsPadding()
-                    .background(MaterialTheme.colorScheme.surface),
+        MusicPlayerBox(
             onNavigateToPlayer = {
                 appState.showPlayerDrawer()
             },
