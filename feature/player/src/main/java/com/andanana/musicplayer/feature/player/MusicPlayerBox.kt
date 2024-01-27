@@ -63,10 +63,11 @@ fun MusicPlayerBox(
     if (state is PlayerUiState.Active) {
         ShrinkablePlayBox(
             state = state as PlayerUiState.Active,
-            onPlayerSheetClick = onNavigateToPlayer,
-            onPlayControlButtonClick = playerStateViewModel::togglePlayState,
-            onFavoriteButtonClick = {},
-            onPlayNextButtonClick = playerStateViewModel::next,
+//            onPlayerSheetClick = onNavigateToPlayer,
+//            onPlayControlButtonClick = playerStateViewModel::togglePlayState,
+//            onFavoriteButtonClick = {},
+//            onPlayNextButtonClick = playerStateViewModel::next,
+            onEvent = playerStateViewModel::onEvent,
         )
     }
 }
@@ -75,10 +76,7 @@ fun MusicPlayerBox(
 private fun ShrinkablePlayBox(
     modifier: Modifier = Modifier,
     state: PlayerUiState.Active,
-    onPlayerSheetClick: () -> Unit = {},
-    onPlayControlButtonClick: () -> Unit = {},
-    onFavoriteButtonClick: () -> Unit = {},
-    onPlayNextButtonClick: () -> Unit = {},
+    onEvent: (PlayerUiEvent) -> Unit,
 ) {
     val navigationBarHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
     val minHeight =
@@ -220,9 +218,8 @@ private fun ShrinkablePlayBox(
                     .then(draggable)
                     .clickable(
                         enabled = currentState == PlayBoxState.SHRINK,
-                    ) {
-                        animatedToggle()
-                    },
+                        onClick = ::animatedToggle,
+                    ),
             heightPxRange = minHeight..maxHeight,
             coverUri = state.mediaItem.mediaMetadata.artworkUri.toString(),
             isPlaying = state.state == PlayState.PLAYING,
@@ -230,10 +227,7 @@ private fun ShrinkablePlayBox(
             title = state.mediaItem.mediaMetadata.title.toString(),
             artist = state.mediaItem.mediaMetadata.artist.toString(),
             progress = state.progress,
-            onPlayerSheetClick = onPlayerSheetClick,
-            onPlayControlButtonClick = onPlayControlButtonClick,
-            onPlayNextButtonClick = onPlayNextButtonClick,
-            onFavoriteButtonClick = onFavoriteButtonClick,
+            onEvent = onEvent,
         )
     }
 }

@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -84,12 +82,7 @@ fun FlexiblePlayerLayout(
     title: String = "",
     artist: String = "",
     progress: Float = 1f,
-    onPlayerSheetClick: () -> Unit = {},
-    onPlayControlButtonClick: () -> Unit = {},
-    onPlayNextButtonClick: () -> Unit = {},
-    onFavoriteButtonClick: () -> Unit = {},
-    onShrinkButtonClick: () -> Unit = {},
-    onOptionIconClick: () -> Unit = {},
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
     val statusBarHeight =
         with(LocalDensity.current) {
@@ -143,9 +136,7 @@ fun FlexiblePlayerLayout(
                 artist = artist,
                 isPlaying = isPlaying,
                 isFavorite = isFavorite,
-                onPlayControlButtonClick = onPlayControlButtonClick,
-                onPlayNextButtonClick = onPlayNextButtonClick,
-                onFavoriteButtonClick = onFavoriteButtonClick,
+                onEvent = onEvent,
             )
 
             val fadeInAreaAlpha = (1f - (1f - expandFactor).times(3f)).coerceIn(0f, 1f)
@@ -157,7 +148,9 @@ fun FlexiblePlayerLayout(
                         .graphicsLayer {
                             alpha = fadeInAreaAlpha
                         },
-                onClick = onShrinkButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnShrinkButtonClick)
+                },
             ) {
                 Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Shrink")
             }
@@ -169,7 +162,9 @@ fun FlexiblePlayerLayout(
                         .graphicsLayer {
                             alpha = fadeInAreaAlpha
                         },
-                onClick = onOptionIconClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnOptionIconClick)
+                },
             ) {
                 Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "Menu")
             }
@@ -178,7 +173,6 @@ fun FlexiblePlayerLayout(
                 CircleImage(
                     modifier =
                         Modifier
-//                        .align(Alignment.TopStart)
                             .padding(top = imagePaddingTopDp)
                             .padding(start = imagePaddingStartDp)
                             .width(imageWidthDp)
@@ -195,10 +189,10 @@ fun FlexiblePlayerLayout(
                             }
                             .fillMaxWidth()
                             .height(IntrinsicSize.Max),
-//                        .padding(top = imagePaddingTopDp + imageWidthDp)
                     progress = progress,
                     title = title,
                     artist = artist,
+                    onEvent = onEvent,
                 )
             }
 
@@ -233,9 +227,7 @@ private fun FadeoutWithExpandArea(
     artist: String,
     isPlaying: Boolean,
     isFavorite: Boolean,
-    onPlayControlButtonClick: () -> Unit,
-    onPlayNextButtonClick: () -> Unit,
-    onFavoriteButtonClick: () -> Unit,
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
     Row(
         modifier = modifier,
@@ -266,7 +258,9 @@ private fun FadeoutWithExpandArea(
                 Modifier
                     .size(30.dp)
                     .scale(1.2f),
-            onClick = onPlayControlButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnPlayButtonClick)
+            },
         ) {
             if (isPlaying) {
                 Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
@@ -281,7 +275,9 @@ private fun FadeoutWithExpandArea(
                     .size(30.dp)
                     .padding(5.dp)
                     .rotate(180f),
-            onClick = onPlayNextButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnNextButtonClick)
+            },
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.music_music_player_player_previous_icon),
@@ -291,7 +287,9 @@ private fun FadeoutWithExpandArea(
         Spacer(modifier = Modifier.width(10.dp))
         IconButton(
             modifier = Modifier.size(30.dp),
-            onClick = onFavoriteButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnFavoriteButtonClick)
+            },
         ) {
             if (isFavorite) {
                 Icon(
@@ -318,14 +316,10 @@ private fun FadeInWithExpandArea(
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
-    onPlayModeButtonClick: () -> Unit = {},
-    onPreviousButtonClick: () -> Unit = {},
-    onPlayButtonClick: () -> Unit = {},
-    onNextButtonClick: () -> Unit = {},
-    onPlayListButtonClick: () -> Unit = {},
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
@@ -354,7 +348,9 @@ private fun FadeInWithExpandArea(
                     Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                onClick = onPlayModeButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnShuffleButtonClick)
+                },
                 imageVector = Icons.Rounded.ShuffleOn,
             )
             SmpSubIconButton(
@@ -363,7 +359,9 @@ private fun FadeInWithExpandArea(
                         .weight(1f)
                         .aspectRatio(1f),
                 scale = 2f,
-                onClick = onPreviousButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPreviousButtonClick)
+                },
                 imageVector = Icons.Rounded.SkipPrevious,
             )
 
@@ -372,7 +370,9 @@ private fun FadeInWithExpandArea(
                     Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                onClick = onPlayButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPlayButtonClick)
+                },
                 imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
             )
             SmpSubIconButton(
@@ -382,12 +382,16 @@ private fun FadeInWithExpandArea(
                         .aspectRatio(1f)
                         .padding(10.dp),
                 scale = 2f,
-                onClick = onNextButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnNextButtonClick)
+                },
                 imageVector = Icons.Rounded.SkipNext,
             )
             SmpSubIconButton(
                 modifier = Modifier.weight(1f),
-                onClick = onPlayListButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPlayModeButtonClick)
+                },
                 imageVector = Icons.Filled.RepeatOne,
             )
         }
