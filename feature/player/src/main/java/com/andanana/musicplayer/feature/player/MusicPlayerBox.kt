@@ -63,10 +63,6 @@ fun MusicPlayerBox(
     if (state is PlayerUiState.Active) {
         ShrinkablePlayBox(
             state = state as PlayerUiState.Active,
-//            onPlayerSheetClick = onNavigateToPlayer,
-//            onPlayControlButtonClick = playerStateViewModel::togglePlayState,
-//            onFavoriteButtonClick = {},
-//            onPlayNextButtonClick = playerStateViewModel::next,
             onEvent = playerStateViewModel::onEvent,
         )
     }
@@ -154,6 +150,12 @@ private fun ShrinkablePlayBox(
             }
         }
 
+        fun onShrinkButtonClick() {
+            animaScope.launch {
+                shrinkAnimation()
+            }
+        }
+
         val draggableState =
             rememberDraggableState { delta ->
                 playerHeight -= delta
@@ -227,6 +229,7 @@ private fun ShrinkablePlayBox(
             title = state.mediaItem.mediaMetadata.title.toString(),
             artist = state.mediaItem.mediaMetadata.artist.toString(),
             progress = state.progress,
+            onShrinkButtonClick = ::onShrinkButtonClick,
             onEvent = onEvent,
         )
     }

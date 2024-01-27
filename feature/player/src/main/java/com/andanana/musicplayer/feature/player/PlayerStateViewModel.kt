@@ -11,7 +11,6 @@ import com.andanana.musicplayer.core.player.PlayerState
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,8 +28,6 @@ private const val TAG = "PlayerStateViewModel"
 sealed interface PlayerUiEvent {
     data object OnFavoriteButtonClick : PlayerUiEvent
 
-    data object OnShrinkButtonClick : PlayerUiEvent
-
     data object OnOptionIconClick : PlayerUiEvent
 
     data object OnPlayButtonClick : PlayerUiEvent
@@ -42,6 +39,8 @@ sealed interface PlayerUiEvent {
     data object OnPreviousButtonClick : PlayerUiEvent
 
     data object OnShuffleButtonClick : PlayerUiEvent
+
+    data class OnProgressChange(val progress: Float) : PlayerUiEvent
 }
 
 @HiltViewModel
@@ -56,7 +55,7 @@ class PlayerStateViewModel
         private val browser: MediaBrowser?
             get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
 
-        private val interactingMusicItem: Flow<MediaItem?> = playerMonitor.observePlayingMedia()
+        private val interactingMusicItem = playerMonitor.observePlayingMedia()
 
         private val playModeFlow =
             smpPreferenceRepository.userData
@@ -79,20 +78,17 @@ class PlayerStateViewModel
                 if (interactingMusicItem == null || !isBrowserReady) {
                     PlayerUiState.Inactive
                 } else {
-                    val duration = browser?.duration?.toFloat() ?: 1f
+                    val duration = browser?.duration ?: 0L
                     PlayerUiState.Active(
                         mediaItem = interactingMusicItem,
-                        progress = playerMonitor.currentPositionMs.div(duration),
+                        duration = duration,
+                        progress = playerMonitor.currentPositionMs.toFloat().div(duration),
                         playMode = playMode,
                         isFavorite = false,
                         state =
                             when (state) {
                                 is PlayerState.Playing -> {
                                     PlayState.PLAYING
-                                }
-
-                                is PlayerState.Paused, PlayerState.PlayBackEnd -> {
-                                    PlayState.PAUSED
                                 }
 
                                 else -> PlayState.PAUSED
@@ -139,8 +135,14 @@ class PlayerStateViewModel
                 PlayerUiEvent.OnPreviousButtonClick -> previous()
                 PlayerUiEvent.OnNextButtonClick -> next()
                 PlayerUiEvent.OnShuffleButtonClick -> {}
-                PlayerUiEvent.OnShrinkButtonClick -> Unit
                 PlayerUiEvent.OnOptionIconClick -> Unit
+                is PlayerUiEvent.OnProgressChange -> {
+                    val time =
+                        with((playerUiStateFlow.value as PlayerUiState.Active)) {
+                            duration.times(event.progress).toLong()
+                        }
+                    seekToTime(time)
+                }
             }
         }
 
@@ -164,7 +166,7 @@ class PlayerStateViewModel
             browser?.seekToPrevious()
         }
 
-        fun onSeekToTime(time: Int) {
+        fun seekToTime(time: Long) {
             browser?.seekTo(time.toLong())
         }
 
@@ -183,6 +185,7 @@ sealed class PlayerUiState {
 
     data class Active(
         val state: PlayState = PlayState.PAUSED,
+        val duration: Long = 0L,
         val progress: Float = 0f,
         val isFavorite: Boolean = false,
         val playMode: PlayMode = PlayMode.REPEAT_ALL,

@@ -83,6 +83,7 @@ fun FlexiblePlayerLayout(
     artist: String = "",
     progress: Float = 1f,
     onEvent: (PlayerUiEvent) -> Unit = {},
+    onShrinkButtonClick: () -> Unit = {},
 ) {
     val statusBarHeight =
         with(LocalDensity.current) {
@@ -148,9 +149,7 @@ fun FlexiblePlayerLayout(
                         .graphicsLayer {
                             alpha = fadeInAreaAlpha
                         },
-                onClick = {
-                    onEvent(PlayerUiEvent.OnShrinkButtonClick)
-                },
+                onClick = onShrinkButtonClick,
             ) {
                 Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Shrink")
             }
@@ -189,6 +188,7 @@ fun FlexiblePlayerLayout(
                             }
                             .fillMaxWidth()
                             .height(IntrinsicSize.Max),
+                    isPlaying = isPlaying,
                     progress = progress,
                     title = title,
                     artist = artist,
@@ -335,7 +335,9 @@ private fun FadeInWithExpandArea(
         Spacer(modifier = Modifier.height(60.dp))
         Slider(
             value = progress,
-            onValueChange = { },
+            onValueChange = {
+                onEvent(PlayerUiEvent.OnProgressChange(it))
+            },
         )
         Spacer(modifier = Modifier.height(15.dp))
         Row(
