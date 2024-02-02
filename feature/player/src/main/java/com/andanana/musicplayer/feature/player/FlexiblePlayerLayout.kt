@@ -1,7 +1,11 @@
 package com.andanana.musicplayer.feature.player
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -10,8 +14,6 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -24,6 +26,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,9 +35,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.rounded.ArrowBackIos
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
@@ -73,7 +77,7 @@ import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.skydoves.flexible.core.toPx
+import com.skydoves.flexible.core.screenHeight
 import kotlin.math.roundToInt
 
 private const val TAG = "BottomPlayerSheet"
@@ -89,8 +93,9 @@ val MaxImagePaddingStart = 20.dp
 
 val MinFadeoutWithExpandAreaPaddingTop = 15.dp
 
-val BottomSheetDragAreaHeight = 80.dp
+val BottomSheetDragAreaHeight = 90.dp
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlexiblePlayerLayout(
     modifier: Modifier = Modifier,
@@ -108,7 +113,12 @@ fun FlexiblePlayerLayout(
         with(LocalDensity.current) {
             WindowInsets.statusBars.getTop(this).toDp()
         }
+    val navigationBarHeight =
+        with(LocalDensity.current) {
+            WindowInsets.navigationBars.getBottom(this).toDp()
+        }
     val coverUriState = rememberUpdatedState(newValue = coverUri)
+    val density = LocalDensity.current
 
     Surface(
         modifier =
@@ -142,6 +152,7 @@ fun FlexiblePlayerLayout(
 
             val fadeoutAreaAlpha = 1 - (expandFactor * 4).coerceIn(0f, 1f)
             val isFullyExpand = expandFactor == 1f
+
             FadeoutWithExpandArea(
                 modifier =
                 Modifier
@@ -171,7 +182,10 @@ fun FlexiblePlayerLayout(
                         },
                 onClick = onShrinkButtonClick,
             ) {
-                Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Shrink")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Shrink",
+                )
             }
             IconButton(
                 modifier =
@@ -204,6 +218,7 @@ fun FlexiblePlayerLayout(
                         Modifier
                             .padding(top = imagePaddingTopDp)
                             .padding(top = imageWidthDp)
+                            .weight(1f)
                             .graphicsLayer {
                                 alpha = fadeInAreaAlpha
                             }
@@ -215,49 +230,44 @@ fun FlexiblePlayerLayout(
                     artist = artist,
                     onEvent = onEvent,
                 )
+                if (isFullyExpand) {
+                    Spacer(modifier = Modifier.height(BottomSheetDragAreaHeight))
+                }
             }
 
-            if (isFullyExpand) {
-                val sheetMaxHeight = maxHeight - statusBarHeight - PlayerShrinkHeight
-                val sheetMinHeight = BottomSheetDragAreaHeight
-                val draggableState =
-                    rememberDraggableState { delta ->
-//                        playerHeight -= delta
-                    }
-                Column(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .height(sheetMaxHeight)
-                            .offset {
-                                IntOffset(0, 0)
-                            }
-                            .align(Alignment.BottomCenter)
-                            .background(Color.Red),
-                ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .height(BottomSheetDragAreaHeight)
-                                .fillMaxWidth()
-                                .draggable(
-                                    draggableState,
-                                    orientation = Orientation.Vertical,
-                                    onDragStarted = {
-                                    },
-                                    onDragStopped = { velocity ->
-                                    },
-                                ),
-                    ) {
-                        Text(
-                            modifier =
-                                Modifier.align(Alignment.Center),
-                            text = "Up next",
-                        )
-                    }
-
-                    Box(modifier = Modifier.fillMaxWidth().weight(1f).background(Color.Blue)) {
+            val sheetMaxHeight = screenHeight() + navigationBarHeight - PlayerShrinkHeight
+            val sheetMinHeight = BottomSheetDragAreaHeight
+            val anchors =
+                with(LocalDensity.current) {
+                    DraggableAnchors {
+                        BottomSheetState.Shrink at (sheetMaxHeight - sheetMinHeight).toPx()
+                        BottomSheetState.Expand at 0f
                     }
                 }
+
+            val state =
+                remember {
+                    AnchoredDraggableState(
+                        initialValue = BottomSheetState.Shrink,
+                        anchors = anchors,
+                        positionalThreshold = { with(density) { 26.dp.toPx() } },
+                        velocityThreshold = { with(density) { 20.dp.toPx() } },
+                        animationSpec = spring(),
+                    )
+                }
+
+            AnimatedVisibility(
+                modifier =
+                    Modifier.align(Alignment.BottomCenter),
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = isFullyExpand,
+            ) {
+                BottomPlayQueueSheet(
+                    sheetMaxHeightDp = sheetMaxHeight,
+                    sheetMinHeightDp = sheetMinHeight,
+                    state = state,
+                )
             }
 
             if (!isFullyExpand) {
@@ -549,7 +559,7 @@ enum class DragValue { Start, Center, End }
 @OptIn(ExperimentalFoundationApi::class)
 @Preview(name = "Light")
 @Composable
-fun LargeControlAreaPreviewww() {
+fun AnchoredDraggableStateApiPreview() {
     MusicPlayerTheme(darkTheme = false) {
         val density = LocalDensity.current
         val anchors =
