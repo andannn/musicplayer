@@ -60,6 +60,7 @@ fun MusicPlayerBox(
 ) {
     val state by playerStateViewModel.playerUiStateFlow.collectAsState()
 
+    Log.d(TAG, "MusicPlayerBox: trigger by state")
     if (state is PlayerUiState.Active) {
         ShrinkablePlayBox(
             state = state as PlayerUiState.Active,
@@ -212,6 +213,7 @@ private fun ShrinkablePlayBox(
             }
         }
 
+        Log.d(TAG, "MusicPlayerBox: compose e")
         FlexiblePlayerLayout(
             modifier =
                 Modifier

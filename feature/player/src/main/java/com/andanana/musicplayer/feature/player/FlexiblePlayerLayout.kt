@@ -38,6 +38,8 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -89,6 +91,7 @@ fun FlexiblePlayerLayout(
         with(LocalDensity.current) {
             WindowInsets.statusBars.getTop(this).toDp()
         }
+    val coverUriState = rememberUpdatedState(newValue = coverUri)
 
     Surface(
         modifier =
@@ -176,7 +179,7 @@ fun FlexiblePlayerLayout(
                             .padding(start = imagePaddingStartDp)
                             .width(imageWidthDp)
                             .aspectRatio(1f),
-                    model = coverUri,
+                    model = coverUriState.value,
                 )
 
                 FadeInWithExpandArea(
@@ -229,6 +232,12 @@ private fun FadeoutWithExpandArea(
     isFavorite: Boolean,
     onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
+// TODO: It seems that there is a bug: Recomposition is done but ui is not update.
+//       I can not tell why this happened.
+//       Use <rememberUpdatedState> as a workaround.
+    val titleState = rememberUpdatedState(title)
+    val artistState = rememberUpdatedState(artist)
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -241,14 +250,14 @@ private fun FadeoutWithExpandArea(
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = title,
+                text = titleState.value,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyLarge,
                 overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(3.dp))
             Text(
-                text = artist,
+                text = artistState.value,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -318,13 +327,14 @@ private fun FadeInWithExpandArea(
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
+    val titleState by rememberUpdatedState(newValue = title)
     Column(
         modifier = modifier,
     ) {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
-            text = title,
+            text = titleState,
             style = MaterialTheme.typography.headlineMedium,
         )
         Text(

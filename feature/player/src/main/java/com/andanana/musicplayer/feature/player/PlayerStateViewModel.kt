@@ -166,8 +166,8 @@ class PlayerStateViewModel
             browser?.seekToPrevious()
         }
 
-        fun seekToTime(time: Long) {
-            browser?.seekTo(time.toLong())
+        private fun seekToTime(time: Long) {
+            browser?.seekTo(time)
         }
 
         fun changePlayMode() {
