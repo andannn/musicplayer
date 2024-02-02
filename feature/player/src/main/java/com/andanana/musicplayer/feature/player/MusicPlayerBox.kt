@@ -39,8 +39,8 @@ import kotlin.math.absoluteValue
 
 private const val TAG = "MiniPlayerBox"
 
-private val PlayerShrinkHeight = 70.dp
-private const val SwipeGestureVelocityThreshold = 1000
+ val PlayerShrinkHeight = 70.dp
+const val SwipeGestureVelocityThreshold = 1000
 
 private enum class PlayBoxState {
     SHRINK,

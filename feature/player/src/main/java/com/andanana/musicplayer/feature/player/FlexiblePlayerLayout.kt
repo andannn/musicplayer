@@ -1,10 +1,19 @@
 package com.andanana.musicplayer.feature.player
 
 import android.util.Log
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -12,8 +21,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -39,6 +50,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +64,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import coil.compose.AsyncImage
@@ -60,6 +73,8 @@ import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.skydoves.flexible.core.toPx
+import kotlin.math.roundToInt
 
 private const val TAG = "BottomPlayerSheet"
 
@@ -73,6 +88,8 @@ val MinImagePaddingStart = 5.dp
 val MaxImagePaddingStart = 20.dp
 
 val MinFadeoutWithExpandAreaPaddingTop = 15.dp
+
+val BottomSheetDragAreaHeight = 80.dp
 
 @Composable
 fun FlexiblePlayerLayout(
@@ -124,18 +141,18 @@ fun FlexiblePlayerLayout(
                 )
 
             val fadeoutAreaAlpha = 1 - (expandFactor * 4).coerceIn(0f, 1f)
-            val isExpand = expandFactor > 0.01f
+            val isFullyExpand = expandFactor == 1f
             FadeoutWithExpandArea(
                 modifier =
-                    Modifier
-                        .graphicsLayer {
-                            alpha = fadeoutAreaAlpha
-                        }
-                        .fillMaxWidth()
-                        .padding(
-                            top = fadingAreaPaddingTop,
-                            start = MinImagePaddingStart * 2 + MinImageSize,
-                        ),
+                Modifier
+                    .graphicsLayer {
+                        alpha = fadeoutAreaAlpha
+                    }
+                    .fillMaxWidth()
+                    .padding(
+                        top = fadingAreaPaddingTop,
+                        start = MinImagePaddingStart * 2 + MinImageSize,
+                    ),
                 title = title,
                 artist = artist,
                 isPlaying = isPlaying,
@@ -171,21 +188,22 @@ fun FlexiblePlayerLayout(
                 Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "Menu")
             }
 
-            Column {
-                CircleImage(
-                    modifier =
-                        Modifier
-                            .padding(top = imagePaddingTopDp)
-                            .padding(start = imagePaddingStartDp)
-                            .width(imageWidthDp)
-                            .aspectRatio(1f),
-                    model = coverUriState.value,
-                )
+            CircleImage(
+                modifier =
+                    Modifier
+                        .padding(top = imagePaddingTopDp)
+                        .padding(start = imagePaddingStartDp)
+                        .width(imageWidthDp)
+                        .aspectRatio(1f),
+                model = coverUriState.value,
+            )
 
+            Column {
                 FadeInWithExpandArea(
                     modifier =
                         Modifier
-                            .weight(1f)
+                            .padding(top = imagePaddingTopDp)
+                            .padding(top = imageWidthDp)
                             .graphicsLayer {
                                 alpha = fadeInAreaAlpha
                             }
@@ -199,7 +217,50 @@ fun FlexiblePlayerLayout(
                 )
             }
 
-            if (!isExpand) {
+            if (isFullyExpand) {
+                val sheetMaxHeight = maxHeight - statusBarHeight - PlayerShrinkHeight
+                val sheetMinHeight = BottomSheetDragAreaHeight
+                val draggableState =
+                    rememberDraggableState { delta ->
+//                        playerHeight -= delta
+                    }
+                Column(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .height(sheetMaxHeight)
+                            .offset {
+                                IntOffset(0, 0)
+                            }
+                            .align(Alignment.BottomCenter)
+                            .background(Color.Red),
+                ) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .height(BottomSheetDragAreaHeight)
+                                .fillMaxWidth()
+                                .draggable(
+                                    draggableState,
+                                    orientation = Orientation.Vertical,
+                                    onDragStarted = {
+                                    },
+                                    onDragStopped = { velocity ->
+                                    },
+                                ),
+                    ) {
+                        Text(
+                            modifier =
+                                Modifier.align(Alignment.Center),
+                            text = "Up next",
+                        )
+                    }
+
+                    Box(modifier = Modifier.fillMaxWidth().weight(1f).background(Color.Blue)) {
+                    }
+                }
+            }
+
+            if (!isFullyExpand) {
                 Spacer(
                     modifier =
                         Modifier
@@ -433,7 +494,7 @@ fun CircleImage(
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme {
         FlexiblePlayerLayout(
-            modifier = Modifier.height(820.dp),
+            modifier = Modifier.height(870.dp),
             coverUri = "",
             isPlaying = true,
             isFavorite = true,
@@ -479,6 +540,52 @@ fun LargeControlAreaPreview() {
                 title = "title",
                 artist = "artist",
             )
+        }
+    }
+}
+
+enum class DragValue { Start, Center, End }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Preview(name = "Light")
+@Composable
+fun LargeControlAreaPreviewww() {
+    MusicPlayerTheme(darkTheme = false) {
+        val density = LocalDensity.current
+        val anchors =
+            with(LocalDensity.current) {
+                DraggableAnchors {
+                    DragValue.Start at -100.dp.toPx()
+                    DragValue.Center at 0f
+                    DragValue.End at 100.dp.toPx()
+                }
+            }
+
+        val state =
+            remember {
+                AnchoredDraggableState(
+                    initialValue = DragValue.Start,
+                    anchors = anchors,
+                    positionalThreshold = { with(density) { 56.dp.toPx() } },
+                    velocityThreshold = { with(density) { 125.dp.toPx() } },
+                    animationSpec = tween(1000),
+                )
+            }
+
+        Box(
+            modifier =
+                Modifier.fillMaxSize()
+                    .anchoredDraggable(state, orientation = Orientation.Horizontal),
+        ) {
+            Box(
+                Modifier.size(200.dp)
+                    .offset {
+                        Log.d(TAG, "LargeControlAreaPreviewww: ${state.requireOffset()}")
+                        IntOffset(x = state.requireOffset().roundToInt(), y = 0)
+                    },
+            ) {
+                Box(modifier = Modifier.fillMaxSize().background(Color.Red))
+            }
         }
     }
 }
