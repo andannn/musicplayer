@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.feature.player
+package com.andanana.musicplayer.feature.player.widget
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi

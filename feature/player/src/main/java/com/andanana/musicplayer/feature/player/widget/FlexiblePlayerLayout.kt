@@ -1,9 +1,8 @@
-package com.andanana.musicplayer.feature.player
+package com.andanana.musicplayer.feature.player.widget
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
@@ -12,10 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,11 +19,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -35,10 +29,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
@@ -68,7 +61,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import coil.compose.AsyncImage
@@ -77,8 +69,8 @@ import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import com.skydoves.flexible.core.screenHeight
-import kotlin.math.roundToInt
 
 private const val TAG = "BottomPlayerSheet"
 
@@ -155,15 +147,15 @@ fun FlexiblePlayerLayout(
 
             FadeoutWithExpandArea(
                 modifier =
-                Modifier
-                    .graphicsLayer {
-                        alpha = fadeoutAreaAlpha
-                    }
-                    .fillMaxWidth()
-                    .padding(
-                        top = fadingAreaPaddingTop,
-                        start = MinImagePaddingStart * 2 + MinImageSize,
-                    ),
+                    Modifier
+                        .graphicsLayer {
+                            alpha = fadeoutAreaAlpha
+                        }
+                        .fillMaxWidth()
+                        .padding(
+                            top = fadingAreaPaddingTop,
+                            start = MinImagePaddingStart * 2 + MinImageSize,
+                        ),
                 title = title,
                 artist = artist,
                 isPlaying = isPlaying,
@@ -183,7 +175,7 @@ fun FlexiblePlayerLayout(
                 onClick = onShrinkButtonClick,
             ) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBackIos,
                     contentDescription = "Shrink",
                 )
             }
@@ -550,52 +542,6 @@ fun LargeControlAreaPreview() {
                 title = "title",
                 artist = "artist",
             )
-        }
-    }
-}
-
-enum class DragValue { Start, Center, End }
-
-@OptIn(ExperimentalFoundationApi::class)
-@Preview(name = "Light")
-@Composable
-fun AnchoredDraggableStateApiPreview() {
-    MusicPlayerTheme(darkTheme = false) {
-        val density = LocalDensity.current
-        val anchors =
-            with(LocalDensity.current) {
-                DraggableAnchors {
-                    DragValue.Start at -100.dp.toPx()
-                    DragValue.Center at 0f
-                    DragValue.End at 100.dp.toPx()
-                }
-            }
-
-        val state =
-            remember {
-                AnchoredDraggableState(
-                    initialValue = DragValue.Start,
-                    anchors = anchors,
-                    positionalThreshold = { with(density) { 56.dp.toPx() } },
-                    velocityThreshold = { with(density) { 125.dp.toPx() } },
-                    animationSpec = tween(1000),
-                )
-            }
-
-        Box(
-            modifier =
-                Modifier.fillMaxSize()
-                    .anchoredDraggable(state, orientation = Orientation.Horizontal),
-        ) {
-            Box(
-                Modifier.size(200.dp)
-                    .offset {
-                        Log.d(TAG, "LargeControlAreaPreviewww: ${state.requireOffset()}")
-                        IntOffset(x = state.requireOffset().roundToInt(), y = 0)
-                    },
-            ) {
-                Box(modifier = Modifier.fillMaxSize().background(Color.Red))
-            }
         }
     }
 }
