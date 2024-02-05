@@ -53,8 +53,6 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    implementation(libs.accompanist.systemuicontroller)
-
     // Activity
     implementation(libs.androidx.activity.compose)
 

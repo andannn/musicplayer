@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,15 +31,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -57,7 +54,6 @@ import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private const val TAG = "PlayListScreen"
 
@@ -158,7 +154,6 @@ fun CommonPlayListContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumPlayListContent(
     modifier: Modifier = Modifier,
@@ -169,14 +164,6 @@ private fun AlbumPlayListContent(
     onShowMusicItemOption: (Uri) -> Unit = {},
     onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
-    val systemUiController = rememberSystemUiController()
-    val statusBarColor = MaterialTheme.colorScheme.surface
-    DisposableEffect(key1 = Unit) {
-        onDispose {
-            systemUiController.setSystemBarsColor(color = statusBarColor)
-        }
-    }
-
     var appBarHeight by
         remember {
             mutableIntStateOf(0)
@@ -230,18 +217,18 @@ private fun AlbumPlayListContent(
         }
     }
 
-    val isDarkTheme = isSystemInDarkTheme()
-    LaunchedEffect(Unit) {
-        snapshotFlow {
-            isHeaderVisible
-        }.collect { isHeaderVisible ->
-            if (!isHeaderVisible) {
-                systemUiController.setStatusBarColor(statusBarColor)
-            } else {
-                systemUiController.setStatusBarColor(Color.Transparent, darkIcons = !isDarkTheme)
-            }
-        }
-    }
+//    val isDarkTheme = isSystemInDarkTheme()
+//    LaunchedEffect(Unit) {
+//        snapshotFlow {
+//            isHeaderVisible
+//        }.collect { isHeaderVisible ->
+//            if (!isHeaderVisible) {
+//                systemUiController.setStatusBarColor(statusBarColor)
+//            } else {
+//                systemUiController.setStatusBarColor(Color.Transparent, darkIcons = !isDarkTheme)
+//            }
+//        }
+//    }
 
     Scaffold(
         modifier = modifier,
@@ -310,7 +297,6 @@ private fun AlbumPlayListContent(
         CustomAppTopBar(
             modifier =
                 Modifier
-                    .statusBarsPadding()
                     .onSizeChanged {
                         appBarHeight = it.height
                     },
@@ -332,9 +318,10 @@ private fun CustomAppTopBar(
     Row(
         modifier =
             modifier
+                .background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface)
+                .windowInsetsPadding(WindowInsets.statusBars)
                 .fillMaxWidth()
-                .height(64.dp)
-                .background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface),
+                .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(

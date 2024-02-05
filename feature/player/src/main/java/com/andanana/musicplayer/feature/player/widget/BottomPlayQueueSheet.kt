@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,15 +47,19 @@ fun BottomPlayQueueSheet(
     val density = LocalDensity.current
     val shrinkOffset = state.anchors.positionOf(BottomSheetState.Shrink)
     val expandOffset = state.anchors.positionOf(BottomSheetState.Expand)
+
     // shrink is 0f, expand is 1f
-    val expandFactor by
+    val expandFactor by remember {
         derivedStateOf {
             1 - state.offset.div(shrinkOffset - expandOffset)
         }
-    val isExpand by
+    }
+
+    val isExpand by remember {
         derivedStateOf {
             state.currentValue == BottomSheetState.Expand
         }
+    }
 
     BackHandler(enabled = isExpand) {
         scope.launch {

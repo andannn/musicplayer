@@ -28,8 +28,6 @@ dependencies {
     api(libs.androidx.compose.material)
     api(libs.androidx.compose.material.iconsExtended)
 
-    implementation(libs.accompanist.systemuicontroller)
-
     // Navigation
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
