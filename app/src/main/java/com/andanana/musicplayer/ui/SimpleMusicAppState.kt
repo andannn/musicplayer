@@ -16,8 +16,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.andanana.musicplayer.core.data.model.MusicListType
 import com.andanana.musicplayer.core.designsystem.Drawer
-import com.google.accompanist.systemuicontroller.SystemUiController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -30,19 +28,16 @@ fun rememberSimpleMusicAppState(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     drawerState: BottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed),
     navController: NavHostController = rememberNavController(),
-    systemUiController: SystemUiController = rememberSystemUiController(),
 ): SimpleMusicAppState {
     return remember(
         navController,
         coroutineScope,
-        systemUiController,
         drawerState,
         snackbarHostState,
     ) {
         SimpleMusicAppState(
             navController,
             coroutineScope,
-            systemUiController,
             drawerState,
             snackbarHostState,
         )
@@ -53,7 +48,6 @@ fun rememberSimpleMusicAppState(
 class SimpleMusicAppState constructor(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
-    val systemUiController: SystemUiController,
     val drawerState: BottomDrawerState,
     val snackbarHostState: SnackbarHostState,
 ) {

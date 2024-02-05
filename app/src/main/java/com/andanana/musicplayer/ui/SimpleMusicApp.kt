@@ -11,7 +11,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +24,7 @@ import com.andanana.musicplayer.MainActivityViewModel
 import com.andanana.musicplayer.core.designsystem.DrawerItem
 import com.andanana.musicplayer.core.designsystem.component.DrawerItemView
 import com.andanana.musicplayer.core.designsystem.icons.Icon
-import com.andanana.musicplayer.feature.player.MusicPlayerBox
+import com.andanana.musicplayer.feature.player.PlayerSheet
 import com.andanana.musicplayer.navigation.SmpNavHost
 
 private const val TAG = "SimpleMusicApp"
@@ -41,8 +40,6 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
         remember(viewModelStoreOwner) {
             ViewModelProvider(viewModelStoreOwner)[MainActivityViewModel::class.java]
         }
-
-    appState.systemUiController.setSystemBarsColor(color = MaterialTheme.colorScheme.surface)
 
     appState.navController.enableOnBackPressed(appState.drawerState.isClosed)
 
@@ -70,7 +67,7 @@ fun SimpleMusicApp(appState: SimpleMusicAppState = rememberSimpleMusicAppState()
             },
         )
 
-        MusicPlayerBox(
+        PlayerSheet(
             onNavigateToPlayer = {
                 appState.showPlayerDrawer()
             },

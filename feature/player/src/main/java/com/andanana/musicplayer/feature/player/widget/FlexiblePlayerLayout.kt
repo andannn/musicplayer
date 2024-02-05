@@ -1,9 +1,16 @@
-package com.andanana.musicplayer.feature.player
+package com.andanana.musicplayer.feature.player.widget
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,18 +21,17 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
@@ -40,6 +46,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +70,8 @@ import com.andanana.musicplayer.core.designsystem.R
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.feature.player.PlayerUiEvent
+import com.skydoves.flexible.core.screenHeight
 
 private const val TAG = "BottomPlayerSheet"
 
@@ -74,6 +86,9 @@ val MaxImagePaddingStart = 20.dp
 
 val MinFadeoutWithExpandAreaPaddingTop = 15.dp
 
+val BottomSheetDragAreaHeight = 90.dp
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlexiblePlayerLayout(
     modifier: Modifier = Modifier,
@@ -84,17 +99,19 @@ fun FlexiblePlayerLayout(
     title: String = "",
     artist: String = "",
     progress: Float = 1f,
-    onPlayerSheetClick: () -> Unit = {},
-    onPlayControlButtonClick: () -> Unit = {},
-    onPlayNextButtonClick: () -> Unit = {},
-    onFavoriteButtonClick: () -> Unit = {},
+    onEvent: (PlayerUiEvent) -> Unit = {},
     onShrinkButtonClick: () -> Unit = {},
-    onOptionIconClick: () -> Unit = {},
 ) {
     val statusBarHeight =
         with(LocalDensity.current) {
             WindowInsets.statusBars.getTop(this).toDp()
         }
+    val navigationBarHeight =
+        with(LocalDensity.current) {
+            WindowInsets.navigationBars.getBottom(this).toDp()
+        }
+    val coverUriState = rememberUpdatedState(newValue = coverUri)
+    val density = LocalDensity.current
 
     Surface(
         modifier =
@@ -110,24 +127,71 @@ fun FlexiblePlayerLayout(
 
             val (minHeightPx, maxHeightPx) = heightPxRange.start to heightPxRange.endInclusive
             val currentHeight = constraints.maxHeight
-            val expandFactor =
-                (currentHeight - minHeightPx).div(maxHeightPx - minHeightPx).coerceIn(0f, 1f)
-            Log.d(TAG, "FlexiblePlayerLayout: expandFactor $expandFactor")
 
-            val imageWidthDp = lerp(start = minImageWidth, stop = maxImageWidth, expandFactor)
+            val layoutExpandFactor =
+                (currentHeight - minHeightPx).div(maxHeightPx - minHeightPx).coerceIn(0f, 1f)
+            val isLayoutFullyExpand = layoutExpandFactor == 1f
+
+            val sheetMaxHeight = screenHeight() + navigationBarHeight - PlayerShrinkHeight
+            val sheetMinHeight = BottomSheetDragAreaHeight
+            val shrinkOffset =
+                with(LocalDensity.current) {
+                    (sheetMaxHeight - sheetMinHeight).toPx()
+                }
+            val anchors =
+                DraggableAnchors {
+                    BottomSheetState.Shrink at shrinkOffset
+                    BottomSheetState.Expand at 0f
+                }
+
+            val state =
+                remember {
+                    AnchoredDraggableState(
+                        initialValue = BottomSheetState.Shrink,
+                        anchors = anchors,
+                        positionalThreshold = { with(density) { 26.dp.toPx() } },
+                        velocityThreshold = { with(density) { 20.dp.toPx() } },
+                        animationSpec = spring(),
+                    )
+                }
+
+            // 1f when sheet shrink, 0f when sheet fully expanded.
+            val sheetShrinkFactor by remember {
+                derivedStateOf {
+                    state.offset.div(shrinkOffset)
+                }
+            }
+
+            val isSheetExpanding =
+                remember(sheetShrinkFactor) {
+                    sheetShrinkFactor < 1f
+                }
+
+            val factor =
+                remember(sheetShrinkFactor, layoutExpandFactor) {
+                    if (isSheetExpanding) sheetShrinkFactor else layoutExpandFactor
+                }
+
+            // states to control ui.
+            val imageWidthDp = lerp(start = minImageWidth, stop = maxImageWidth, factor)
+
             val imagePaddingTopDp =
-                lerp(start = MinImagePaddingTop, stop = MaxImagePaddingTop, expandFactor)
+                lerp(
+                    start = MinImagePaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
+                    stop = MaxImagePaddingTop,
+                    factor,
+                )
             val imagePaddingStartDp =
-                lerp(start = MinImagePaddingStart, stop = MaxImagePaddingStart, expandFactor)
+                lerp(start = MinImagePaddingStart, stop = MaxImagePaddingStart, factor)
             val fadingAreaPaddingTop =
                 lerp(
-                    start = MinFadeoutWithExpandAreaPaddingTop,
+                    start = MinFadeoutWithExpandAreaPaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
                     stop = statusBarHeight,
-                    expandFactor,
+                    factor,
                 )
+            val fadeInAreaAlpha = (1f - (1f - factor).times(3f)).coerceIn(0f, 1f)
+            val fadeoutAreaAlpha = 1 - (factor * 4).coerceIn(0f, 1f)
 
-            val fadeoutAreaAlpha = 1 - (expandFactor * 4).coerceIn(0f, 1f)
-            val isExpand = expandFactor > 0.01f
             FadeoutWithExpandArea(
                 modifier =
                     Modifier
@@ -143,12 +207,9 @@ fun FlexiblePlayerLayout(
                 artist = artist,
                 isPlaying = isPlaying,
                 isFavorite = isFavorite,
-                onPlayControlButtonClick = onPlayControlButtonClick,
-                onPlayNextButtonClick = onPlayNextButtonClick,
-                onFavoriteButtonClick = onFavoriteButtonClick,
+                onEvent = onEvent,
             )
 
-            val fadeInAreaAlpha = (1f - (1f - expandFactor).times(3f)).coerceIn(0f, 1f)
             IconButton(
                 modifier =
                     Modifier
@@ -159,7 +220,10 @@ fun FlexiblePlayerLayout(
                         },
                 onClick = onShrinkButtonClick,
             ) {
-                Icon(imageVector = Icons.Rounded.ArrowBackIos, contentDescription = "Shrink")
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBackIos,
+                    contentDescription = "Shrink",
+                )
             }
             IconButton(
                 modifier =
@@ -169,40 +233,60 @@ fun FlexiblePlayerLayout(
                         .graphicsLayer {
                             alpha = fadeInAreaAlpha
                         },
-                onClick = onOptionIconClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnOptionIconClick)
+                },
             ) {
                 Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "Menu")
             }
 
-            Column {
-                CircleImage(
-                    modifier =
-                        Modifier
-//                        .align(Alignment.TopStart)
-                            .padding(top = imagePaddingTopDp)
-                            .padding(start = imagePaddingStartDp)
-                            .width(imageWidthDp)
-                            .aspectRatio(1f),
-                    model = coverUri,
-                )
+            CircleImage(
+                modifier =
+                    Modifier
+                        .padding(top = imagePaddingTopDp)
+                        .padding(start = imagePaddingStartDp)
+                        .width(imageWidthDp)
+                        .aspectRatio(1f),
+                model = coverUriState.value,
+            )
 
+            Column {
                 FadeInWithExpandArea(
                     modifier =
                         Modifier
+                            .padding(top = imagePaddingTopDp)
+                            .padding(top = imageWidthDp)
                             .weight(1f)
                             .graphicsLayer {
                                 alpha = fadeInAreaAlpha
                             }
                             .fillMaxWidth()
                             .height(IntrinsicSize.Max),
-//                        .padding(top = imagePaddingTopDp + imageWidthDp)
+                    isPlaying = isPlaying,
                     progress = progress,
                     title = title,
                     artist = artist,
+                    onEvent = onEvent,
+                )
+                if (isLayoutFullyExpand) {
+                    Spacer(modifier = Modifier.height(BottomSheetDragAreaHeight))
+                }
+            }
+
+            AnimatedVisibility(
+                modifier =
+                    Modifier.align(Alignment.BottomCenter),
+                enter = fadeIn(),
+                exit = fadeOut(),
+                visible = isLayoutFullyExpand,
+            ) {
+                BottomPlayQueueSheet(
+                    sheetMaxHeightDp = sheetMaxHeight,
+                    state = state,
                 )
             }
 
-            if (!isExpand) {
+            if (!isLayoutFullyExpand) {
                 Spacer(
                     modifier =
                         Modifier
@@ -233,10 +317,14 @@ private fun FadeoutWithExpandArea(
     artist: String,
     isPlaying: Boolean,
     isFavorite: Boolean,
-    onPlayControlButtonClick: () -> Unit,
-    onPlayNextButtonClick: () -> Unit,
-    onFavoriteButtonClick: () -> Unit,
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
+// TODO: It seems that there is a bug: Recomposition is done but ui is not update.
+//       I can not tell why this happened.
+//       Use <rememberUpdatedState> as a workaround.
+    val titleState = rememberUpdatedState(title)
+    val artistState = rememberUpdatedState(artist)
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -249,14 +337,14 @@ private fun FadeoutWithExpandArea(
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
-                text = title,
+                text = titleState.value,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodyLarge,
                 overflow = TextOverflow.Ellipsis,
             )
             Spacer(modifier = Modifier.height(3.dp))
             Text(
-                text = artist,
+                text = artistState.value,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
             )
@@ -266,7 +354,9 @@ private fun FadeoutWithExpandArea(
                 Modifier
                     .size(30.dp)
                     .scale(1.2f),
-            onClick = onPlayControlButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnPlayButtonClick)
+            },
         ) {
             if (isPlaying) {
                 Icon(imageVector = Icons.Rounded.Pause, contentDescription = "")
@@ -281,7 +371,9 @@ private fun FadeoutWithExpandArea(
                     .size(30.dp)
                     .padding(5.dp)
                     .rotate(180f),
-            onClick = onPlayNextButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnNextButtonClick)
+            },
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.music_music_player_player_previous_icon),
@@ -291,7 +383,9 @@ private fun FadeoutWithExpandArea(
         Spacer(modifier = Modifier.width(10.dp))
         IconButton(
             modifier = Modifier.size(30.dp),
-            onClick = onFavoriteButtonClick,
+            onClick = {
+                onEvent(PlayerUiEvent.OnFavoriteButtonClick)
+            },
         ) {
             if (isFavorite) {
                 Icon(
@@ -318,19 +412,16 @@ private fun FadeInWithExpandArea(
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
-    onPlayModeButtonClick: () -> Unit = {},
-    onPreviousButtonClick: () -> Unit = {},
-    onPlayButtonClick: () -> Unit = {},
-    onNextButtonClick: () -> Unit = {},
-    onPlayListButtonClick: () -> Unit = {},
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
+    val titleState by rememberUpdatedState(newValue = title)
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
-            text = title,
+            text = titleState,
             style = MaterialTheme.typography.headlineMedium,
         )
         Text(
@@ -341,7 +432,9 @@ private fun FadeInWithExpandArea(
         Spacer(modifier = Modifier.height(60.dp))
         Slider(
             value = progress,
-            onValueChange = { },
+            onValueChange = {
+                onEvent(PlayerUiEvent.OnProgressChange(it))
+            },
         )
         Spacer(modifier = Modifier.height(15.dp))
         Row(
@@ -354,7 +447,9 @@ private fun FadeInWithExpandArea(
                     Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                onClick = onPlayModeButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnShuffleButtonClick)
+                },
                 imageVector = Icons.Rounded.ShuffleOn,
             )
             SmpSubIconButton(
@@ -363,7 +458,9 @@ private fun FadeInWithExpandArea(
                         .weight(1f)
                         .aspectRatio(1f),
                 scale = 2f,
-                onClick = onPreviousButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPreviousButtonClick)
+                },
                 imageVector = Icons.Rounded.SkipPrevious,
             )
 
@@ -372,7 +469,9 @@ private fun FadeInWithExpandArea(
                     Modifier
                         .weight(1f)
                         .aspectRatio(1f),
-                onClick = onPlayButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPlayButtonClick)
+                },
                 imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
             )
             SmpSubIconButton(
@@ -382,12 +481,16 @@ private fun FadeInWithExpandArea(
                         .aspectRatio(1f)
                         .padding(10.dp),
                 scale = 2f,
-                onClick = onNextButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnNextButtonClick)
+                },
                 imageVector = Icons.Rounded.SkipNext,
             )
             SmpSubIconButton(
                 modifier = Modifier.weight(1f),
-                onClick = onPlayListButtonClick,
+                onClick = {
+                    onEvent(PlayerUiEvent.OnPlayModeButtonClick)
+                },
                 imageVector = Icons.Filled.RepeatOne,
             )
         }
@@ -417,7 +520,7 @@ fun CircleImage(
 fun PlayingWithFavoriteSongBottomPlayerSheetPreview() {
     MusicPlayerTheme {
         FlexiblePlayerLayout(
-            modifier = Modifier.height(820.dp),
+            modifier = Modifier.height(870.dp),
             coverUri = "",
             isPlaying = true,
             isFavorite = true,
