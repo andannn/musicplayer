@@ -46,6 +46,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -126,24 +127,70 @@ fun FlexiblePlayerLayout(
 
             val (minHeightPx, maxHeightPx) = heightPxRange.start to heightPxRange.endInclusive
             val currentHeight = constraints.maxHeight
-            val expandFactor =
-                (currentHeight - minHeightPx).div(maxHeightPx - minHeightPx).coerceIn(0f, 1f)
-            Log.d(TAG, "FlexiblePlayerLayout: expandFactor $expandFactor")
 
-            val imageWidthDp = lerp(start = minImageWidth, stop = maxImageWidth, expandFactor)
+            val layoutExpandFactor =
+                (currentHeight - minHeightPx).div(maxHeightPx - minHeightPx).coerceIn(0f, 1f)
+            val isLayoutFullyExpand = layoutExpandFactor == 1f
+
+            val sheetMaxHeight = screenHeight() + navigationBarHeight - PlayerShrinkHeight
+            val sheetMinHeight = BottomSheetDragAreaHeight
+            val shrinkOffset =
+                with(LocalDensity.current) {
+                    (sheetMaxHeight - sheetMinHeight).toPx()
+                }
+            val anchors =
+                DraggableAnchors {
+                    BottomSheetState.Shrink at shrinkOffset
+                    BottomSheetState.Expand at 0f
+                }
+
+            val state =
+                remember {
+                    AnchoredDraggableState(
+                        initialValue = BottomSheetState.Shrink,
+                        anchors = anchors,
+                        positionalThreshold = { with(density) { 26.dp.toPx() } },
+                        velocityThreshold = { with(density) { 20.dp.toPx() } },
+                        animationSpec = spring(),
+                    )
+                }
+
+            // 1f when sheet shrink, 0f when sheet fully expanded.
+            val sheetShrinkFactor by remember {
+                derivedStateOf {
+                    state.offset.div(shrinkOffset)
+                }
+            }
+
+            val isSheetExpanding =
+                remember(sheetShrinkFactor) {
+                    sheetShrinkFactor < 1f
+                }
+
+            val factor =
+                remember(sheetShrinkFactor, layoutExpandFactor) {
+                    if (isSheetExpanding) sheetShrinkFactor else layoutExpandFactor
+                }
+
+            // states to control ui.
+            val imageWidthDp = lerp(start = minImageWidth, stop = maxImageWidth, factor)
+
             val imagePaddingTopDp =
-                lerp(start = MinImagePaddingTop, stop = MaxImagePaddingTop, expandFactor)
+                lerp(
+                    start = MinImagePaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
+                    stop = MaxImagePaddingTop,
+                    factor,
+                )
             val imagePaddingStartDp =
-                lerp(start = MinImagePaddingStart, stop = MaxImagePaddingStart, expandFactor)
+                lerp(start = MinImagePaddingStart, stop = MaxImagePaddingStart, factor)
             val fadingAreaPaddingTop =
                 lerp(
-                    start = MinFadeoutWithExpandAreaPaddingTop,
+                    start = MinFadeoutWithExpandAreaPaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
                     stop = statusBarHeight,
-                    expandFactor,
+                    factor,
                 )
-
-            val fadeoutAreaAlpha = 1 - (expandFactor * 4).coerceIn(0f, 1f)
-            val isFullyExpand = expandFactor == 1f
+            val fadeInAreaAlpha = (1f - (1f - factor).times(3f)).coerceIn(0f, 1f)
+            val fadeoutAreaAlpha = 1 - (factor * 4).coerceIn(0f, 1f)
 
             FadeoutWithExpandArea(
                 modifier =
@@ -163,7 +210,6 @@ fun FlexiblePlayerLayout(
                 onEvent = onEvent,
             )
 
-            val fadeInAreaAlpha = (1f - (1f - expandFactor).times(3f)).coerceIn(0f, 1f)
             IconButton(
                 modifier =
                     Modifier
@@ -222,47 +268,25 @@ fun FlexiblePlayerLayout(
                     artist = artist,
                     onEvent = onEvent,
                 )
-                if (isFullyExpand) {
+                if (isLayoutFullyExpand) {
                     Spacer(modifier = Modifier.height(BottomSheetDragAreaHeight))
                 }
             }
-
-            val sheetMaxHeight = screenHeight() + navigationBarHeight - PlayerShrinkHeight
-            val sheetMinHeight = BottomSheetDragAreaHeight
-            val anchors =
-                with(LocalDensity.current) {
-                    DraggableAnchors {
-                        BottomSheetState.Shrink at (sheetMaxHeight - sheetMinHeight).toPx()
-                        BottomSheetState.Expand at 0f
-                    }
-                }
-
-            val state =
-                remember {
-                    AnchoredDraggableState(
-                        initialValue = BottomSheetState.Shrink,
-                        anchors = anchors,
-                        positionalThreshold = { with(density) { 26.dp.toPx() } },
-                        velocityThreshold = { with(density) { 20.dp.toPx() } },
-                        animationSpec = spring(),
-                    )
-                }
 
             AnimatedVisibility(
                 modifier =
                     Modifier.align(Alignment.BottomCenter),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                visible = isFullyExpand,
+                visible = isLayoutFullyExpand,
             ) {
                 BottomPlayQueueSheet(
                     sheetMaxHeightDp = sheetMaxHeight,
-                    sheetMinHeightDp = sheetMinHeight,
                     state = state,
                 )
             }
 
-            if (!isFullyExpand) {
+            if (!isLayoutFullyExpand) {
                 Spacer(
                     modifier =
                         Modifier
