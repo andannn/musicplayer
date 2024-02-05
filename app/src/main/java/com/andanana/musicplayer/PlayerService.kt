@@ -8,7 +8,6 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import com.andanana.musicplayer.core.data.repository.MusicRepository
-import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -24,7 +23,6 @@ private const val TAG = "PlayerService"
 
 @AndroidEntryPoint
 class PlayerService : MediaLibraryService(), CoroutineScope {
-
     @Inject
     lateinit var player: Player
 
@@ -59,13 +57,14 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
         override fun onGetLibraryRoot(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
-            params: LibraryParams?
-        ): ListenableFuture<LibraryResult<MediaItem>> = future {
-            LibraryResult.ofItem(
-                musicRepository.getLibraryRoot(),
-                params
-            )
-        }
+            params: LibraryParams?,
+        ): ListenableFuture<LibraryResult<MediaItem>> =
+            future {
+                LibraryResult.ofItem(
+                    musicRepository.getLibraryRoot(),
+                    params,
+                )
+            }
 
         override fun onGetChildren(
             session: MediaLibrarySession,
@@ -73,34 +72,37 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             parentId: String,
             page: Int,
             pageSize: Int,
-            params: LibraryParams?
-        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> = future {
-            LibraryResult.ofItemList(
-                musicRepository.getChildren(parentId),
-                params
-            )
-        }
+            params: LibraryParams?,
+        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> =
+            future {
+                LibraryResult.ofItemList(
+                    musicRepository.getChildren(parentId),
+                    params,
+                )
+            }
 
         override fun onGetItem(
             session: MediaLibrarySession,
             browser: MediaSession.ControllerInfo,
-            mediaId: String
-        ): ListenableFuture<LibraryResult<MediaItem>> = future {
-            musicRepository.getMediaItem(mediaId)?.let {
-                LibraryResult.ofItem(it, null)
-            } ?: LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED)
-        }
+            mediaId: String,
+        ): ListenableFuture<LibraryResult<MediaItem>> =
+            future {
+                musicRepository.getMediaItem(mediaId)?.let {
+                    LibraryResult.ofItem(it, null)
+                } ?: LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED)
+            }
 
         override fun onAddMediaItems(
             mediaSession: MediaSession,
             controller: MediaSession.ControllerInfo,
-            mediaItems: MutableList<MediaItem>
+            mediaItems: MutableList<MediaItem>,
         ): ListenableFuture<List<MediaItem>> {
-            val updatedMediaItems = mediaItems.map { mediaItem ->
-                mediaItem.buildUpon()
-                    .setUri(mediaItem.requestMetadata.mediaUri)
-                    .build()
-            }
+            val updatedMediaItems =
+                mediaItems.map { mediaItem ->
+                    mediaItem.buildUpon()
+                        .setUri(mediaItem.requestMetadata.mediaUri)
+                        .build()
+                }
             return Futures.immediateFuture(updatedMediaItems)
         }
     }
@@ -118,7 +120,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             this,
             0,
             Intent(this, MainActivity::class.java),
-            immutableFlag or PendingIntent.FLAG_UPDATE_CURRENT
+            immutableFlag or PendingIntent.FLAG_UPDATE_CURRENT,
         )
     }
 }

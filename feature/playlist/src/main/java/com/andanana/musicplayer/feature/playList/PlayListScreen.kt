@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,12 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -94,14 +93,14 @@ fun PlayListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonPlayListContent(
     modifier: Modifier = Modifier,
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { list, index -> },
+    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
     onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
@@ -115,7 +114,7 @@ fun CommonPlayListContent(
                 navigationIcon = {
                     IconButton(onClick = {}) {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back",
                         )
                     }
@@ -138,7 +137,6 @@ fun CommonPlayListContent(
                     showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
                     artist = item.mediaMetadata.artist.toString(),
                     trackNum = item.mediaMetadata.trackNumber ?: 0,
-                    date = -1,
                     onMusicItemClick = {
                         onAudioItemClick(
                             uiState.musicItems,
@@ -160,7 +158,7 @@ private fun AlbumPlayListContent(
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
     onAddButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { list, index -> },
+    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
     onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
@@ -280,7 +278,6 @@ private fun AlbumPlayListContent(
                     showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
                     artist = item.mediaMetadata.artist.toString(),
                     trackNum = item.mediaMetadata.trackNumber ?: 0,
-                    date = -1,
                     onMusicItemClick = {
                         onAudioItemClick(
                             uiState.musicItems,
@@ -329,7 +326,7 @@ private fun CustomAppTopBar(
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
         ) {
             Icon(
-                imageVector = Icons.Rounded.ArrowBack,
+                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = "Back",
             )
         }

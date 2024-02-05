@@ -65,7 +65,7 @@ class HomeViewModel
                     )
                 }
 
-                contentChangeFlowProvider.audioChangedEventFlow.collect { isSyncing ->
+                contentChangeFlowProvider.audioChangedEventFlow.collect { _ ->
                     getMediaItemsAndUpdateState(currentMediaCategoryId)
                 }
             }

@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.designsystem.icons
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Settings
@@ -24,7 +25,7 @@ object SimpleMusicIcons {
     val UnselectedLibrary = Icons.Outlined.LibraryMusic
     val Share = Icon.ImageVectorIcon(Icons.Rounded.Share)
     val AddFavorite = Icon.ImageVectorIcon(Icons.Rounded.Favorite)
-    val AddPlayList = Icon.ImageVectorIcon(Icons.Rounded.PlaylistAdd)
+    val AddPlayList = Icon.ImageVectorIcon(Icons.AutoMirrored.Rounded.PlaylistAdd)
     val PlayNext = Icon.ImageVectorIcon(Icons.Rounded.PlayCircle)
     val Information = Icon.ImageVectorIcon(Icons.Rounded.Info)
     val Delete = Icon.ImageVectorIcon(Icons.Rounded.Delete)

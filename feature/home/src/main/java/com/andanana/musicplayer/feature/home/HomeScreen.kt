@@ -56,7 +56,6 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
     onNavigateToPlayList: (mediaId: String) -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItem) {
         if (mediaItem.mediaMetadata.isBrowsable == true) {
@@ -239,7 +238,6 @@ fun LazyAllAudioContent(
                 showTrackNum = false,
                 artist = item.mediaMetadata.artist.toString(),
                 trackNum = item.mediaMetadata.trackNumber ?: 0,
-                date = -1,
                 onMusicItemClick = {
                     onMusicItemClick.invoke(item)
                 },
