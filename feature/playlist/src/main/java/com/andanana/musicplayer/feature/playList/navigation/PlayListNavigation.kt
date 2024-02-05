@@ -19,7 +19,6 @@ fun NavController.navigateToPlayList(mediaId: String) {
 
 fun NavGraphBuilder.playListScreen(
     onShowMusicItemOption: (Uri) -> Unit,
-    onBackPressed: () -> Unit = {},
 ) {
     composable(
         route = "$MusicListRoute/{$MediaIdKey}",

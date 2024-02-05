@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.playqueue
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.player.PlayerMonitor
@@ -8,11 +7,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class PlayQueueViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val playerMonitor: PlayerMonitor,
-    private val mediaStoreSource: MediaStoreSource
-) : ViewModel() {
+class PlayQueueViewModel
+    @Inject
+    constructor(
+        private val playerMonitor: PlayerMonitor,
+        private val mediaStoreSource: MediaStoreSource,
+    ) : ViewModel() {
 //    val playQueueFlow = playerRepository.observePlayListQueue()
 //        .map { uriList ->
 //            uriList.map {
@@ -22,5 +22,5 @@ class PlayQueueViewModel @Inject constructor(
 //            }
 //        }
 
-    val playingMediaFlow = playerMonitor.observePlayingMedia()
-}
+        val playingMediaFlow = playerMonitor.observePlayingMedia()
+    }

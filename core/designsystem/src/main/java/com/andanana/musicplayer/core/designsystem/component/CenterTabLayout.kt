@@ -157,7 +157,7 @@ fun CenterTabLayout(
                 var left = startPadding
                 val tabPositions = mutableListOf<TabPosition>()
 
-                tabPlaceables.forEachIndexed { index, placeable ->
+                tabPlaceables.forEachIndexed { _, placeable ->
                     tabPositions.add(TabPosition(left, placeable.width))
                     left += placeable.width
                 }

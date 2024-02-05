@@ -17,15 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.ui.SimpleMusicApp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
 
@@ -47,18 +41,6 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
-        var mainUiState by mutableStateOf<MainUiState>(MainUiState.Loading)
-
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.mainUiState
-                    .onEach { state ->
-                        mainUiState = state
-                    }
-                    .collect()
-            }
-        }
-
         setContent {
             var permissionGranted by remember {
                 mutableStateOf(isPermissionGranted())
@@ -67,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestMultiplePermissions(),
                     onResult = {
-                        it.forEach { (permission, granted) ->
+                        it.forEach { (_, granted) ->
                             if (!granted) {
                                 finish()
                             }

@@ -41,7 +41,6 @@ fun MusicCard(
     isActive: Boolean = false,
     title: String,
     artist: String,
-    date: Long,
     trackNum: Int = 0,
     showTrackNum: Boolean = false,
     showSwapIcon: Boolean = false,
@@ -130,7 +129,6 @@ private fun MusicCardPreview() {
         albumArtUri = "",
         title = "Title",
         artist = "artist",
-        date = 1543121980333L,
         showTrackNum = true,
         showSwapIcon = true
     )

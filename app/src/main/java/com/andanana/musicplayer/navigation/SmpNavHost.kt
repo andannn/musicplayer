@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.navigation
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -15,12 +14,9 @@ private const val TAG = "SmpNavHost"
 
 @Composable
 fun SmpNavHost(
-    navHostController: NavHostController,
     modifier: Modifier = Modifier,
+    navHostController: NavHostController,
     onBackPressed: () -> Unit,
-    onShowMusicItemOption: (Uri) -> Unit,
-    onNewPlayListButtonClick: () -> Unit,
-    onCreateButtonClick: (name: String) -> Unit,
 ) {
     NavHost(
         navController = navHostController,
@@ -31,7 +27,6 @@ fun SmpNavHost(
             onNavigateToPlayList = { mediaId ->
                 navHostController.navigateToPlayList(mediaId = mediaId)
             },
-            onShowMusicItemOption = onShowMusicItemOption,
         )
         playListScreen(
             onShowMusicItemOption = {
