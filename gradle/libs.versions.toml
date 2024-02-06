@@ -1,12 +1,12 @@
 [versions]
-ksp = "1.9.0-1.0.12"
+ksp = "1.9.22-1.0.17"
 hilt = "2.50"
 protobufPlugin = "0.9.4"
 hiltExt = "1.1.0"
 kotlin = "1.9.22"
 junit4 = "4.13.2"
 androidxTestExt = "1.1.5"
-androidxComposeCompiler = "1.5.2"
+androidxComposeCompiler = "1.5.8"
 androidxComposeBom = "2024.01.00"
 androidxCore = "1.12.0"
 androidxCoreSplashscreen = "1.0.1"
@@ -80,4 +80,5 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
