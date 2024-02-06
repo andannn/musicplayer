@@ -8,16 +8,14 @@ import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.core.player.PlayerState
+import com.andanana.musicplayer.core.player.toExoPlayerMode
 import com.andanana.musicplayer.core.player.util.CoroutineTicker
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
@@ -50,7 +48,6 @@ class PlayerStateViewModel
         private val browserFuture: ListenableFuture<MediaBrowser>,
         private val playerMonitor: PlayerMonitor,
         private val smpPreferenceRepository: SmpPreferenceRepository,
-//    private val useCases: PlayListUseCases
     ) : ViewModel() {
         private val browser: MediaBrowser?
             get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
@@ -58,24 +55,33 @@ class PlayerStateViewModel
         private val interactingMusicItem = playerMonitor.observePlayingMedia()
 
         private val playModeFlow =
-            smpPreferenceRepository.userData
-                .map { it.playMode }
+            smpPreferenceRepository.playMode
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 100),
+                    PlayMode.REPEAT_ALL,
+                )
+        private val isShuffleFlow =
+            smpPreferenceRepository.isShuffle
+                .stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 100),
+                    false,
+                )
 
         private val isCurrentMusicFavorite = flowOf(false)
 
         private val updateProgressEventFlow = MutableSharedFlow<Unit>()
 
-        private val isBrowserReady = MutableStateFlow(false)
-
         val playerUiStateFlow =
             combine(
-                isBrowserReady,
                 interactingMusicItem,
                 playerMonitor.observePlayerState(),
                 playModeFlow,
+                isShuffleFlow,
                 updateProgressEventFlow,
-            ) { isBrowserReady, interactingMusicItem, state, playMode, _ ->
-                if (interactingMusicItem == null || !isBrowserReady) {
+            ) { interactingMusicItem, state, playMode, isShuffle, _ ->
+                if (interactingMusicItem == null) {
                     PlayerUiState.Inactive
                 } else {
                     val duration = browser?.duration ?: 0L
@@ -84,6 +90,7 @@ class PlayerStateViewModel
                         duration = duration,
                         progress = playerMonitor.currentPositionMs.toFloat().div(duration),
                         playMode = playMode,
+                        isShuffle = isShuffle,
                         isFavorite = false,
                         state =
                             when (state) {
@@ -123,18 +130,45 @@ class PlayerStateViewModel
             viewModelScope.launch {
                 // wait browser build complete.
                 browserFuture.await()
-                isBrowserReady.value = true
+
+                playModeFlow.collect { mode ->
+                    browser!!.repeatMode = mode.toExoPlayerMode()
+                }
+            }
+
+            viewModelScope.launch {
+                // wait browser build complete.
+                browserFuture.await()
+
+                isShuffleFlow.collect { isShuffle ->
+                    browser!!.shuffleModeEnabled = isShuffle
+                }
             }
         }
 
         fun onEvent(event: PlayerUiEvent) {
             when (event) {
                 PlayerUiEvent.OnFavoriteButtonClick -> {}
-                PlayerUiEvent.OnPlayModeButtonClick -> {}
+                PlayerUiEvent.OnPlayModeButtonClick -> {
+                    viewModelScope.launch {
+                        val currentPlayMode = playModeFlow.value
+                        smpPreferenceRepository.setPlayMode(
+                            playMode = currentPlayMode.next(),
+                        )
+                    }
+                }
+
                 PlayerUiEvent.OnPlayButtonClick -> togglePlayState()
                 PlayerUiEvent.OnPreviousButtonClick -> previous()
                 PlayerUiEvent.OnNextButtonClick -> next()
-                PlayerUiEvent.OnShuffleButtonClick -> {}
+                PlayerUiEvent.OnShuffleButtonClick -> {
+                    viewModelScope.launch {
+                        smpPreferenceRepository.setIsShuffle(
+                            isShuffle = !isShuffleFlow.value,
+                        )
+                    }
+                }
+
                 PlayerUiEvent.OnOptionIconClick -> Unit
                 is PlayerUiEvent.OnProgressChange -> {
                     val time =
@@ -169,15 +203,6 @@ class PlayerStateViewModel
         private fun seekToTime(time: Long) {
             browser?.seekTo(time)
         }
-
-        fun changePlayMode() {
-            viewModelScope.launch {
-                val userPreferences = smpPreferenceRepository.userData.first()
-                smpPreferenceRepository.setPlayMode(
-                    playMode = userPreferences.playMode.next(),
-                )
-            }
-        }
     }
 
 sealed class PlayerUiState {
@@ -185,6 +210,7 @@ sealed class PlayerUiState {
 
     data class Active(
         val state: PlayState = PlayState.PAUSED,
+        val isShuffle: Boolean = false,
         val duration: Long = 0L,
         val progress: Float = 0f,
         val isFavorite: Boolean = false,

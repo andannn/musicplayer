@@ -107,6 +107,8 @@ fun ShrinkablePlayBox(
                     ),
             heightPxRange = minHeight..maxHeight,
             coverUri = state.mediaItem.mediaMetadata.artworkUri.toString(),
+            playMode = state.playMode,
+            isShuffle = state.isShuffle,
             isPlaying = state.state == PlayState.PLAYING,
             isFavorite = state.isFavorite,
             title = state.mediaItem.mediaMetadata.title.toString(),

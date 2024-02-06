@@ -8,5 +8,4 @@ enum PlayModeProto {
     PLAT_MODE_REPEAT_ONE = 0;
     PLAT_MODE_REPEAT_OFF = 1;
     PLAT_MODE_REPEAT_ALL = 2;
-    PLAT_MODE_SHUFFLE = 3;
 }

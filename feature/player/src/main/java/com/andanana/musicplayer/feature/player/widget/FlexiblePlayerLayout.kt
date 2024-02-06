@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.player.widget
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -31,11 +30,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBackIos
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.ShuffleOn
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.SkipPrevious
@@ -71,6 +70,7 @@ import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
+import com.andanana.musicplayer.feature.player.util.getIcon
 import com.skydoves.flexible.core.screenHeight
 
 private const val TAG = "BottomPlayerSheet"
@@ -93,6 +93,8 @@ val BottomSheetDragAreaHeight = 90.dp
 fun FlexiblePlayerLayout(
     modifier: Modifier = Modifier,
     heightPxRange: ClosedFloatingPointRange<Float> = 100f..800f,
+    playMode: PlayMode = PlayMode.REPEAT_ALL,
+    isShuffle: Boolean = false,
     coverUri: String,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
@@ -263,6 +265,8 @@ fun FlexiblePlayerLayout(
                             .fillMaxWidth()
                             .height(IntrinsicSize.Max),
                     isPlaying = isPlaying,
+                    playMode = playMode,
+                    isShuffle = isShuffle,
                     progress = progress,
                     title = title,
                     artist = artist,
@@ -412,6 +416,7 @@ private fun FadeInWithExpandArea(
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
+    isShuffle: Boolean = false,
     onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
     val titleState by rememberUpdatedState(newValue = title)
@@ -450,7 +455,7 @@ private fun FadeInWithExpandArea(
                 onClick = {
                     onEvent(PlayerUiEvent.OnShuffleButtonClick)
                 },
-                imageVector = Icons.Rounded.ShuffleOn,
+                imageVector = if (isShuffle) Icons.Rounded.ShuffleOn else Icons.Rounded.Shuffle,
             )
             SmpSubIconButton(
                 modifier =
@@ -491,7 +496,7 @@ private fun FadeInWithExpandArea(
                 onClick = {
                     onEvent(PlayerUiEvent.OnPlayModeButtonClick)
                 },
-                imageVector = Icons.Filled.RepeatOne,
+                imageVector = playMode.getIcon(),
             )
         }
     }

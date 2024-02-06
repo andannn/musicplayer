@@ -1,11 +1,14 @@
 package com.andanana.musicplayer.feature.player.util
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Repeat
+import androidx.compose.material.icons.rounded.RepeatOn
+import androidx.compose.material.icons.rounded.RepeatOneOn
 import com.andanana.musicplayer.core.data.model.PlayMode
-import com.andanana.musicplayer.feature.player.R
 
-fun PlayMode.getIconRes() = when (this) {
-    PlayMode.REPEAT_ONE -> R.drawable.repeate_one_icn
-    PlayMode.REPEAT_OFF -> R.drawable.playmode_repeat_off
-    PlayMode.REPEAT_ALL -> R.drawable.playmode_loop_icn
-    PlayMode.SHUFFLE -> R.drawable.playmode_random_icn
-}
+fun PlayMode.getIcon() =
+    when (this) {
+        PlayMode.REPEAT_ONE -> Icons.Rounded.RepeatOneOn
+        PlayMode.REPEAT_OFF -> Icons.Rounded.Repeat
+        PlayMode.REPEAT_ALL -> Icons.Rounded.RepeatOn
+    }
