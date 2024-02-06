@@ -18,13 +18,15 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun SmpMainIconButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    imageVector: ImageVector,
     onClick: () -> Unit,
-    imageVector: ImageVector
 ) {
     TextButton(
         modifier = modifier,
+        enabled = enabled,
+        colors = ButtonDefaults.buttonColors(),
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors()
     ) {
         Icon(modifier = Modifier.scale(1.5f), imageVector = imageVector, contentDescription = null)
     }
@@ -33,44 +35,42 @@ fun SmpMainIconButton(
 @Composable
 fun SmpSubIconButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    enabled: Boolean = true,
     imageVector: ImageVector,
-    scale: Float = 1.0f
+    scale: Float = 1.0f,
+    onClick: () -> Unit,
 ) {
     IconButton(
         modifier = modifier,
-        onClick = onClick
+        enabled = enabled,
+        onClick = onClick,
     ) {
-        Icon(modifier = Modifier.scale(scale), imageVector = imageVector, contentDescription = null)
+        Icon(
+            modifier = Modifier.scale(scale),
+            imageVector = imageVector,
+            contentDescription = null,
+        )
     }
 }
 
 @Composable
 fun SmpSubIconButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     resId: Int,
     onClick: () -> Unit,
-    scale: Float = 1.0f
+    scale: Float = 1.0f,
 ) {
     IconButton(
         modifier = modifier,
-        onClick = onClick
+        enabled = enabled,
+        onClick = onClick,
     ) {
-        Icon(modifier = Modifier.scale(scale), painter = painterResource(id = resId), contentDescription = null)
-    }
-}
-
-@Composable
-fun SmpSubIconButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    painter: Painter
-) {
-    IconButton(
-        modifier = modifier,
-        onClick = onClick
-    ) {
-        Icon(painter = painter, contentDescription = null)
+        Icon(
+            modifier = Modifier.scale(scale),
+            painter = painterResource(id = resId),
+            contentDescription = null,
+        )
     }
 }
 
@@ -79,8 +79,8 @@ fun SmpSubIconButton(
 private fun SmpMainIconButtonPreview() {
     MaterialTheme {
         SmpMainIconButton(
+            onClick = {},
             imageVector = Icons.Rounded.PlayArrow,
-            onClick = {}
         )
     }
 }
@@ -90,8 +90,9 @@ private fun SmpMainIconButtonPreview() {
 private fun SmpSubIconButtonPreview() {
     MaterialTheme {
         SmpSubIconButton(
+            onClick = {},
             imageVector = Icons.Rounded.PlayArrow,
-            onClick = {}
+            enabled = true
         )
     }
 }

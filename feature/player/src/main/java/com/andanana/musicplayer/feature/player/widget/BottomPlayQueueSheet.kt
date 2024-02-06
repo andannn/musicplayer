@@ -40,8 +40,6 @@ import kotlin.math.roundToInt
 
 private const val TAG = "BottomPlayQueueSheet"
 
-enum class BottomSheetState { Shrink, Expand }
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPlayQueueSheet(
