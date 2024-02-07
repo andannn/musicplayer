@@ -42,7 +42,6 @@ import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
-private const val TAG = "FlexiblePlayerLayout"
 val MinImageSize = 60.dp
 // MaxImageSize is calculated.
 

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,8 +51,6 @@ import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-
-private const val TAG = "PlayListScreen"
 
 @Composable
 fun PlayListScreen(
@@ -99,7 +95,6 @@ fun CommonPlayListContent(
     modifier: Modifier = Modifier,
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
     onShowPlayListItemOption: (Uri) -> Unit = {},
@@ -157,7 +152,6 @@ private fun AlbumPlayListContent(
     modifier: Modifier = Modifier,
     uiState: PlayListUiState,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
     onShowPlayListItemOption: (Uri) -> Unit = {},
@@ -215,19 +209,6 @@ private fun AlbumPlayListContent(
         }
     }
 
-//    val isDarkTheme = isSystemInDarkTheme()
-//    LaunchedEffect(Unit) {
-//        snapshotFlow {
-//            isHeaderVisible
-//        }.collect { isHeaderVisible ->
-//            if (!isHeaderVisible) {
-//                systemUiController.setStatusBarColor(statusBarColor)
-//            } else {
-//                systemUiController.setStatusBarColor(Color.Transparent, darkIcons = !isDarkTheme)
-//            }
-//        }
-//    }
-
     Scaffold(
         modifier = modifier,
     ) { padding ->
@@ -240,10 +221,7 @@ private fun AlbumPlayListContent(
             item {
                 Column {
                     Spacer(
-                        modifier =
-                            Modifier
-                                .padding(WindowInsets.statusBars.asPaddingValues())
-                                .padding(top = appBarHeightDp),
+                        modifier = Modifier.padding(top = appBarHeightDp),
                     )
                     PlayListHeader(
                         modifier =
