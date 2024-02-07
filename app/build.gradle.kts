@@ -44,7 +44,6 @@ dependencies {
 
     implementation(project(":feature:home"))
     implementation(project(":feature:player"))
-    implementation(project(":feature:playqueue"))
     implementation(project(":feature:playlist"))
 
     implementation(libs.androidx.core.ktx)

@@ -17,7 +17,6 @@ rootProject.name = "MusicPlayer"
 include(":app")
 include(":feature:home")
 include(":feature:player")
-include(":feature:playqueue")
 include(":feature:playlist")
 include(":core:designsystem")
 include(":core:mediastore")
