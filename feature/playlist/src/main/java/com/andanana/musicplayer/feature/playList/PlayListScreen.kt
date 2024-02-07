@@ -45,19 +45,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
-import com.andanana.musicplayer.core.data.model.LibraryRootCategory
 import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.model.LibraryRootCategory
 
 @Composable
 fun PlayListScreen(
     modifier: Modifier = Modifier,
     playListViewModel: PlayListViewModel = hiltViewModel(),
     onShowMusicItemOption: (Uri) -> Unit = {},
-    onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
     val uiState by playListViewModel.state.collectAsState()
 
@@ -74,17 +73,13 @@ fun PlayListScreen(
             },
             onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
             onShowMusicItemOption = onShowMusicItemOption,
-            onShowPlayListItemOption = onShowPlayListItemOption,
         )
     } else {
         CommonPlayListContent(
             modifier = modifier,
             uiState = uiState,
-            onPlayAllButtonClick = {
-            },
             onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
             onShowMusicItemOption = onShowMusicItemOption,
-            onShowPlayListItemOption = onShowPlayListItemOption,
         )
     }
 }
@@ -94,10 +89,8 @@ fun PlayListScreen(
 fun CommonPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onPlayAllButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
-    onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -154,7 +147,6 @@ private fun AlbumPlayListContent(
     onPlayAllButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
-    onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
     var appBarHeight by
         remember {

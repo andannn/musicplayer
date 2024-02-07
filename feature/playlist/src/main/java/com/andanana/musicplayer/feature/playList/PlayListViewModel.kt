@@ -10,8 +10,8 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
-import com.andanana.musicplayer.core.data.model.LibraryRootCategory
-import com.andanana.musicplayer.core.player.PlayerMonitor
+import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,15 +22,13 @@ import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private const val TAG = "PlayListViewModel"
-
 @HiltViewModel
 class PlayListViewModel
     @Inject
     constructor(
         application: Application,
         savedStateHandle: SavedStateHandle,
-        private val playerMonitor: PlayerMonitor,
+        private val playerMonitor: PlayerStateRepository,
     ) : ViewModel() {
         private val mediaId =
             savedStateHandle.get<String>(MediaIdKey) ?: ""

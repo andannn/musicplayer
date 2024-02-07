@@ -1,5 +1,4 @@
-package com.andanana.musicplayer.core.player.util
-
+package com.andanana.musicplayer.core.model.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,19 +9,20 @@ import kotlin.coroutines.CoroutineContext
 
 class CoroutineTicker(
     private val delayMs: Long = 1000 / 30L,
-    val action: () -> Unit
+    val action: () -> Unit,
 ) : CoroutineScope {
     private var jobTracker: Job? = null
 
     override val coroutineContext: CoroutineContext get() = Dispatchers.Main
 
     fun startTicker() {
-        jobTracker = launch {
-            while (true) {
-                action()
-                delay(delayMs)
+        jobTracker =
+            launch {
+                while (true) {
+                    action()
+                    delay(delayMs)
+                }
             }
-        }
     }
 
     fun stopTicker() {

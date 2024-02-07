@@ -37,9 +37,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
 val MinImageSize = 60.dp

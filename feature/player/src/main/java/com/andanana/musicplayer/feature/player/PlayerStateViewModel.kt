@@ -5,18 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
-import com.andanana.musicplayer.core.data.model.PlayMode
-import com.andanana.musicplayer.core.datastore.repository.SmpPreferenceRepository
-import com.andanana.musicplayer.core.player.PlayerMonitor
-import com.andanana.musicplayer.core.player.PlayerState
-import com.andanana.musicplayer.core.player.toExoPlayerMode
-import com.andanana.musicplayer.core.player.util.CoroutineTicker
+import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepository
+import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.model.PlayerState
+import com.andanana.musicplayer.core.model.toExoPlayerMode
+import com.andanana.musicplayer.core.model.util.CoroutineTicker
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
@@ -47,7 +46,7 @@ class PlayerStateViewModel
     @Inject
     constructor(
         private val browserFuture: ListenableFuture<MediaBrowser>,
-        private val playerMonitor: PlayerMonitor,
+        private val playerMonitor: PlayerStateRepository,
         private val smpPreferenceRepository: SmpPreferenceRepository,
     ) : ViewModel() {
         private val browser: MediaBrowser?
@@ -70,7 +69,7 @@ class PlayerStateViewModel
                     false,
                 )
 
-        private val isCurrentMusicFavorite = flowOf(false)
+//        private val isCurrentMusicFavorite = flowOf(false)
 
         private val updateProgressEventFlow = MutableSharedFlow<Unit>()
 

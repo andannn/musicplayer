@@ -15,11 +15,7 @@ android {
 dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
-    implementation(project(":core:player"))
-
-// TODO: remove this dependency.
-    implementation(project(":core:datastore"))
-    implementation(project(":core:mediastore"))
+    implementation(project(":core:model"))
 
     implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.androidx.core.ktx)

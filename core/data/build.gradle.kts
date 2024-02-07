@@ -15,6 +15,9 @@ android {
 
 dependencies {
     implementation(project(":core:mediastore"))
+    implementation(project(":core:datastore"))
+    implementation(project(":core:model"))
+    implementation(project(":core:player"))
 
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)

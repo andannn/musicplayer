@@ -24,9 +24,6 @@ fun SmpNavHost(
                 navHostController.navigateToPlayList(mediaId = mediaId)
             },
         )
-        playListScreen(
-            onShowMusicItemOption = {
-            },
-        )
+        playListScreen()
     }
 }

@@ -1,9 +1,8 @@
 package com.andanana.musicplayer.core.data
 
-import com.andanana.musicplayer.core.data.model.LibraryRootCategory
-import org.junit.Test
-
+import com.andanana.musicplayer.core.model.LibraryRootCategory
 import org.junit.Assert.*
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -18,6 +17,6 @@ class CommonTest {
         assertEquals(LibraryRootCategory.ALBUM, type)
         assertEquals(12343, id)
 
-        assertEquals(null,  LibraryRootCategory.getMatchedChildTypeAndId("XXXalbum_12343") )
+        assertEquals(null, LibraryRootCategory.getMatchedChildTypeAndId("XXXalbum_12343"))
     }
 }

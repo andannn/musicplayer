@@ -37,10 +37,8 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:mediastore"))
-    implementation(project(":core:player"))
     implementation(project(":core:data"))
-    implementation(project(":core:datastore"))
+    implementation(project(":core:model"))
 
     implementation(project(":feature:home"))
     implementation(project(":feature:player"))

@@ -13,10 +13,9 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:mediastore"))
-    implementation(project(":core:player"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.core.ktx)
 
