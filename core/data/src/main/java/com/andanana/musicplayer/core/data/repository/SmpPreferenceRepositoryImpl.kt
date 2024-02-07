@@ -1,8 +1,8 @@
-package com.andanana.musicplayer.core.datastore.repository
+package com.andanana.musicplayer.core.data.repository
 
-import com.andanana.musicplayer.core.data.model.PlayMode
-import com.andanana.musicplayer.core.data.model.UserSetting
 import com.andanana.musicplayer.core.datastore.SmpPreferencesDataSource
+import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.model.UserSetting
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

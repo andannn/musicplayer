@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.andanana.musicplayer.feature.core.player"
+    namespace = "com.andanana.musicplayer.core.model"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -12,9 +12,5 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:model"))
-
-    // Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
+    implementation(libs.androidx.media3.common)
 }

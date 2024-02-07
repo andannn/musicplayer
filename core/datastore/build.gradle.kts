@@ -18,12 +18,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:data"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.kotlin.lite)
 }
-
 
 // TODO: Remove this after problem solved.
 // Could not build this module when upgrade ksp to 1.9.22-1.0.17.

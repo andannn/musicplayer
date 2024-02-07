@@ -7,7 +7,7 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
-import com.andanana.musicplayer.core.data.model.ALL_MUSIC_ID
+import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

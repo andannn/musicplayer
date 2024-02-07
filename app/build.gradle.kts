@@ -37,14 +37,11 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:mediastore"))
-    implementation(project(":core:player"))
     implementation(project(":core:data"))
-    implementation(project(":core:datastore"))
+    implementation(project(":core:model"))
 
     implementation(project(":feature:home"))
     implementation(project(":feature:player"))
-    implementation(project(":feature:playqueue"))
     implementation(project(":feature:playlist"))
 
     implementation(libs.androidx.core.ktx)
@@ -66,6 +63,4 @@ dependencies {
     // Media3
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
-
-    lintChecks("com.slack.lint.compose:compose-lint-checks:1.3.1")
 }

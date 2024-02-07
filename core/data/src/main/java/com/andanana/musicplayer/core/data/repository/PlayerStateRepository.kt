@@ -1,10 +1,10 @@
-package com.andanana.musicplayer.core.player
+package com.andanana.musicplayer.core.data.repository
 
 import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.model.PlayerState
 import kotlinx.coroutines.flow.Flow
 
-interface PlayerMonitor {
+interface PlayerStateRepository {
     val currentPositionMs: Long
 
     val playerState: PlayerState

@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOn
 import androidx.compose.material.icons.rounded.RepeatOneOn
-import com.andanana.musicplayer.core.data.model.PlayMode
+import com.andanana.musicplayer.core.model.PlayMode
 
 fun PlayMode.getIcon() =
     when (this) {

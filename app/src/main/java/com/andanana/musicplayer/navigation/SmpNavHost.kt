@@ -8,15 +8,11 @@ import com.andanana.musicplayer.feature.home.navigation.HOME_ROUTE
 import com.andanana.musicplayer.feature.home.navigation.homeScreen
 import com.andanana.musicplayer.feature.playList.navigation.navigateToPlayList
 import com.andanana.musicplayer.feature.playList.navigation.playListScreen
-import com.andanana.musicplayer.feature.playqueue.navigation.playQueueScreen
-
-private const val TAG = "SmpNavHost"
 
 @Composable
 fun SmpNavHost(
-    modifier: Modifier = Modifier,
     navHostController: NavHostController,
-    onBackPressed: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navHostController,
@@ -28,12 +24,6 @@ fun SmpNavHost(
                 navHostController.navigateToPlayList(mediaId = mediaId)
             },
         )
-        playListScreen(
-            onShowMusicItemOption = {
-            },
-        )
-        playQueueScreen(
-            onBackPressed = onBackPressed,
-        )
+        playListScreen()
     }
 }

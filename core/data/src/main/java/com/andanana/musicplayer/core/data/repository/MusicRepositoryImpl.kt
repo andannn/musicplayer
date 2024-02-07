@@ -9,10 +9,10 @@ import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.data.model.AlbumData
 import com.andanana.musicplayer.core.data.model.ArtistData
 import com.andanana.musicplayer.core.data.model.AudioData
-import com.andanana.musicplayer.core.data.model.LibraryRootCategory
-import com.andanana.musicplayer.core.data.model.PLAYABLE_MEDIA_ITEM_PREFIX
-import com.andanana.musicplayer.core.data.model.ROOT_ID
 import com.andanana.musicplayer.core.data.util.buildMediaItem
+import com.andanana.musicplayer.core.model.LibraryRootCategory
+import com.andanana.musicplayer.core.model.PLAYABLE_MEDIA_ITEM_PREFIX
+import com.andanana.musicplayer.core.model.ROOT_ID
 import javax.inject.Inject
 
 private const val TAG = "MusicRepositoryImpl"
@@ -35,7 +35,7 @@ class MusicRepositoryImpl
         override suspend fun getChildren(mediaId: String): List<MediaItem> {
             Log.d(TAG, "getChildren: mediaId $mediaId")
             return if (mediaId == ROOT_ID) {
-                LibraryRootCategory.values().mapNotNull { category ->
+                LibraryRootCategory.entries.mapNotNull { category ->
                     getMediaItem(category.mediaId)
                 }
             } else if (mediaId == LibraryRootCategory.ALL_MUSIC.mediaId) {
@@ -80,7 +80,7 @@ class MusicRepositoryImpl
                     isBrowsable = true,
                     mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED,
                 )
-            } else if (mediaId in LibraryRootCategory.values().map { it.mediaId }) {
+            } else if (mediaId in LibraryRootCategory.entries.map { it.mediaId }) {
                 buildMediaItem(
                     title = mediaId,
                     mediaId = mediaId,

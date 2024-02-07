@@ -20,7 +20,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -40,12 +39,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
-import com.andanana.musicplayer.core.data.model.ALBUM_ID
-import com.andanana.musicplayer.core.data.model.ALL_MUSIC_ID
-import com.andanana.musicplayer.core.data.model.ARTIST_ID
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.model.ALBUM_ID
+import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
+import com.andanana.musicplayer.core.model.ARTIST_ID
 import com.andanana.musicplayer.feature.home.util.ResourceUtil
 import kotlinx.coroutines.launch
 
@@ -77,13 +76,13 @@ fun HomeRoute(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreen(
-    modifier: Modifier = Modifier,
     state: HomeUiState,
-    onMediaItemClick: (MediaItem) -> Unit,
-    onTabClicked: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onMediaItemClick: (MediaItem) -> Unit = {},
+    onTabClicked: (String) -> Unit = {},
 ) {
     val categories =
         state.categories.map {
@@ -215,12 +214,13 @@ private fun HomeScreen(
     }
 }
 
+// TODO: remove dependency of MediaItem
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyAllAudioContent(
-    modifier: Modifier = Modifier,
     mediaItems: List<MediaItem>,
-    onMusicItemClick: (MediaItem) -> Unit,
+    modifier: Modifier = Modifier,
+    onMusicItemClick: (MediaItem) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,

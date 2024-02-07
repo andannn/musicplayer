@@ -37,12 +37,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
-private const val TAG = "FlexiblePlayerLayout"
 val MinImageSize = 60.dp
 // MaxImageSize is calculated.
 
@@ -59,11 +58,11 @@ val BottomSheetDragAreaHeight = 90.dp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlexiblePlayerLayout(
-    modifier: Modifier = Modifier,
     layoutState: PlayerLayoutState,
+    coverUri: String,
+    modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     isShuffle: Boolean = false,
-    coverUri: String,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
     title: String = "",
@@ -245,7 +244,7 @@ fun FlexiblePlayerLayout(
 
 @Preview
 @Composable
-fun FlexiblePlayerLayoutExpandPreview() {
+private fun FlexiblePlayerLayoutExpandPreview() {
     MusicPlayerTheme {
         val layoutState =
             PlayerLayoutState(
@@ -269,7 +268,7 @@ fun FlexiblePlayerLayoutExpandPreview() {
 
 @Preview
 @Composable
-fun FlexiblePlayerLayoutShrinkPreview() {
+private fun FlexiblePlayerLayoutShrinkPreview() {
     MusicPlayerTheme(darkTheme = false) {
         val layoutState =
             PlayerLayoutState(

@@ -15,21 +15,16 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class PlayerModule {
-
     @Provides
     @Singleton
-    fun providePlayer(
-        application: Application
-    ): Player {
+    fun providePlayer(application: Application): Player {
         return ExoPlayer.Builder(application).build()
     }
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface PlayerBins {
+interface PlayerBinds {
     @Binds
-    fun bindsPlayerRepository(
-        playerRepositoryImpl: PlayerMonitorImpl
-    ): PlayerMonitor
+    fun bindsPlayerRepository(playerRepositoryImpl: PlayerMonitorImpl): PlayerMonitor
 }

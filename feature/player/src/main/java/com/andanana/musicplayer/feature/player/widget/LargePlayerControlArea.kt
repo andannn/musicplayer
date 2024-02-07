@@ -23,26 +23,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andanana.musicplayer.core.data.model.PlayMode
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import com.andanana.musicplayer.feature.player.util.getIcon
 
 @Composable
 fun LargePlayerControlArea(
-    modifier: Modifier = Modifier,
     title: String,
     artist: String,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
-    isShuffle: Boolean = false,
-    enabled: Boolean,
     onEvent: (PlayerUiEvent) -> Unit = {},
+    isShuffle: Boolean = false,
 ) {
     val titleState by rememberUpdatedState(newValue = title)
     Column(
@@ -52,6 +53,8 @@ fun LargePlayerControlArea(
         Text(
             modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
             text = titleState,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.headlineMedium,
         )
         Text(
@@ -133,9 +136,9 @@ fun LargePlayerControlArea(
     }
 }
 
-@Preview(name = "Light")
+@Preview
 @Composable
-fun LargeControlAreaPreview() {
+private fun LargeControlAreaPreview() {
     MusicPlayerTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(
