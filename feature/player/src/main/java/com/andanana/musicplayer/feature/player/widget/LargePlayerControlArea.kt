@@ -35,15 +35,15 @@ import com.andanana.musicplayer.feature.player.util.getIcon
 
 @Composable
 fun LargePlayerControlArea(
-    modifier: Modifier = Modifier,
     title: String,
     artist: String,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
-    isShuffle: Boolean = false,
-    enabled: Boolean,
     onEvent: (PlayerUiEvent) -> Unit = {},
+    isShuffle: Boolean = false,
 ) {
     val titleState by rememberUpdatedState(newValue = title)
     Column(
@@ -136,9 +136,9 @@ fun LargePlayerControlArea(
     }
 }
 
-@Preview(name = "Light")
+@Preview
 @Composable
-fun LargeControlAreaPreview() {
+private fun LargeControlAreaPreview() {
     MusicPlayerTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(

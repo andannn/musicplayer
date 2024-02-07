@@ -19,8 +19,10 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             add("implementation", platform(bom))
             add("androidTestImplementation", platform(bom))
 
-            "implementation"(libs.findLibrary("androidx.compose.ui.tooling.preview").get())
-            "debugImplementation"(libs.findLibrary("androidx.compose.ui.tooling").get())
+            add("lintChecks", libs.findLibrary("compose.lint.checks").get())
+
+            add("implementation", libs.findLibrary("androidx.compose.ui.tooling.preview").get())
+            add("debugImplementation", libs.findLibrary("androidx.compose.ui.tooling").get())
         }
     }
 }

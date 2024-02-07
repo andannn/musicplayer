@@ -1,4 +1,5 @@
 [versions]
+composeLintChecks = "1.3.1"
 ksp = "1.9.22-1.0.17"
 hilt = "2.50"
 protobufPlugin = "0.9.4"
@@ -53,6 +54,7 @@ androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-t
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+compose-lint-checks = { group = "com.slack.lint.compose", name = "compose-lint-checks",version.ref = "composeLintChecks" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }

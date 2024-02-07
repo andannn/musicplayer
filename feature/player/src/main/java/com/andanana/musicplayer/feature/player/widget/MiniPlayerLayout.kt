@@ -36,12 +36,12 @@ import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
 @Composable
 fun MiniPlayerLayout(
-    modifier: Modifier = Modifier,
     title: String,
     artist: String,
     isPlaying: Boolean,
     isFavorite: Boolean,
     enabled: Boolean,
+    modifier: Modifier = Modifier,
     onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
 // TODO: It seems that there is a bug: Recomposition is done but ui is not update.
@@ -131,7 +131,7 @@ fun MiniPlayerLayout(
 
 @Preview
 @Composable
-fun MiniPlayerLayoutPreview() {
+private fun MiniPlayerLayoutPreview() {
     MusicPlayerTheme {
         Surface {
             MiniPlayerLayout(

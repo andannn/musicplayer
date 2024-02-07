@@ -10,13 +10,12 @@ import com.andanana.musicplayer.feature.player.PlayerSheet
 import com.andanana.musicplayer.navigation.SmpNavHost
 
 @Composable
-fun SimpleMusicApp() {
-    Surface(modifier = Modifier.fillMaxSize()) {
+fun SimpleMusicApp(modifier: Modifier = Modifier) {
+    Surface(modifier = modifier.fillMaxSize()) {
         val navController = rememberNavController()
         SmpNavHost(
             modifier = Modifier.fillMaxWidth(),
             navHostController = navController,
-            onBackPressed = navController::popBackStack,
         )
 
         PlayerSheet()

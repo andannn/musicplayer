@@ -58,11 +58,11 @@ val BottomSheetDragAreaHeight = 90.dp
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FlexiblePlayerLayout(
-    modifier: Modifier = Modifier,
     layoutState: PlayerLayoutState,
+    coverUri: String,
+    modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     isShuffle: Boolean = false,
-    coverUri: String,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
     title: String = "",
@@ -244,7 +244,7 @@ fun FlexiblePlayerLayout(
 
 @Preview
 @Composable
-fun FlexiblePlayerLayoutExpandPreview() {
+private fun FlexiblePlayerLayoutExpandPreview() {
     MusicPlayerTheme {
         val layoutState =
             PlayerLayoutState(
@@ -268,7 +268,7 @@ fun FlexiblePlayerLayoutExpandPreview() {
 
 @Preview
 @Composable
-fun FlexiblePlayerLayoutShrinkPreview() {
+private fun FlexiblePlayerLayoutShrinkPreview() {
     MusicPlayerTheme(darkTheme = false) {
         val layoutState =
             PlayerLayoutState(

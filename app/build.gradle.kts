@@ -65,6 +65,4 @@ dependencies {
     // Media3
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
-
-    lintChecks("com.slack.lint.compose:compose-lint-checks:1.3.1")
 }

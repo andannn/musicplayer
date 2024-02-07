@@ -56,8 +56,8 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 fun PlayListScreen(
     modifier: Modifier = Modifier,
     playListViewModel: PlayListViewModel = hiltViewModel(),
-    onShowMusicItemOption: (Uri) -> Unit,
-    onShowPlayListItemOption: (Uri) -> Unit,
+    onShowMusicItemOption: (Uri) -> Unit = {},
+    onShowPlayListItemOption: (Uri) -> Unit = {},
 ) {
     val uiState by playListViewModel.state.collectAsState()
 
@@ -92,8 +92,8 @@ fun PlayListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonPlayListContent(
-    modifier: Modifier = Modifier,
     uiState: PlayListUiState,
+    modifier: Modifier = Modifier,
     onPlayAllButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
@@ -149,8 +149,8 @@ fun CommonPlayListContent(
 
 @Composable
 private fun AlbumPlayListContent(
-    modifier: Modifier = Modifier,
     uiState: PlayListUiState,
+    modifier: Modifier = Modifier,
     onPlayAllButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
@@ -284,10 +284,10 @@ private fun AlbumPlayListContent(
 
 @Composable
 private fun CustomAppTopBar(
-    modifier: Modifier = Modifier,
     title: String,
     isTitleVisible: Boolean,
     isBackgroundTransparent: Boolean,
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
 ) {
     Row(
