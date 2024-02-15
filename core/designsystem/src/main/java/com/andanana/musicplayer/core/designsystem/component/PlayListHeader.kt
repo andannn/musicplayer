@@ -26,14 +26,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 
-private const val TAG = "PlayListControlBox"
-
 @Composable
 fun PlayListHeader(
     modifier: Modifier = Modifier,
-    coverArtUri: String,
-    title: String,
-    trackCount: Int,
+    coverArtUri: String = "",
+    title: String = "",
+    trackCount: Int = 0,
     onPlayAllButtonClick: () -> Unit = {},
     onAddToPlayListButtonClick: () -> Unit = {},
 ) {
@@ -86,7 +84,7 @@ fun PlayListHeader(
 
 @Preview
 @Composable
-fun PlayListControlBoxPreview() {
+private fun PlayListControlBoxPreview() {
     MusicPlayerTheme {
         Surface {
             PlayListHeader(
@@ -100,7 +98,7 @@ fun PlayListControlBoxPreview() {
 
 @Preview
 @Composable
-fun PlayListControlBoxLongTitlePreview() {
+private fun PlayListControlBoxLongTitlePreview() {
     MusicPlayerTheme {
         Surface {
             PlayListHeader(

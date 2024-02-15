@@ -12,8 +12,8 @@ import coil.compose.AsyncImage
 
 @Composable
 fun CircleBorderImage(
-    modifier: Modifier = Modifier,
     model: String,
+    modifier: Modifier = Modifier,
 ) {
     AsyncImage(
         modifier =

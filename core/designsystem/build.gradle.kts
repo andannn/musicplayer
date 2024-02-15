@@ -12,17 +12,9 @@ android {
 }
 
 dependencies {
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material)
-    api(libs.androidx.compose.material.iconsExtended)
-
-    // Navigation
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.iconsExtended)
 
     // Coil
     implementation(libs.coil.compose)
-
-    // Compose pager
-    implementation("com.google.accompanist:accompanist-pager:0.34.0")
 }

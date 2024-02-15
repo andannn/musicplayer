@@ -64,7 +64,7 @@ fun CenterTabLayout(
     modifier: Modifier = Modifier,
     paddingVertical: Dp = 20.dp,
     selectedIndex: Int = 0,
-    onScrollFinishToSelectIndex: (Int) -> Unit,
+    onScrollFinishToSelectIndex: (Int) -> Unit = {},
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     scrollState: ScrollState = rememberScrollState(),
     indicator: @Composable (tabPositions: List<TabPosition>, centerPosition: Int) -> Unit =
@@ -76,7 +76,7 @@ fun CenterTabLayout(
                 paddingValues = PaddingValues(horizontal = 10.dp, vertical = 5.dp),
             )
         },
-    tabs: @Composable () -> Unit,
+    tabs: @Composable () -> Unit = {},
 ) {
     val onScrollFinishToSelectIndexState = rememberUpdatedState(onScrollFinishToSelectIndex)
 
@@ -213,8 +213,8 @@ fun Modifier.tabIndicatorOffset(currentTabPosition: TabPosition): Modifier =
 
 @Composable
 fun Indicator(
-    modifier: Modifier = Modifier,
     paddingValues: PaddingValues,
+    modifier: Modifier = Modifier,
 ) {
     Spacer(
         modifier =

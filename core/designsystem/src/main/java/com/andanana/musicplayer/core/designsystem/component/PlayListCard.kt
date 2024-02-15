@@ -20,7 +20,6 @@ import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,17 +33,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
-private const val TAG = "MusicCard"
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayListCard(
     modifier: Modifier = Modifier,
     colors: CardColors = CardDefaults.cardColors(),
     albumArtUri: String = "",
     coverImage: ImageVector? = null,
-    title: String,
-    trackCount: Int,
+    title: String = "",
+    trackCount: Int = 0,
     onPlayListItemClick: () -> Unit = {},
     onOptionButtonClick: () -> Unit = {}
 ) {

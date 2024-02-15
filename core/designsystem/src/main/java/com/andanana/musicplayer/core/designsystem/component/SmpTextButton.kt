@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SmpTextButton(
-    modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     imageVector: ImageVector? = null,
     text: String? = null,
     enabled: Boolean = true,

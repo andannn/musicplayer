@@ -10,17 +10,16 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SmpMainIconButton(
+    imageVector: ImageVector,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    imageVector: ImageVector,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     TextButton(
         modifier = modifier,
@@ -34,11 +33,11 @@ fun SmpMainIconButton(
 
 @Composable
 fun SmpSubIconButton(
+    imageVector: ImageVector,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    imageVector: ImageVector,
     scale: Float = 1.0f,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     IconButton(
         modifier = modifier,
@@ -55,10 +54,10 @@ fun SmpSubIconButton(
 
 @Composable
 fun SmpSubIconButton(
+    resId: Int,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    resId: Int,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
     scale: Float = 1.0f,
 ) {
     IconButton(
@@ -92,7 +91,7 @@ private fun SmpSubIconButtonPreview() {
         SmpSubIconButton(
             onClick = {},
             imageVector = Icons.Rounded.PlayArrow,
-            enabled = true
+            enabled = true,
         )
     }
 }
