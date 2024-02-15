@@ -17,7 +17,7 @@ private val LightColorPalette = lightColorScheme()
 @Composable
 fun MusicPlayerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    isDynamicColor: Boolean = true,
+    isDynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val dynamicColor = isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

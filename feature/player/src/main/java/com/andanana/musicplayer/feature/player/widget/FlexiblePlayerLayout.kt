@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.designsystem.util.verticalGradientScrim
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
@@ -80,11 +82,26 @@ fun FlexiblePlayerLayout(
     Surface(
         modifier =
             modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         shadowElevation = 10.dp,
     ) {
+        val primaryColor = MaterialTheme.colorScheme.primary
+        val backGroundModifier =
+            remember(layoutState.isPlayerExpanding) {
+                if (layoutState.isPlayerExpanding) {
+                    Modifier.verticalGradientScrim(
+                        color = primaryColor.copy(alpha = 0.38f),
+                        startYPercentage = 1f,
+                        endYPercentage = 0f,
+                    )
+                } else {
+                    Modifier
+                }
+            }
         BoxWithConstraints(
-            modifier = Modifier.fillMaxWidth(),
+            modifier =
+                Modifier.fillMaxWidth()
+                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
+                    .then(backGroundModifier),
         ) {
             val playerExpandFactor = layoutState.playerExpandFactor
             val isLayoutFullyExpand = playerExpandFactor == 1f

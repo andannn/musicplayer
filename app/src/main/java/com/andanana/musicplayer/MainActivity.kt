@@ -9,7 +9,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,8 +20,6 @@ import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.ui.SimpleMusicApp
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TAG = "MainActivity"
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val runTimePermissions =
@@ -32,7 +29,7 @@ class MainActivity : ComponentActivity() {
             listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    private val mainViewModel: MainActivityViewModel by viewModels()
+//    private val mainViewModel: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -73,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            MusicPlayerTheme {
+            MusicPlayerTheme(isDynamicColor = true) {
                 if (permissionGranted) {
                     SimpleMusicApp()
                 }

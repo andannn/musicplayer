@@ -8,6 +8,7 @@ kotlin = "1.9.22"
 junit4 = "4.13.2"
 androidxTestExt = "1.1.5"
 androidxComposeCompiler = "1.5.8"
+androidx-palette = "1.0.0"
 androidxComposeBom = "2024.02.00"
 androidxCore = "1.12.0"
 androidxCoreSplashscreen = "1.0.1"
@@ -44,6 +45,7 @@ com-google-dagger-hilt-android-testing = { group = "com.google.dagger", name = "
 com-google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 com-google-dagger-hilt-ext-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltExt" }
 com-google-dagger-hilt-ext-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltExt" }
+androidx-palette = { module = "androidx.palette:palette", version.ref = "androidx-palette" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }

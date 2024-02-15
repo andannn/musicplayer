@@ -79,6 +79,7 @@ fun MiniPlayerLayout(
                 Modifier
                     .size(30.dp)
                     .scale(1.2f),
+            enabled = enabled,
             onClick = {
                 onEvent(PlayerUiEvent.OnPlayButtonClick)
             },
@@ -96,6 +97,7 @@ fun MiniPlayerLayout(
                     .size(30.dp)
                     .padding(5.dp)
                     .rotate(180f),
+            enabled = enabled,
             onClick = {
                 onEvent(PlayerUiEvent.OnNextButtonClick)
             },
@@ -108,6 +110,7 @@ fun MiniPlayerLayout(
         Spacer(modifier = Modifier.width(10.dp))
         IconButton(
             modifier = Modifier.size(30.dp),
+            enabled = enabled,
             onClick = {
                 onEvent(PlayerUiEvent.OnFavoriteButtonClick)
             },
@@ -132,7 +135,7 @@ fun MiniPlayerLayout(
 @Preview
 @Composable
 private fun MiniPlayerLayoutPreview() {
-    MusicPlayerTheme {
+    MusicPlayerTheme{
         Surface {
             MiniPlayerLayout(
                 modifier = Modifier.fillMaxWidth().height(PlayerShrinkHeight),

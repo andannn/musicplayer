@@ -17,9 +17,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -28,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,15 +38,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-private const val TAG = "BottomPlayQueueSheet"
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPlayQueueSheet(
-    modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     sheetMaxHeightDp: Dp,
     state: AnchoredDraggableState<BottomSheetState>,
+    modifier: Modifier = Modifier,
+    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val shrinkOffset = state.anchors.positionOf(BottomSheetState.Shrink)
     val expandOffset = state.anchors.positionOf(BottomSheetState.Expand)
@@ -70,15 +68,15 @@ fun BottomPlayQueueSheet(
         }
     }
 
-    Surface(
+    Box(
         modifier =
             modifier
                 .fillMaxWidth()
                 .height(sheetMaxHeightDp)
+                .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                 .offset {
                     IntOffset(0, state.requireOffset().roundToInt())
                 },
-        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
     ) {
         Box {
             Column(
@@ -91,7 +89,7 @@ fun BottomPlayQueueSheet(
                     modifier = Modifier.height(BottomSheetDragAreaHeight),
                 )
 
-                Divider()
+                HorizontalDivider()
 
                 Box(
                     modifier =
@@ -133,7 +131,7 @@ fun BottomPlayQueueSheet(
 @ExperimentalFoundationApi
 @Preview
 @Composable
-fun BottomPlayQueueSheetPreview() {
+private fun BottomPlayQueueSheetPreview() {
     val density = LocalDensity.current
     val anchors =
         with(LocalDensity.current) {

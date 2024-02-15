@@ -21,7 +21,6 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 
     api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material)
     api(libs.androidx.compose.material.iconsExtended)
 
     // Navigation
@@ -33,6 +32,4 @@ dependencies {
 
     // Media3
     implementation(libs.androidx.media3.session)
-
-    implementation("com.github.skydoves:flexible-bottomsheet-material3:0.1.2")
 }
