@@ -86,17 +86,16 @@ fun FlexiblePlayerLayout(
     ) {
         val primaryColor = MaterialTheme.colorScheme.primary
         val backGroundModifier =
-            remember(layoutState.isPlayerExpanding) {
-                if (layoutState.isPlayerExpanding) {
-                    Modifier.verticalGradientScrim(
-                        color = primaryColor.copy(alpha = 0.38f),
-                        startYPercentage = 1f,
-                        endYPercentage = 0f,
-                    )
-                } else {
-                    Modifier
-                }
+            if (layoutState.isPlayerExpanding) {
+                Modifier.verticalGradientScrim(
+                    color = primaryColor.copy(alpha = 0.38f),
+                    startYPercentage = 1f,
+                    endYPercentage = 0f,
+                )
+            } else {
+                Modifier
             }
+
         BoxWithConstraints(
             modifier =
                 Modifier.fillMaxWidth()
