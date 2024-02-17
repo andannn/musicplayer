@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.player
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -141,7 +140,6 @@ class PlayerStateViewModel
                 browserFuture.await()
 
                 isShuffleFlow.collect { isShuffle ->
-                    Log.d(TAG, ": isShuffleFlowisShuffleFlow $isShuffle")
                     browser!!.shuffleModeEnabled = isShuffle
                 }
             }

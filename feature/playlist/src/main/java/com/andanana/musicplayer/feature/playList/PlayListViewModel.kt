@@ -110,7 +110,6 @@ class PlayListViewModel
                     // startPositionMs=
                     C.TIME_UNSET,
                 )
-                shuffleModeEnabled = false
                 prepare()
                 play()
             }
