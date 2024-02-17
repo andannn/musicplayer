@@ -34,6 +34,7 @@ fun PlayListHeader(
     title: String = "",
     trackCount: Int = 0,
     onPlayAllButtonClick: () -> Unit = {},
+    onShuffleButtonClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         Surface(
@@ -90,7 +91,7 @@ fun PlayListHeader(
             Spacer(modifier = Modifier.width(10.dp))
             OutlinedButton(
                 modifier = Modifier.weight(1f),
-                onClick = { /*TODO*/ },
+                onClick = onShuffleButtonClick,
             ) {
                 Icon(imageVector = Icons.Rounded.Shuffle, contentDescription = null)
 

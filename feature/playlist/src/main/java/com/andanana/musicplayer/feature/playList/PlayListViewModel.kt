@@ -118,7 +118,7 @@ class PlayListViewModel
                 }
 
                 is PlayListEvent.OnShuffleButtonClick -> {
-//                    setPlayListAndStartIndex(event.mediaItems, 0)
+                    setPlayListAndStartIndex(event.mediaItems, 0, isShuffle = true)
                 }
             }
         }
@@ -126,6 +126,7 @@ class PlayListViewModel
         private fun setPlayListAndStartIndex(
             mediaItems: List<MediaItem>,
             index: Int,
+            isShuffle: Boolean = false,
         ) {
             browser?.run {
                 setMediaItems(
@@ -135,6 +136,7 @@ class PlayListViewModel
                     // startPositionMs=
                     C.TIME_UNSET,
                 )
+                shuffleModeEnabled = isShuffle
                 prepare()
                 play()
             }

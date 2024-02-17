@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
-import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayerState
 import com.andanana.musicplayer.core.model.toExoPlayerMode
@@ -16,11 +15,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-private const val TAG = "PlayerStateViewModel"
 
 sealed interface PlayerUiEvent {
     data object OnFavoriteButtonClick : PlayerUiEvent
@@ -46,27 +42,15 @@ class PlayerStateViewModel
     constructor(
         private val browserFuture: ListenableFuture<MediaBrowser>,
         private val playerMonitor: PlayerStateRepository,
-        private val smpPreferenceRepository: SmpPreferenceRepository,
     ) : ViewModel() {
         private val browser: MediaBrowser?
             get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
 
         private val interactingMusicItem = playerMonitor.observePlayingMedia()
 
-        private val playModeFlow =
-            smpPreferenceRepository.playMode
-                .stateIn(
-                    viewModelScope,
-                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 100),
-                    PlayMode.REPEAT_ALL,
-                )
-        private val isShuffleFlow =
-            smpPreferenceRepository.isShuffle
-                .stateIn(
-                    viewModelScope,
-                    SharingStarted.WhileSubscribed(stopTimeoutMillis = 100),
-                    false,
-                )
+        private val playModeFlow = playerMonitor.observePlayMode()
+
+        private val isShuffleFlow = playerMonitor.observeIsShuffle()
 
 //        private val isCurrentMusicFavorite = flowOf(false)
 
@@ -125,47 +109,21 @@ class PlayerStateViewModel
                     }
                 }
             }
-
-            viewModelScope.launch {
-                // wait browser build complete.
-                browserFuture.await()
-
-                playModeFlow.collect { mode ->
-                    browser!!.repeatMode = mode.toExoPlayerMode()
-                }
-            }
-
-            viewModelScope.launch {
-                // wait browser build complete.
-                browserFuture.await()
-
-                isShuffleFlow.collect { isShuffle ->
-                    browser!!.shuffleModeEnabled = isShuffle
-                }
-            }
         }
 
         fun onEvent(event: PlayerUiEvent) {
             when (event) {
                 PlayerUiEvent.OnFavoriteButtonClick -> {}
                 PlayerUiEvent.OnPlayModeButtonClick -> {
-                    viewModelScope.launch {
-                        val currentPlayMode = playModeFlow.value
-                        smpPreferenceRepository.setPlayMode(
-                            playMode = currentPlayMode.next(),
-                        )
-                    }
+                    val currentPlayMode = playModeFlow.value
+                    browser?.repeatMode = currentPlayMode.next().toExoPlayerMode()
                 }
 
                 PlayerUiEvent.OnPlayButtonClick -> togglePlayState()
                 PlayerUiEvent.OnPreviousButtonClick -> previous()
                 PlayerUiEvent.OnNextButtonClick -> next()
                 PlayerUiEvent.OnShuffleButtonClick -> {
-                    viewModelScope.launch {
-                        smpPreferenceRepository.setIsShuffle(
-                            isShuffle = !isShuffleFlow.value,
-                        )
-                    }
+                    browser?.shuffleModeEnabled = !isShuffleFlow.value
                 }
 
                 PlayerUiEvent.OnOptionIconClick -> Unit

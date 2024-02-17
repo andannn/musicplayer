@@ -15,6 +15,10 @@ class PlayerStateRepositoryImpl
         override val playerState: PlayerState
             get() = playerMonitor.playerState
 
+        override fun observeIsShuffle() = playerMonitor.observeIsShuffle()
+
+        override fun observePlayMode() = playerMonitor.observePlayMode()
+
         override fun observePlayerState() = playerMonitor.observePlayerState()
 
         override fun observePlayListQueue() = playerMonitor.observePlayListQueue()

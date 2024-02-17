@@ -238,6 +238,13 @@ private fun AlbumPlayListContent(
                                 ),
                             )
                         },
+                        onShuffleButtonClick = {
+                            onEvent(
+                                PlayListEvent.OnShuffleButtonClick(
+                                    mediaItems = uiState.musicItems,
+                                ),
+                            )
+                        },
                     )
                 }
             }
