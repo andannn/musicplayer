@@ -5,6 +5,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayerState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,9 @@ class PlayerMonitorImpl
         private val player: Player,
     ) : PlayerMonitor {
         private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
+
+        private val playerModeFlow = MutableStateFlow(PlayMode.REPEAT_ALL)
+        private val isShuffleFlow = MutableStateFlow(false)
 
         private val playingMediaItemStateFlow = MutableStateFlow<MediaItem?>(null)
 
@@ -120,6 +124,12 @@ class PlayerMonitorImpl
 
                 override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                     Log.d(TAG, "onShuffleModeEnabledChanged: $shuffleModeEnabled")
+                    isShuffleFlow.value = shuffleModeEnabled
+                }
+
+                override fun onRepeatModeChanged(repeatMode: Int) {
+                    Log.d(TAG, "onRepeatModeChanged: $repeatMode")
+                    playerModeFlow.value = PlayMode.fromRepeatMode(repeatMode)
                 }
             }
 
@@ -139,14 +149,7 @@ class PlayerMonitorImpl
 
         override fun observePlayingMedia(): Flow<MediaItem?> = playingMediaItemStateFlow
 
-//    override fun setRepeatMode(playMode: PlayMode) {
-//        Log.d(TAG, "setRepeatMode: $playMode")
-//        if (playMode == PlayMode.SHUFFLE) {
-//            player.repeatMode = PlayMode.REPEAT_ALL.toExoPlayerMode()
-//            player.shuffleModeEnabled = true
-//        } else {
-//            player.repeatMode = playMode.toExoPlayerMode()
-//            player.shuffleModeEnabled = false
-//        }
-//    }
+        override fun observeIsShuffle() = isShuffleFlow
+
+        override fun observePlayMode() = playerModeFlow
     }

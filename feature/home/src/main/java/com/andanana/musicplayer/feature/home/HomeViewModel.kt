@@ -119,7 +119,6 @@ class HomeViewModel
                     mediaItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
                     C.TIME_UNSET,
                 )
-                shuffleModeEnabled = false
                 prepare()
                 play()
             }

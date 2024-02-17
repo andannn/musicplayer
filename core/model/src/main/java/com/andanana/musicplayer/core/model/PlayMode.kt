@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.model
 
 import androidx.media3.common.Player
+import androidx.media3.common.Player.RepeatMode
 
 enum class PlayMode {
     REPEAT_ONE,
@@ -15,6 +16,15 @@ enum class PlayMode {
 
     companion object {
         val DefaultPlayMode = REPEAT_ALL
+
+        fun fromRepeatMode(
+            @RepeatMode repeatMode: Int,
+        ) = when (repeatMode) {
+            Player.REPEAT_MODE_ONE -> REPEAT_ONE
+            Player.REPEAT_MODE_OFF -> REPEAT_OFF
+            Player.REPEAT_MODE_ALL -> REPEAT_ALL
+            else -> error("Invalid param $repeatMode")
+        }
     }
 }
 

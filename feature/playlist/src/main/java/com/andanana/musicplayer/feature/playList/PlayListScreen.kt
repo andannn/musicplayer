@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
@@ -55,10 +54,11 @@ import com.andanana.musicplayer.core.model.LibraryRootCategory
 @Composable
 fun PlayListScreen(
     modifier: Modifier = Modifier,
-    playListViewModel: PlayListViewModel = hiltViewModel(),
+    viewModel: PlayListViewModel = hiltViewModel(),
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
-    val uiState by playListViewModel.state.collectAsState()
+    val uiState by viewModel.state.collectAsState()
 
     val isAlbumType =
         remember(uiState.playListType) {
@@ -69,17 +69,17 @@ fun PlayListScreen(
         AlbumPlayListContent(
             modifier = modifier,
             uiState = uiState,
-            onPlayAllButtonClick = {
-            },
-            onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
+            onEvent = viewModel::onEvent,
             onShowMusicItemOption = onShowMusicItemOption,
+            onBackPressed = onBackPressed,
         )
     } else {
         CommonPlayListContent(
             modifier = modifier,
             uiState = uiState,
-            onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
+            onEvent = viewModel::onEvent,
             onShowMusicItemOption = onShowMusicItemOption,
+            onBackPressed = onBackPressed,
         )
     }
 }
@@ -89,8 +89,9 @@ fun PlayListScreen(
 fun CommonPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit = {},
+    onEvent: (PlayListEvent) -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -100,7 +101,7 @@ fun CommonPlayListContent(
                     Text(text = uiState.title)
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back",
@@ -126,9 +127,11 @@ fun CommonPlayListContent(
                     artist = item.mediaMetadata.artist.toString(),
                     trackNum = item.mediaMetadata.trackNumber ?: 0,
                     onMusicItemClick = {
-                        onAudioItemClick(
-                            uiState.musicItems,
-                            uiState.musicItems.indexOf(item),
+                        onEvent(
+                            PlayListEvent.OnStartPlayAtIndex(
+                                mediaItems = uiState.musicItems,
+                                index = uiState.musicItems.indexOf(item),
+                            ),
                         )
                     },
                     onOptionButtonClick = {
@@ -144,9 +147,9 @@ fun CommonPlayListContent(
 private fun AlbumPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onPlayAllButtonClick: () -> Unit = {},
-    onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit = {},
+    onEvent: (PlayListEvent) -> Unit = {},
 ) {
     var appBarHeight by
         remember {
@@ -228,8 +231,20 @@ private fun AlbumPlayListContent(
                         coverArtUri = uiState.artCoverUri.toString(),
                         title = uiState.title,
                         trackCount = uiState.trackCount,
-                        onPlayAllButtonClick = onPlayAllButtonClick,
-                        onAddToPlayListButtonClick = {},
+                        onPlayAllButtonClick = {
+                            onEvent(
+                                PlayListEvent.OnPlayAllButtonClick(
+                                    mediaItems = uiState.musicItems,
+                                ),
+                            )
+                        },
+                        onShuffleButtonClick = {
+                            onEvent(
+                                PlayListEvent.OnShuffleButtonClick(
+                                    mediaItems = uiState.musicItems,
+                                ),
+                            )
+                        },
                     )
                 }
             }
@@ -241,7 +256,7 @@ private fun AlbumPlayListContent(
                 MusicCard(
                     modifier =
                         Modifier
-                            .padding(vertical = 4.dp, horizontal = 10.dp),
+                            .padding(vertical = 4.dp, horizontal = 14.dp),
                     isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
@@ -249,9 +264,11 @@ private fun AlbumPlayListContent(
                     artist = item.mediaMetadata.artist.toString(),
                     trackNum = item.mediaMetadata.trackNumber ?: 0,
                     onMusicItemClick = {
-                        onAudioItemClick(
-                            uiState.musicItems,
-                            uiState.musicItems.indexOf(item),
+                        onEvent(
+                            PlayListEvent.OnStartPlayAtIndex(
+                                mediaItems = uiState.musicItems,
+                                index = uiState.musicItems.indexOf(item),
+                            ),
                         )
                     },
                     onOptionButtonClick = {
@@ -270,6 +287,7 @@ private fun AlbumPlayListContent(
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
             title = uiState.title,
+            onBackPressed = onBackPressed,
         )
     }
 }
@@ -280,7 +298,7 @@ private fun CustomAppTopBar(
     isTitleVisible: Boolean,
     isBackgroundTransparent: Boolean,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
     Row(
         modifier =
@@ -292,7 +310,7 @@ private fun CustomAppTopBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
-            onClick = onBackClick,
+            onClick = onBackPressed,
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
         ) {
             Icon(
@@ -335,6 +353,7 @@ private fun PlayListScreenContentPreview() {
                             ),
                         ),
                 ),
+            onBackPressed = {},
         )
     }
 }

@@ -12,7 +12,7 @@ import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.model.LibraryRootCategory
-import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
+import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +21,21 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed interface PlayListEvent {
+    data class OnStartPlayAtIndex(
+        val mediaItems: List<MediaItem>,
+        val index: Int,
+    ) : PlayListEvent
+
+    data class OnPlayAllButtonClick(
+        val mediaItems: List<MediaItem>,
+    ) : PlayListEvent
+
+    data class OnShuffleButtonClick(
+        val mediaItems: List<MediaItem>,
+    ) : PlayListEvent
+}
 
 @HiltViewModel
 class PlayListViewModel
@@ -31,7 +46,7 @@ class PlayListViewModel
         private val playerMonitor: PlayerStateRepository,
     ) : ViewModel() {
         private val mediaId =
-            savedStateHandle.get<String>(MediaIdKey) ?: ""
+            savedStateHandle.get<String>(MEDIA_ID) ?: ""
 
         private val _state = MutableStateFlow(PlayListUiState())
         val state = _state.asStateFlow()
@@ -92,15 +107,26 @@ class PlayListViewModel
             }
         }
 
-        override fun onCleared() {
-            super.onCleared()
-            MediaBrowser.releaseFuture(browserFuture)
-            browser?.release()
+        fun onEvent(event: PlayListEvent) {
+            when (event) {
+                is PlayListEvent.OnStartPlayAtIndex -> {
+                    setPlayListAndStartIndex(event.mediaItems, event.index)
+                }
+
+                is PlayListEvent.OnPlayAllButtonClick -> {
+                    setPlayListAndStartIndex(event.mediaItems, 0)
+                }
+
+                is PlayListEvent.OnShuffleButtonClick -> {
+                    setPlayListAndStartIndex(event.mediaItems, 0, isShuffle = true)
+                }
+            }
         }
 
-        fun setPlayListAndStartIndex(
+        private fun setPlayListAndStartIndex(
             mediaItems: List<MediaItem>,
             index: Int,
+            isShuffle: Boolean = false,
         ) {
             browser?.run {
                 setMediaItems(
@@ -110,10 +136,16 @@ class PlayListViewModel
                     // startPositionMs=
                     C.TIME_UNSET,
                 )
-                shuffleModeEnabled = false
+                shuffleModeEnabled = isShuffle
                 prepare()
                 play()
             }
+        }
+
+        override fun onCleared() {
+            super.onCleared()
+            MediaBrowser.releaseFuture(browserFuture)
+            browser?.release()
         }
     }
 

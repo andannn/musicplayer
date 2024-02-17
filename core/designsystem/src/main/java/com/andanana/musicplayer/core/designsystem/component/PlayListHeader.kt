@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.designsystem.component
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -8,12 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Shuffle
-import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,52 +34,77 @@ fun PlayListHeader(
     title: String = "",
     trackCount: Int = 0,
     onPlayAllButtonClick: () -> Unit = {},
-    onAddToPlayListButtonClick: () -> Unit = {},
+    onShuffleButtonClick: () -> Unit = {},
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth().wrapContentHeight(),
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Row(modifier = Modifier.padding(5.dp)) {
-            AsyncImage(
+    Column(modifier = modifier) {
+        Surface(
+            modifier =
+                Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+        ) {
+            Row(
                 modifier =
                     Modifier
-                        .align(Alignment.CenterVertically)
-                        .weight(1f)
-                        .aspectRatio(1f)
-                        .clip(MaterialTheme.shapes.extraSmall),
-                model = coverArtUri,
-                contentDescription = "",
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(
-                modifier =
-                    Modifier.weight(1f),
+                        .padding(5.dp)
+                        .height(IntrinsicSize.Max),
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                AsyncImage(
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterVertically)
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clip(MaterialTheme.shapes.extraSmall),
+                    model = coverArtUri,
+                    contentDescription = "",
                 )
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    modifier = Modifier,
-                    text = "$trackCount tracks",
-                    style = MaterialTheme.typography.bodySmall,
-                )
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(modifier = Modifier) {
-                    SmpTextButton(
-                        imageVector = Icons.Rounded.PlayArrow,
-                        onClick = onPlayAllButtonClick,
+                Spacer(modifier = Modifier.width(10.dp))
+                Column(
+                    modifier =
+                        Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    SmpTextButton(
-                        imageVector = Icons.Rounded.Shuffle,
-                        onClick = onAddToPlayListButtonClick,
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        modifier = Modifier,
+                        text = "$trackCount tracks",
+                        style = MaterialTheme.typography.bodySmall,
                     )
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row {
+            Spacer(modifier = Modifier.width(10.dp))
+            SmpTextButton(
+                modifier = Modifier.weight(1f),
+                imageVector = Icons.Rounded.PlayArrow,
+                text = "Play",
+                onClick = onPlayAllButtonClick,
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = onShuffleButtonClick,
+            ) {
+                Icon(imageVector = Icons.Rounded.Shuffle, contentDescription = null)
+
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = "Shuffle",
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+        }
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
