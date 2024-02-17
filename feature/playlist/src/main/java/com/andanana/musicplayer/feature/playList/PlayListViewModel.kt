@@ -12,7 +12,7 @@ import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.model.LibraryRootCategory
-import com.andanana.musicplayer.feature.playList.navigation.MediaIdKey
+import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,7 @@ class PlayListViewModel
         private val playerMonitor: PlayerStateRepository,
     ) : ViewModel() {
         private val mediaId =
-            savedStateHandle.get<String>(MediaIdKey) ?: ""
+            savedStateHandle.get<String>(MEDIA_ID) ?: ""
 
         private val _state = MutableStateFlow(PlayListUiState())
         val state = _state.asStateFlow()

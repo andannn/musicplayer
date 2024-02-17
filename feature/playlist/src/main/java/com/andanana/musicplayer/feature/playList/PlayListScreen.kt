@@ -57,6 +57,7 @@ fun PlayListScreen(
     modifier: Modifier = Modifier,
     playListViewModel: PlayListViewModel = hiltViewModel(),
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
     val uiState by playListViewModel.state.collectAsState()
 
@@ -73,6 +74,7 @@ fun PlayListScreen(
             },
             onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
             onShowMusicItemOption = onShowMusicItemOption,
+            onBackPressed = onBackPressed,
         )
     } else {
         CommonPlayListContent(
@@ -80,6 +82,7 @@ fun PlayListScreen(
             uiState = uiState,
             onAudioItemClick = playListViewModel::setPlayListAndStartIndex,
             onShowMusicItemOption = onShowMusicItemOption,
+            onBackPressed = onBackPressed,
         )
     }
 }
@@ -91,6 +94,7 @@ fun CommonPlayListContent(
     modifier: Modifier = Modifier,
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -100,7 +104,7 @@ fun CommonPlayListContent(
                     Text(text = uiState.title)
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onBackPressed) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                             contentDescription = "Back",
@@ -147,6 +151,7 @@ private fun AlbumPlayListContent(
     onPlayAllButtonClick: () -> Unit = {},
     onAudioItemClick: (List<MediaItem>, Int) -> Unit = { _, _ -> },
     onShowMusicItemOption: (Uri) -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
     var appBarHeight by
         remember {
@@ -270,6 +275,7 @@ private fun AlbumPlayListContent(
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
             title = uiState.title,
+            onBackPressed = onBackPressed,
         )
     }
 }
@@ -280,7 +286,7 @@ private fun CustomAppTopBar(
     isTitleVisible: Boolean,
     isBackgroundTransparent: Boolean,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
+    onBackPressed: () -> Unit,
 ) {
     Row(
         modifier =
@@ -292,7 +298,7 @@ private fun CustomAppTopBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
-            onClick = onBackClick,
+            onClick = onBackPressed,
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
         ) {
             Icon(
@@ -335,6 +341,7 @@ private fun PlayListScreenContentPreview() {
                             ),
                         ),
                 ),
+            onBackPressed = {},
         )
     }
 }

@@ -13,6 +13,7 @@ import com.andanana.musicplayer.feature.playList.navigation.playListScreen
 fun SmpNavHost(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
+    onBackPressed: () -> Unit,
 ) {
     NavHost(
         navController = navHostController,
@@ -24,6 +25,8 @@ fun SmpNavHost(
                 navHostController.navigateToPlayList(mediaId = mediaId)
             },
         )
-        playListScreen()
+        playListScreen(
+            onBackPressed = onBackPressed,
+        )
     }
 }

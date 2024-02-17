@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -60,6 +60,7 @@ fun SmpNavHostContainer(
         SmpNavHost(
             modifier = Modifier.fillMaxWidth().weight(1f),
             navHostController = navController,
+            onBackPressed = navController::popBackStack,
         )
 
         if (isPlaying) {
