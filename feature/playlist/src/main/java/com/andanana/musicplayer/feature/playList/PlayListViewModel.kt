@@ -22,6 +22,21 @@ import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+sealed interface PlayListEvent {
+    data class OnStartPlayAtIndex(
+        val mediaItems: List<MediaItem>,
+        val index: Int,
+    ) : PlayListEvent
+
+    data class OnPlayAllButtonClick(
+        val mediaItems: List<MediaItem>,
+    ) : PlayListEvent
+
+    data class OnShuffleButtonClick(
+        val mediaItems: List<MediaItem>,
+    ) : PlayListEvent
+}
+
 @HiltViewModel
 class PlayListViewModel
     @Inject
@@ -92,13 +107,23 @@ class PlayListViewModel
             }
         }
 
-        override fun onCleared() {
-            super.onCleared()
-            MediaBrowser.releaseFuture(browserFuture)
-            browser?.release()
+        fun onEvent(event: PlayListEvent) {
+            when (event) {
+                is PlayListEvent.OnStartPlayAtIndex -> {
+                    setPlayListAndStartIndex(event.mediaItems, event.index)
+                }
+
+                is PlayListEvent.OnPlayAllButtonClick -> {
+                    setPlayListAndStartIndex(event.mediaItems, 0)
+                }
+
+                is PlayListEvent.OnShuffleButtonClick -> {
+//                    setPlayListAndStartIndex(event.mediaItems, 0)
+                }
+            }
         }
 
-        fun setPlayListAndStartIndex(
+        private fun setPlayListAndStartIndex(
             mediaItems: List<MediaItem>,
             index: Int,
         ) {
@@ -113,6 +138,12 @@ class PlayListViewModel
                 prepare()
                 play()
             }
+        }
+
+        override fun onCleared() {
+            super.onCleared()
+            MediaBrowser.releaseFuture(browserFuture)
+            browser?.release()
         }
     }
 
