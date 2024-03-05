@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.data.util.isSameDatasource
+import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
@@ -139,6 +140,8 @@ fun CommonPlayListContent(
                     },
                 )
             }
+
+            item { ExtraPaddingBottom() }
         }
     }
 }
@@ -276,6 +279,8 @@ private fun AlbumPlayListContent(
                     },
                 )
             }
+
+            item { ExtraPaddingBottom() }
         }
 
         CustomAppTopBar(

@@ -37,14 +37,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
+import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.model.ALBUM_ID
 import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
 import com.andanana.musicplayer.core.model.ARTIST_ID
 import com.andanana.musicplayer.feature.home.util.ResourceUtil
-
-private const val TAG = "HomeScreen"
 
 @Composable
 fun HomeRoute(
@@ -166,6 +165,8 @@ private fun HomeScreen(
                                 },
                             )
                         }
+
+                        item { ExtraPaddingBottom() }
                     }
                 }
 
@@ -194,6 +195,8 @@ private fun HomeScreen(
                                 },
                             )
                         }
+
+                        item { ExtraPaddingBottom() }
                     }
                 }
             }
@@ -236,5 +239,7 @@ fun LazyAllAudioContent(
                 },
             )
         }
+
+        item { ExtraPaddingBottom() }
     }
 }
