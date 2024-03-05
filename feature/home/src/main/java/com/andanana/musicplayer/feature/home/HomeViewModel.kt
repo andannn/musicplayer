@@ -34,7 +34,6 @@ class HomeViewModel
         val state = _state.asStateFlow()
 
         private var queryJob: Job? = null
-        private var currentMediaCategoryId = ALL_MUSIC_ID
 
         init {
             viewModelScope.launch {
@@ -49,13 +48,9 @@ class HomeViewModel
                 val root = browser.getLibraryRoot(null).await()
                 val categories =
                     browser.getChildren(
-                        // parentId =
                         root.value!!.mediaId,
-                        // page =
                         0,
-                        // pageSize =
                         Int.MAX_VALUE,
-                        // params =
                         null,
                     ).await().value!!.toList()
 
@@ -66,15 +61,13 @@ class HomeViewModel
                 }
 
                 contentChangeFlowProvider.audioChangedEventFlow.collect { _ ->
-                    getMediaItemsAndUpdateState(currentMediaCategoryId)
+                    getMediaItemsAndUpdateState(_state.value.mediaItemPair.first)
                 }
             }
         }
 
         fun onSelectedCategoryChanged(mediaId: String) {
-            currentMediaCategoryId = mediaId
-
-            if (state.value.categoryToMediaItemsMap.containsKey(mediaId)) {
+            if (mediaId == _state.value.mediaItemPair.first) {
                 // already loaded.
                 return
             }
@@ -100,18 +93,13 @@ class HomeViewModel
 
                     val state = this@HomeViewModel._state.value
                     _state.update {
-                        state.copy(
-                            categoryToMediaItemsMap =
-                                state.categoryToMediaItemsMap.toMutableMap().apply {
-                                    put(mediaId, children)
-                                },
-                        )
+                        state.copy(mediaItemPair = mediaId to children.toList())
                     }
                 }
         }
 
         fun playMusic(mediaItem: MediaItem) {
-            val mediaItems = this._state.value.categoryToMediaItemsMap[currentMediaCategoryId] ?: return
+            val mediaItems = _state.value.mediaItemPair.second
 
             browser?.run {
                 setMediaItems(
@@ -133,11 +121,7 @@ class HomeViewModel
 
 data class HomeUiState(
     val categories: List<MediaItem> = emptyList(),
-    val categoryToMediaItemsMap: Map<String, List<MediaItem>> = emptyMap(),
+    val mediaItemPair: Pair<String, List<MediaItem>> = ALL_MUSIC_ID to emptyList(),
 ) {
-    val categoryPageContents
-        get() =
-            categories.map {
-                categoryToMediaItemsMap.getOrDefault(it.mediaId, defaultValue = emptyList())
-            }
+    val categoryPageContents get() = mediaItemPair.second
 }
