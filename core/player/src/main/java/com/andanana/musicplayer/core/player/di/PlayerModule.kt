@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.core.player.di
 
 import android.app.Application
+import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.andanana.musicplayer.core.player.PlayerMonitor
@@ -18,7 +19,10 @@ class PlayerModule {
     @Provides
     @Singleton
     fun providePlayer(application: Application): Player {
-        return ExoPlayer.Builder(application).build()
+        return ExoPlayer.Builder(application)
+            .setAudioAttributes(AudioAttributes.DEFAULT, true)
+            .setHandleAudioBecomingNoisy(true)
+            .build()
     }
 }
 
