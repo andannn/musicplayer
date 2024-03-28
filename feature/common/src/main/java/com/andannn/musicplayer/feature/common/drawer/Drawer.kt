@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.designsystem
+package com.andannn.musicplayer.feature.common.drawer
 
 import com.andanana.musicplayer.core.designsystem.icons.Icon
 import com.andanana.musicplayer.core.designsystem.icons.SimpleMusicIcons
@@ -36,7 +36,7 @@ enum class DrawerItem(
 sealed class Drawer(
     val itemList: List<DrawerItem>
 ) {
-    object MusicDrawer : Drawer(
+    data object MusicDrawer : Drawer(
         listOf(
             DrawerItem.ADD_TO_FAVORITE,
             DrawerItem.ADD_TO_PLAY_LIST,
@@ -45,21 +45,21 @@ sealed class Drawer(
         )
     )
 
-    object AlbumDrawer : Drawer(
+    data object AlbumDrawer : Drawer(
         listOf(
             DrawerItem.PLAY_NEXT,
             DrawerItem.INFORMATION
         )
     )
 
-    object ArtistDrawer : Drawer(
+    data object ArtistDrawer : Drawer(
         listOf(
             DrawerItem.PLAY_NEXT,
             DrawerItem.INFORMATION
         )
     )
 
-    object PlayListDrawer : Drawer(
+    data object PlayListDrawer : Drawer(
         listOf(
             DrawerItem.PLAY_NEXT,
             DrawerItem.INFORMATION,
