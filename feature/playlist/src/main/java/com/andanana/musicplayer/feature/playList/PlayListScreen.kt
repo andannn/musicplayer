@@ -1,6 +1,5 @@
 package com.andanana.musicplayer.feature.playList
 
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
@@ -56,7 +56,6 @@ import com.andanana.musicplayer.core.model.LibraryRootCategory
 fun PlayListScreen(
     modifier: Modifier = Modifier,
     viewModel: PlayListViewModel = hiltViewModel(),
-    onShowMusicItemOption: (Uri) -> Unit = {},
     onBackPressed: () -> Unit,
 ) {
     val uiState by viewModel.state.collectAsState()
@@ -71,7 +70,6 @@ fun PlayListScreen(
             modifier = modifier,
             uiState = uiState,
             onEvent = viewModel::onEvent,
-            onShowMusicItemOption = onShowMusicItemOption,
             onBackPressed = onBackPressed,
         )
     } else {
@@ -79,7 +77,6 @@ fun PlayListScreen(
             modifier = modifier,
             uiState = uiState,
             onEvent = viewModel::onEvent,
-            onShowMusicItemOption = onShowMusicItemOption,
             onBackPressed = onBackPressed,
         )
     }
@@ -90,7 +87,6 @@ fun PlayListScreen(
 fun CommonPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onShowMusicItemOption: (Uri) -> Unit = {},
     onBackPressed: () -> Unit = {},
     onEvent: (PlayListEvent) -> Unit = {},
 ) {
@@ -136,7 +132,7 @@ fun CommonPlayListContent(
                         )
                     },
                     onOptionButtonClick = {
-                        item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                        onEvent.invoke(PlayListEvent.OnOptionClick(item))
                     },
                 )
             }
@@ -150,7 +146,7 @@ fun CommonPlayListContent(
 private fun AlbumPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onShowMusicItemOption: (Uri) -> Unit = {},
+    onShowMusicItemOption: (MediaItem) -> Unit = {},
     onBackPressed: () -> Unit = {},
     onEvent: (PlayListEvent) -> Unit = {},
 ) {
@@ -275,7 +271,7 @@ private fun AlbumPlayListContent(
                         )
                     },
                     onOptionButtonClick = {
-                        item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                        onShowMusicItemOption(item)
                     },
                 )
             }

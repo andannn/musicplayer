@@ -13,6 +13,7 @@ import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
+import com.andannn.musicplayer.common.drawer.BottomSheetEventSink
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,10 @@ sealed interface PlayListEvent {
     data class OnShuffleButtonClick(
         val mediaItems: List<MediaItem>,
     ) : PlayListEvent
+
+    data class OnOptionClick(
+        val mediaItem: MediaItem,
+    ) : PlayListEvent
 }
 
 @HiltViewModel
@@ -44,6 +49,7 @@ class PlayListViewModel
         application: Application,
         savedStateHandle: SavedStateHandle,
         private val playerMonitor: PlayerStateRepository,
+        private val drawerEventSink: BottomSheetEventSink,
     ) : ViewModel() {
         private val mediaId =
             savedStateHandle.get<String>(MEDIA_ID) ?: ""
@@ -119,6 +125,10 @@ class PlayListViewModel
 
                 is PlayListEvent.OnShuffleButtonClick -> {
                     setPlayListAndStartIndex(event.mediaItems, 0, isShuffle = true)
+                }
+
+                is PlayListEvent.OnOptionClick -> {
+                    drawerEventSink.onRequestShowSheet(event.mediaItem)
                 }
             }
         }
