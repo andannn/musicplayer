@@ -3,9 +3,11 @@ package com.andannn.musicplayer.common.drawer
 import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.model.MediaSourceType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-data class ShowDrawerRequest(
+data class BottomSheetModel(
     val source: MediaItem,
     val bottomSheet: BottomSheet,
 )
@@ -18,30 +20,32 @@ data class MediaOptionResult(
 interface BottomSheetEventSink {
     fun onRequestShowSheet(mediaItem: MediaItem)
 
-    fun onDrawerOptionClick(item: SheetItem)
+    fun onDismissRequest(item: SheetItem?)
 }
 
 interface BottomSheetController : BottomSheetEventSink {
-    fun observeShowDrawerRequest(): Flow<ShowDrawerRequest>
+    val bottomSheetModel: StateFlow<BottomSheetModel?>
 
-    fun observeMediaOptionResult(): Flow<ShowDrawerRequest>
+    fun observeMediaOptionResult(): Flow<BottomSheetModel>
 }
 
-internal class BottomSheetControllerImpl : BottomSheetController {
+class BottomSheetControllerImpl : BottomSheetController {
     private var lastRequestedMediaItem: MediaItem? = null
 
-    private val showDrawerRequestFlow =
-        MutableSharedFlow<ShowDrawerRequest>(extraBufferCapacity = 1)
+    override val bottomSheetModel: StateFlow<BottomSheetModel?>
+        get() = _bottomSheetModelFlow.asStateFlow()
+
+    private val _bottomSheetModelFlow =
+        MutableStateFlow<BottomSheetModel?>(null)
 
     override fun onRequestShowSheet(mediaItem: MediaItem) {
         lastRequestedMediaItem = mediaItem
 
-        showDrawerRequestFlow.tryEmit(
-            ShowDrawerRequest(
+        _bottomSheetModelFlow.value =
+            BottomSheetModel(
                 source = mediaItem,
                 bottomSheet = buildDrawer(mediaItem),
-            ),
-        )
+            )
     }
 
     private fun buildDrawer(mediaItem: MediaItem): BottomSheet {
@@ -55,13 +59,11 @@ internal class BottomSheetControllerImpl : BottomSheetController {
         }
     }
 
-    override fun onDrawerOptionClick(item: SheetItem) {
-        TODO("Not yet implemented")
+    override fun onDismissRequest(item: SheetItem?) {
+        _bottomSheetModelFlow.value = null
     }
 
-    override fun observeShowDrawerRequest() = showDrawerRequestFlow
-
-    override fun observeMediaOptionResult(): Flow<ShowDrawerRequest> {
+    override fun observeMediaOptionResult(): Flow<BottomSheetModel> {
         TODO("Not yet implemented")
     }
 }

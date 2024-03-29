@@ -43,7 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
@@ -51,6 +50,7 @@ import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.core.model.LibraryRootCategory
+import com.andannn.musicplayer.common.drawer.MediaBottomSheet
 
 @Composable
 fun PlayListScreen(
@@ -59,6 +59,7 @@ fun PlayListScreen(
     onBackPressed: () -> Unit,
 ) {
     val uiState by viewModel.state.collectAsState()
+    val bottomSheetModel by viewModel.bottomSheetModel.collectAsState()
 
     val isAlbumType =
         remember(uiState.playListType) {
@@ -78,6 +79,13 @@ fun PlayListScreen(
             uiState = uiState,
             onEvent = viewModel::onEvent,
             onBackPressed = onBackPressed,
+        )
+    }
+
+    if (bottomSheetModel != null) {
+        MediaBottomSheet(
+            bottomSheet = bottomSheetModel!!.bottomSheet,
+            onDismissRequest = viewModel::onDismissRequest,
         )
     }
 }
@@ -114,9 +122,7 @@ fun CommonPlayListContent(
                 key = { it.mediaId },
             ) { item ->
                 MusicCard(
-                    modifier =
-                        Modifier
-                            .padding(vertical = 4.dp, horizontal = 10.dp),
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
                     isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
@@ -146,24 +152,21 @@ fun CommonPlayListContent(
 private fun AlbumPlayListContent(
     uiState: PlayListUiState,
     modifier: Modifier = Modifier,
-    onShowMusicItemOption: (MediaItem) -> Unit = {},
     onBackPressed: () -> Unit = {},
     onEvent: (PlayListEvent) -> Unit = {},
 ) {
-    var appBarHeight by
-        remember {
-            mutableIntStateOf(0)
-        }
+    var appBarHeight by remember {
+        mutableIntStateOf(0)
+    }
 
     val appBarHeightDp =
         with(LocalDensity.current) {
             appBarHeight.toDp()
         }
 
-    var headerHeight by
-        remember {
-            mutableIntStateOf(0)
-        }
+    var headerHeight by remember {
+        mutableIntStateOf(0)
+    }
 
     /**
      * Animation Start Edge: Scroll 0:
@@ -219,14 +222,11 @@ private fun AlbumPlayListContent(
                     )
                     PlayListHeader(
                         modifier =
-                            Modifier
-                                .padding(10.dp)
-                                .graphicsLayer {
-                                    alpha = 1 - headerScrollFactor
-                                }
-                                .onSizeChanged {
-                                    headerHeight = it.height
-                                },
+                            Modifier.padding(10.dp).graphicsLayer {
+                                alpha = 1 - headerScrollFactor
+                            }.onSizeChanged {
+                                headerHeight = it.height
+                            },
                         coverArtUri = uiState.artCoverUri.toString(),
                         title = uiState.title,
                         trackCount = uiState.trackCount,
@@ -253,9 +253,7 @@ private fun AlbumPlayListContent(
                 key = { it.mediaId },
             ) { item ->
                 MusicCard(
-                    modifier =
-                        Modifier
-                            .padding(vertical = 4.dp, horizontal = 14.dp),
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 14.dp),
                     isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
@@ -271,7 +269,11 @@ private fun AlbumPlayListContent(
                         )
                     },
                     onOptionButtonClick = {
-                        onShowMusicItemOption(item)
+                        onEvent(
+                            PlayListEvent.OnOptionClick(
+                                item,
+                            ),
+                        )
                     },
                 )
             }
@@ -281,10 +283,9 @@ private fun AlbumPlayListContent(
 
         CustomAppTopBar(
             modifier =
-                Modifier
-                    .onSizeChanged {
-                        appBarHeight = it.height
-                    },
+                Modifier.onSizeChanged {
+                    appBarHeight = it.height
+                },
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
             title = uiState.title,
@@ -303,11 +304,8 @@ private fun CustomAppTopBar(
 ) {
     Row(
         modifier =
-            modifier
-                .background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .fillMaxWidth()
-                .height(64.dp),
+            modifier.background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface)
+                .windowInsetsPadding(WindowInsets.statusBars).fillMaxWidth().height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(

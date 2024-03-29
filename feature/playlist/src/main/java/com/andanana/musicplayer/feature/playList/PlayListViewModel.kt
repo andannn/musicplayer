@@ -13,7 +13,8 @@ import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
-import com.andannn.musicplayer.common.drawer.BottomSheetEventSink
+import com.andannn.musicplayer.common.drawer.BottomSheetController
+import com.andannn.musicplayer.common.drawer.BottomSheetControllerImpl
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,8 +50,8 @@ class PlayListViewModel
         application: Application,
         savedStateHandle: SavedStateHandle,
         private val playerMonitor: PlayerStateRepository,
-        private val drawerEventSink: BottomSheetEventSink,
-    ) : ViewModel() {
+        private val bottomSheetController: BottomSheetController = BottomSheetControllerImpl(),
+    ) : ViewModel(), BottomSheetController by bottomSheetController {
         private val mediaId =
             savedStateHandle.get<String>(MEDIA_ID) ?: ""
 
@@ -128,7 +129,7 @@ class PlayListViewModel
                 }
 
                 is PlayListEvent.OnOptionClick -> {
-                    drawerEventSink.onRequestShowSheet(event.mediaItem)
+                    onRequestShowSheet(event.mediaItem)
                 }
             }
         }
