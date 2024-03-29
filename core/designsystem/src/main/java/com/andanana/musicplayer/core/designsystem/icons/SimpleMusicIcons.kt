@@ -22,14 +22,14 @@ object SimpleMusicIcons {
     val UnselectedSettings = Icons.Outlined.Settings
     val Library = Icons.Filled.LibraryMusic
     val UnselectedLibrary = Icons.Outlined.LibraryMusic
-    val Share = Icon.ImageVectorIcon(Icons.Rounded.Share)
-    val AddFavorite = Icon.ImageVectorIcon(Icons.Rounded.Favorite)
-    val AddPlayList = Icon.ImageVectorIcon(Icons.AutoMirrored.Rounded.PlaylistAdd)
-    val PlayNext = Icon.ImageVectorIcon(Icons.Rounded.PlayCircle)
-    val Information = Icon.ImageVectorIcon(Icons.Rounded.Info)
-    val Delete = Icon.ImageVectorIcon(Icons.Rounded.Delete)
+    val Share = SmpIcon.ImageVectorIcon(Icons.Rounded.Share)
+    val AddFavorite = SmpIcon.ImageVectorIcon(Icons.Rounded.Favorite)
+    val AddPlayList = SmpIcon.ImageVectorIcon(Icons.AutoMirrored.Rounded.PlaylistAdd)
+    val PlayNext = SmpIcon.ImageVectorIcon(Icons.Rounded.PlayCircle)
+    val Information = SmpIcon.ImageVectorIcon(Icons.Rounded.Info)
+    val Delete = SmpIcon.ImageVectorIcon(Icons.Rounded.Delete)
 }
 
-sealed class Icon {
-    data class ImageVectorIcon(val imageVector: ImageVector) : Icon()
+sealed class SmpIcon {
+    data class ImageVectorIcon(val imageVector: ImageVector) : SmpIcon()
 }

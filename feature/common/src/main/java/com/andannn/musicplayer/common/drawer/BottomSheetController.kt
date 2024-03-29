@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 
 data class ShowDrawerRequest(
     val source: MediaItem,
-    val drawer: Drawer,
+    val bottomSheet: BottomSheet,
 )
 
 data class MediaOptionResult(
     val source: MediaItem,
-    val item: DrawerItem,
+    val item: SheetItem,
 )
 
 interface BottomSheetEventSink {
     fun onRequestShowSheet(mediaItem: MediaItem)
 
-    fun onDrawerOptionClick(item: DrawerItem)
+    fun onDrawerOptionClick(item: SheetItem)
 }
 
 interface BottomSheetController : BottomSheetEventSink {
@@ -39,23 +39,23 @@ internal class BottomSheetControllerImpl : BottomSheetController {
         showDrawerRequestFlow.tryEmit(
             ShowDrawerRequest(
                 source = mediaItem,
-                drawer = buildDrawer(mediaItem),
+                bottomSheet = buildDrawer(mediaItem),
             ),
         )
     }
 
-    private fun buildDrawer(mediaItem: MediaItem): Drawer {
+    private fun buildDrawer(mediaItem: MediaItem): BottomSheet {
         val source =
             MediaSourceType.getMediaSourceType(mediaItem.mediaId!!)
                 ?: error("no need to show drawer for ${mediaItem.mediaId}")
         return when (source) {
-            MediaSourceType.MUSIC -> Drawer.MusicDrawer
-            MediaSourceType.ARTIST -> Drawer.ArtistDrawer
-            MediaSourceType.ALBUM -> Drawer.AlbumDrawer
+            MediaSourceType.MUSIC -> BottomSheet.MusicBottomSheet
+            MediaSourceType.ARTIST -> BottomSheet.ArtistBottomSheet
+            MediaSourceType.ALBUM -> BottomSheet.AlbumBottomSheet
         }
     }
 
-    override fun onDrawerOptionClick(item: DrawerItem) {
+    override fun onDrawerOptionClick(item: SheetItem) {
         TODO("Not yet implemented")
     }
 

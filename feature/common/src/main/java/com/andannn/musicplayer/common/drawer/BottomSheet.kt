@@ -1,69 +1,69 @@
 package com.andannn.musicplayer.common.drawer
 
-import com.andanana.musicplayer.core.designsystem.icons.Icon
+import com.andanana.musicplayer.core.designsystem.icons.SmpIcon
 import com.andanana.musicplayer.core.designsystem.icons.SimpleMusicIcons
 
-enum class DrawerItem(
-    val icon: Icon,
+enum class SheetItem(
+    val smpIcon: SmpIcon,
     val text: String,
 ) {
     ADD_TO_FAVORITE(
-        icon = SimpleMusicIcons.AddFavorite,
+        smpIcon = SimpleMusicIcons.AddFavorite,
         text = "Save to Favorite",
     ),
     PLAY_NEXT(
-        icon = SimpleMusicIcons.PlayNext,
+        smpIcon = SimpleMusicIcons.PlayNext,
         text = "Play next",
     ),
     ADD_TO_PLAY_LIST(
-        icon = SimpleMusicIcons.AddPlayList,
+        smpIcon = SimpleMusicIcons.AddPlayList,
         text = "Save to PlayList",
     ),
     SHARE(
-        icon = SimpleMusicIcons.Share,
+        smpIcon = SimpleMusicIcons.Share,
         text = "Share",
     ),
     INFORMATION(
-        icon = SimpleMusicIcons.Information,
+        smpIcon = SimpleMusicIcons.Information,
         text = "Information",
     ),
     DELETE(
-        icon = SimpleMusicIcons.Delete,
+        smpIcon = SimpleMusicIcons.Delete,
         text = "Delete",
     ),
 }
 
-sealed class Drawer(
-    val itemList: List<DrawerItem>,
+sealed class BottomSheet(
+    val itemList: List<SheetItem>,
 ) {
-    data object MusicDrawer : Drawer(
+    data object MusicBottomSheet : BottomSheet(
         listOf(
-            DrawerItem.ADD_TO_FAVORITE,
-            DrawerItem.ADD_TO_PLAY_LIST,
-            DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            SheetItem.ADD_TO_FAVORITE,
+            SheetItem.ADD_TO_PLAY_LIST,
+            SheetItem.PLAY_NEXT,
+            SheetItem.INFORMATION,
         ),
     )
 
-    data object AlbumDrawer : Drawer(
+    data object AlbumBottomSheet : BottomSheet(
         listOf(
-            DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            SheetItem.PLAY_NEXT,
+            SheetItem.INFORMATION,
         ),
     )
 
-    data object ArtistDrawer : Drawer(
+    data object ArtistBottomSheet : BottomSheet(
         listOf(
-            DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
+            SheetItem.PLAY_NEXT,
+            SheetItem.INFORMATION,
         ),
     )
 
-    data object PlayListDrawer : Drawer(
+    data object PlayListBottomSheet : BottomSheet(
         listOf(
-            DrawerItem.PLAY_NEXT,
-            DrawerItem.INFORMATION,
-            DrawerItem.DELETE,
+            SheetItem.PLAY_NEXT,
+            SheetItem.INFORMATION,
+            SheetItem.DELETE,
         ),
     )
 }

@@ -1,48 +1,93 @@
 package com.andannn.musicplayer.common.drawer
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.andanana.musicplayer.core.designsystem.icons.SmpIcon
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.skydoves.flexible.bottomsheet.material3.FlexibleBottomSheet
-import com.skydoves.flexible.core.FlexibleSheetSize
-import com.skydoves.flexible.core.rememberFlexibleBottomSheetState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MediaBottomSheet(
+    bottomSheet: BottomSheet,
     modifier: Modifier = Modifier,
-    onDismissRequest: () -> Unit = {},
+    scope: CoroutineScope = rememberCoroutineScope(),
+    onDismissRequest: (SheetItem?) -> Unit = {},
 ) {
-    FlexibleBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState =
-            rememberFlexibleBottomSheetState(
-                flexibleSheetSize =
-                    FlexibleSheetSize(
-                        fullyExpanded = 0.9f,
-                        intermediatelyExpanded = 0.5f,
-                        slightlyExpanded = 0.15f,
-                    ),
-                isModal = true,
-                skipSlightlyExpanded = false,
-            ),
-        containerColor = Color.Black,
+    val sheetState =
+        rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = {
+            onDismissRequest.invoke(null)
+        },
     ) {
-        Text(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            text = "This is Flexible Bottom Sheet",
-            textAlign = TextAlign.Center,
-            color = Color.White,
-        )
+        Surface(modifier = modifier) {
+            Column(Modifier.fillMaxWidth()) {
+                bottomSheet.itemList.map { item ->
+                    SheetItem(
+                        item = item,
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                                onDismissRequest.invoke(item)
+                            }
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SheetItem(
+    item: SheetItem,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+            .fillMaxWidth(),
+    ) {
+        SmpIcon(item.smpIcon)
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(text = item.text, style = MaterialTheme.typography.bodyLarge)
+    }
+}
+
+@Composable
+fun SmpIcon(item: SmpIcon) {
+    when (item) {
+        is SmpIcon.ImageVectorIcon -> {
+            Icon(imageVector = item.imageVector, contentDescription = "")
+        }
     }
 }
 
@@ -50,6 +95,23 @@ fun MediaBottomSheet(
 @Composable
 private fun MediaBottomDrawerPreview() {
     MusicPlayerTheme {
-        MediaBottomSheet()
+        var isShow by remember {
+            mutableStateOf(false)
+        }
+
+        Surface {
+            Button(onClick = { isShow = true }) {
+                Text(text = "Show")
+            }
+        }
+
+        if (isShow) {
+            MediaBottomSheet(
+                BottomSheet.MusicBottomSheet,
+                onDismissRequest = {
+                    isShow = false
+                },
+            )
+        }
     }
 }
