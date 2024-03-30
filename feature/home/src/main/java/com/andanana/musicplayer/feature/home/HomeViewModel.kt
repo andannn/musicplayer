@@ -7,6 +7,8 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
+import com.andanana.musicplayer.core.data.util.getChildrenById
+import com.andanana.musicplayer.core.data.util.getOrNull
 import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,9 +29,6 @@ class HomeViewModel
         private val browserFuture: ListenableFuture<MediaBrowser>,
         private val contentChangeFlowProvider: ContentChangeFlowProvider,
     ) : ViewModel() {
-        private val browser: MediaBrowser?
-            get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
-
         private val _state = MutableStateFlow(HomeUiState())
         val state = _state.asStateFlow()
 
@@ -37,22 +36,11 @@ class HomeViewModel
 
         init {
             viewModelScope.launch {
-                state.collect {
-                    Log.d(TAG, "$it: ")
-                }
-            }
-            viewModelScope.launch {
                 // wait browser build complete.
                 val browser = browserFuture.await()
 
                 val root = browser.getLibraryRoot(null).await()
-                val categories =
-                    browser.getChildren(
-                        root.value!!.mediaId,
-                        0,
-                        Int.MAX_VALUE,
-                        null,
-                    ).await().value!!.toList()
+                val categories = browser.getChildrenById(root.value!!.mediaId)
 
                 _state.update {
                     HomeUiState(
@@ -81,7 +69,7 @@ class HomeViewModel
 
             queryJob =
                 viewModelScope.launch {
-                    val browser = this@HomeViewModel.browser ?: return@launch
+                    val browser = this@HomeViewModel.browserFuture.getOrNull() ?: return@launch
 
                     val children =
                         browser.getChildren(
@@ -101,7 +89,7 @@ class HomeViewModel
         fun playMusic(mediaItem: MediaItem) {
             val mediaItems = _state.value.mediaItemPair.second
 
-            browser?.run {
+            browserFuture.getOrNull()?.run {
                 setMediaItems(
                     mediaItems,
                     mediaItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
@@ -110,12 +98,6 @@ class HomeViewModel
                 prepare()
                 play()
             }
-        }
-
-        override fun onCleared() {
-            super.onCleared()
-            MediaBrowser.releaseFuture(browserFuture)
-            browser?.release()
         }
     }
 

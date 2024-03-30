@@ -11,13 +11,15 @@ interface PlayerStateRepository {
 
     val playerState: PlayerState
 
+    val playingIndexInQueue: Int
+
+    val playingMediaStateFlow: StateFlow<MediaItem?>
+
+    val playListQueueStateFlow: StateFlow<List<MediaItem>>
+
     fun observeIsShuffle(): StateFlow<Boolean>
 
     fun observePlayMode(): StateFlow<PlayMode>
 
     fun observePlayerState(): Flow<PlayerState>
-
-    fun observePlayListQueue(): Flow<List<MediaItem>>
-
-    fun observePlayingMedia(): Flow<MediaItem?>
 }

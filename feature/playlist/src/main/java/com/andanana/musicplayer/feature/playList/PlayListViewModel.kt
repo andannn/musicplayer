@@ -1,23 +1,25 @@
 package com.andanana.musicplayer.feature.playList
 
-import android.app.Application
-import android.content.ComponentName
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
-import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.data.util.getChildrenById
+import com.andanana.musicplayer.core.data.util.getOrNull
+import com.andanana.musicplayer.core.data.util.playMediaList
 import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
 import com.andannn.musicplayer.common.drawer.BottomSheetController
 import com.andannn.musicplayer.common.drawer.BottomSheetControllerImpl
+import com.andannn.musicplayer.common.drawer.BottomSheetModel
+import com.andannn.musicplayer.common.drawer.SheetItem
 import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.guava.await
@@ -47,29 +49,18 @@ sealed interface PlayListEvent {
 class PlayListViewModel
     @Inject
     constructor(
-        application: Application,
         savedStateHandle: SavedStateHandle,
         private val playerMonitor: PlayerStateRepository,
-        private val bottomSheetController: BottomSheetController = BottomSheetControllerImpl(),
-    ) : ViewModel(), BottomSheetController by bottomSheetController {
+        private val browserFuture: ListenableFuture<MediaBrowser>,
+    ) : ViewModel(), BottomSheetController {
         private val mediaId =
             savedStateHandle.get<String>(MEDIA_ID) ?: ""
 
+        private val bottomSheetController: BottomSheetController =
+            BottomSheetControllerImpl(viewModelScope, browserFuture, playerMonitor)
+
         private val _state = MutableStateFlow(PlayListUiState())
         val state = _state.asStateFlow()
-
-        private var browserFuture: ListenableFuture<MediaBrowser> =
-            MediaBrowser.Builder(
-                application,
-                SessionToken(
-                    application,
-                    ComponentName(application, "com.andanana.musicplayer.PlayerService"),
-                ),
-            )
-                .buildAsync()
-
-        private val browser: MediaBrowser?
-            get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
 
         init {
             viewModelScope.launch {
@@ -83,12 +74,7 @@ class PlayListViewModel
                         ?: return@launch
 
                 val playableItems =
-                    browser.getChildren(
-                        mediaId,
-                        0,
-                        Int.MAX_VALUE,
-                        null,
-                    ).await().value!!.toList().run {
+                    browser.getChildrenById(mediaId).run {
                         sortedBy {
                             it.mediaMetadata.trackNumber
                         }
@@ -106,13 +92,20 @@ class PlayListViewModel
             }
 
             viewModelScope.launch {
-                playerMonitor.observePlayingMedia().collect { playingMediaItem ->
+                playerMonitor.playingMediaStateFlow.collect { playingMediaItem ->
                     _state.update {
                         it.copy(playingMediaItem = playingMediaItem)
                     }
                 }
             }
         }
+
+        override val bottomSheetModel: StateFlow<BottomSheetModel?>
+            get() = bottomSheetController.bottomSheetModel
+
+        override fun onRequestShowSheet(mediaItem: MediaItem) = bottomSheetController.onRequestShowSheet(mediaItem)
+
+        override fun onDismissRequest(item: SheetItem?) = bottomSheetController.onDismissRequest(item)
 
         fun onEvent(event: PlayListEvent) {
             when (event) {
@@ -139,24 +132,10 @@ class PlayListViewModel
             index: Int,
             isShuffle: Boolean = false,
         ) {
-            browser?.run {
-                setMediaItems(
-                    mediaItems,
-                    // startIndex=
-                    index,
-                    // startPositionMs=
-                    C.TIME_UNSET,
-                )
+            browserFuture.getOrNull()?.run {
                 shuffleModeEnabled = isShuffle
-                prepare()
-                play()
+                playMediaList(mediaItems, index)
             }
-        }
-
-        override fun onCleared() {
-            super.onCleared()
-            MediaBrowser.releaseFuture(browserFuture)
-            browser?.release()
         }
     }
 

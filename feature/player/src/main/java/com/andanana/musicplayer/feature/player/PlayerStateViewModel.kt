@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.session.MediaBrowser
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.data.util.getOrNull
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayerState
 import com.andanana.musicplayer.core.model.toExoPlayerMode
@@ -43,10 +44,7 @@ class PlayerStateViewModel
         private val browserFuture: ListenableFuture<MediaBrowser>,
         private val playerMonitor: PlayerStateRepository,
     ) : ViewModel() {
-        private val browser: MediaBrowser?
-            get() = if (browserFuture.isDone && !browserFuture.isCancelled) browserFuture.get() else null
-
-        private val interactingMusicItem = playerMonitor.observePlayingMedia()
+        private val interactingMusicItem = playerMonitor.playingMediaStateFlow
 
         private val playModeFlow = playerMonitor.observePlayMode()
 
@@ -67,7 +65,7 @@ class PlayerStateViewModel
                 if (interactingMusicItem == null) {
                     PlayerUiState.Inactive
                 } else {
-                    val duration = browser?.duration ?: 0L
+                    val duration = browserFuture.getOrNull()?.duration ?: 0L
                     PlayerUiState.Active(
                         mediaItem = interactingMusicItem,
                         duration = duration,
@@ -116,14 +114,14 @@ class PlayerStateViewModel
                 PlayerUiEvent.OnFavoriteButtonClick -> {}
                 PlayerUiEvent.OnPlayModeButtonClick -> {
                     val currentPlayMode = playModeFlow.value
-                    browser?.repeatMode = currentPlayMode.next().toExoPlayerMode()
+                    browserFuture.getOrNull()?.repeatMode = currentPlayMode.next().toExoPlayerMode()
                 }
 
                 PlayerUiEvent.OnPlayButtonClick -> togglePlayState()
                 PlayerUiEvent.OnPreviousButtonClick -> previous()
                 PlayerUiEvent.OnNextButtonClick -> next()
                 PlayerUiEvent.OnShuffleButtonClick -> {
-                    browser?.shuffleModeEnabled = !isShuffleFlow.value
+                    browserFuture.getOrNull()?.shuffleModeEnabled = !isShuffleFlow.value
                 }
 
                 PlayerUiEvent.OnOptionIconClick -> Unit
@@ -142,23 +140,23 @@ class PlayerStateViewModel
             if (state is PlayerUiState.Active) {
                 playerUiStateFlow.value.let {
                     when (state.state) {
-                        PlayState.PAUSED -> browser?.play()
-                        PlayState.PLAYING -> browser?.pause()
+                        PlayState.PAUSED -> browserFuture.getOrNull()?.play()
+                        PlayState.PLAYING -> browserFuture.getOrNull()?.pause()
                     }
                 }
             }
         }
 
         fun next() {
-            browser?.seekToNext()
+            browserFuture.getOrNull()?.seekToNext()
         }
 
         private fun previous() {
-            browser?.seekToPrevious()
+            browserFuture.getOrNull()?.seekToPrevious()
         }
 
         private fun seekToTime(time: Long) {
-            browser?.seekTo(time)
+            browserFuture.getOrNull()?.seekTo(time)
         }
     }
 
