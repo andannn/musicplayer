@@ -19,6 +19,7 @@ import com.andanana.musicplayer.feature.player.PlayerStateViewModel
 import com.andanana.musicplayer.feature.player.PlayerUiState
 import com.andanana.musicplayer.feature.player.widget.PlayerShrinkHeight
 import com.andanana.musicplayer.navigation.SmpNavHost
+import com.andannn.musicplayer.common.drawer.MediaBottomSheet
 
 @Composable
 fun SimpleMusicApp(
@@ -27,6 +28,7 @@ fun SimpleMusicApp(
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         val state by playerStateViewModel.playerUiStateFlow.collectAsState()
+        val bottomSheetModel by playerStateViewModel.bottomSheetModel.collectAsState()
 
         SmpNavHostContainer(
             modifier = Modifier.fillMaxSize(),
@@ -37,6 +39,13 @@ fun SimpleMusicApp(
                 state = state as PlayerUiState.Active,
                 onEvent = playerStateViewModel::onEvent,
             )
+
+            if (bottomSheetModel != null) {
+                MediaBottomSheet(
+                    bottomSheet = bottomSheetModel!!.bottomSheet,
+                    onDismissRequest = playerStateViewModel::onDismissRequest,
+                )
+            }
         }
     }
 }
