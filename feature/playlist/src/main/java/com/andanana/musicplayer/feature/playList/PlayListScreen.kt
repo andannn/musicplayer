@@ -85,7 +85,9 @@ fun PlayListScreen(
     if (bottomSheetModel != null) {
         MediaBottomSheet(
             bottomSheet = bottomSheetModel!!.bottomSheet,
-            onDismissRequest = viewModel::onDismissRequest,
+            onDismissRequest = {
+                viewModel.onEvent(PlayListEvent.OnDismissRequest(it))
+            },
         )
     }
 }
@@ -244,6 +246,9 @@ private fun AlbumPlayListContent(
                                 ),
                             )
                         },
+                        onOptionClick = {
+                            onEvent(PlayListEvent.OnHeaderOptionClick)
+                        }
                     )
                 }
             }

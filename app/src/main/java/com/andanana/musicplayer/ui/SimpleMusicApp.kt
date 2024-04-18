@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.andanana.musicplayer.feature.player.PlayerSheet
 import com.andanana.musicplayer.feature.player.PlayerStateViewModel
+import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import com.andanana.musicplayer.feature.player.PlayerUiState
 import com.andanana.musicplayer.feature.player.widget.PlayerShrinkHeight
 import com.andanana.musicplayer.navigation.SmpNavHost
@@ -43,7 +44,9 @@ fun SimpleMusicApp(
             if (bottomSheetModel != null) {
                 MediaBottomSheet(
                     bottomSheet = bottomSheetModel!!.bottomSheet,
-                    onDismissRequest = playerStateViewModel::onDismissRequest,
+                    onDismissRequest = {
+                        playerStateViewModel.onEvent(PlayerUiEvent.OnDismissDrawerRequest(it))
+                    },
                 )
             }
         }

@@ -114,7 +114,7 @@ fun BottomPlayQueueSheet(
                     LazyColumn {
                         items(
                             items = playListQueue,
-                            key = { it.mediaId },
+                            key = { it.hashCode() },
                         ) { item ->
                             MusicCard(
                                 modifier =

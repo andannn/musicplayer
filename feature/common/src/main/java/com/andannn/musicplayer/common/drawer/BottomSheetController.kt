@@ -23,24 +23,18 @@ data class BottomSheetModel(
     val bottomSheet: BottomSheet,
 )
 
-data class MediaOptionResult(
-    val source: MediaItem,
-    val item: SheetItem,
-)
-
 interface BottomSheetController {
     val bottomSheetModel: StateFlow<BottomSheetModel?>
 
     fun onRequestShowSheet(mediaItem: MediaItem)
 
-    fun onDismissRequest(item: SheetItem?)
+    fun CoroutineScope.onDismissRequest(item: SheetItem?)
 }
 
-class BottomSheetControllerImpl(
-    private val coroutineScope: CoroutineScope,
+internal class BottomSheetControllerImpl(
     private val browserFuture: ListenableFuture<MediaBrowser>,
     private val playerMoRepository: PlayerStateRepository,
-) : BottomSheetController, CoroutineScope by coroutineScope {
+) : BottomSheetController {
     override val bottomSheetModel: StateFlow<BottomSheetModel?>
         get() = _bottomSheetModelFlow.asStateFlow()
 
@@ -65,7 +59,7 @@ class BottomSheetControllerImpl(
         }
     }
 
-    override fun onDismissRequest(item: SheetItem?) {
+    override fun CoroutineScope.onDismissRequest(item: SheetItem?) {
         if (item != null) {
             when (item) {
                 SheetItem.ADD_TO_FAVORITE -> TODO()
@@ -80,28 +74,26 @@ class BottomSheetControllerImpl(
         _bottomSheetModelFlow.value = null
     }
 
-    private fun onPlayNextClick(source: MediaItem) {
-        launch {
-            with(browserFuture.await()) {
-                if (!availableCommands.contains(COMMAND_CHANGE_MEDIA_ITEMS)) {
-                    Log.d(TAG, "MediaBrowser do not contains COMMAND_CHANGE_MEDIA_ITEMS")
-                    return@launch
-                }
+    private fun CoroutineScope.onPlayNextClick(source: MediaItem) = launch {
+        with(browserFuture.await()) {
+            if (!availableCommands.contains(COMMAND_CHANGE_MEDIA_ITEMS)) {
+                Log.d(TAG, "MediaBrowser do not contains COMMAND_CHANGE_MEDIA_ITEMS")
+                return@launch
+            }
 
-                val havePlayingQueue = playerMoRepository.playListQueueStateFlow.value.isNotEmpty()
+            val havePlayingQueue = playerMoRepository.playListQueueStateFlow.value.isNotEmpty()
 
-                val items =
-                    if (source.mediaMetadata.isBrowsable == true) {
-                        getChildrenById(source.mediaId)
-                    } else {
-                        listOf(source)
-                    }
-
-                if (havePlayingQueue) {
-                    addMediaItems(playerMoRepository.playingIndexInQueue + 1, items)
+            val items =
+                if (source.mediaMetadata.isBrowsable == true) {
+                    getChildrenById(source.mediaId)
                 } else {
-                    playMediaListFromStart(items)
+                    listOf(source)
                 }
+
+            if (havePlayingQueue) {
+                addMediaItems(playerMoRepository.playingIndexInQueue + 1, items)
+            } else {
+                playMediaListFromStart(items)
             }
         }
     }
