@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.core.designsystem.util.verticalGradientScrim
@@ -62,6 +63,8 @@ val BottomSheetDragAreaHeight = 90.dp
 fun FlexiblePlayerLayout(
     layoutState: PlayerLayoutState,
     coverUri: String,
+    activeMediaItem: MediaItem,
+    playListQueue: List<MediaItem>,
     modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     isShuffle: Boolean = false,
@@ -98,7 +101,8 @@ fun FlexiblePlayerLayout(
 
         BoxWithConstraints(
             modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                     .then(backGroundModifier),
         ) {
@@ -178,7 +182,7 @@ fun FlexiblePlayerLayout(
                         },
                 enabled = fadeInAreaAlpha == 1f,
                 onClick = {
-                    onEvent(PlayerUiEvent.OnOptionIconClick)
+                    onEvent(PlayerUiEvent.OnOptionIconClick(activeMediaItem))
                 },
             ) {
                 Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "Menu")
@@ -230,6 +234,9 @@ fun FlexiblePlayerLayout(
                 BottomPlayQueueSheet(
                     sheetMaxHeightDp = with(LocalDensity.current) { layoutState.sheetHeight.toDp() },
                     state = layoutState.sheetState,
+                    activeMediaItem = activeMediaItem,
+                    playListQueue = playListQueue,
+                    onEvent = onEvent,
                 )
             }
 
@@ -271,13 +278,15 @@ private fun FlexiblePlayerLayoutExpandPreview() {
                 statusBarHeight = 83,
             )
         FlexiblePlayerLayout(
-            modifier = Modifier.height(870.dp),
+            layoutState = layoutState,
             coverUri = "",
+            modifier = Modifier.height(870.dp),
             isPlaying = true,
             isFavorite = true,
             title = "Song name",
             artist = "Artist name",
-            layoutState = layoutState,
+            playListQueue = emptyList(),
+            activeMediaItem = MediaItem.EMPTY
         )
     }
 }
@@ -295,11 +304,13 @@ private fun FlexiblePlayerLayoutShrinkPreview() {
                 statusBarHeight = 83,
             )
         FlexiblePlayerLayout(
-            modifier = Modifier.height(70.dp),
+            layoutState = layoutState,
             coverUri = "",
+            modifier = Modifier.height(70.dp),
             title = "Song name",
             artist = "Artist name",
-            layoutState = layoutState,
+            playListQueue = emptyList(),
+            activeMediaItem = MediaItem.EMPTY
         )
     }
 }

@@ -19,6 +19,8 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:player"))
 
+    implementation(libs.kotlinx.coroutines.guava)
+
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
 }

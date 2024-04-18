@@ -110,6 +110,8 @@ fun ShrinkablePlayBox(
                 isShuffle = state.isShuffle,
                 isPlaying = state.state == PlayState.PLAYING,
                 isFavorite = state.isFavorite,
+                playListQueue = state.playListQueue,
+                activeMediaItem = state.mediaItem,
                 title = state.mediaItem.mediaMetadata.title.toString(),
                 artist = state.mediaItem.mediaMetadata.artist.toString(),
                 progress = state.progress,

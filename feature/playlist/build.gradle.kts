@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":feature:common"))
 
     implementation(libs.androidx.core.ktx)
 

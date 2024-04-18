@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,17 +35,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.MediaItem
+import androidx.media3.common.util.UnstableApi
+import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPlayQueueSheet(
     sheetMaxHeightDp: Dp,
     state: AnchoredDraggableState<BottomSheetState>,
+    playListQueue: List<MediaItem>,
+    activeMediaItem: MediaItem,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
+    onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
     val shrinkOffset = state.anchors.positionOf(BottomSheetState.Shrink)
     val expandOffset = state.anchors.positionOf(BottomSheetState.Expand)
@@ -75,7 +84,12 @@ fun BottomPlayQueueSheet(
                 .height(sheetMaxHeightDp)
                 .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                 .offset {
-                    IntOffset(0, state.requireOffset().roundToInt())
+                    IntOffset(
+                        0,
+                        state
+                            .requireOffset()
+                            .roundToInt(),
+                    )
                 },
     ) {
         Box {
@@ -99,12 +113,24 @@ fun BottomPlayQueueSheet(
                 ) {
                     LazyColumn {
                         items(
-                            items = listOf(1, 2, 3, 4, 5, 6),
-                            key = { it },
-                        ) {
-                            Text(
-                                modifier = Modifier.fillMaxWidth().height(100.dp),
-                                text = it.toString(),
+                            items = playListQueue,
+                            key = { it.hashCode() },
+                        ) { item ->
+                            MusicCard(
+                                modifier =
+                                    Modifier
+                                        .padding(vertical = 4.dp)
+                                        .animateItemPlacement(),
+                                isActive = item.mediaId == activeMediaItem.mediaId,
+                                albumArtUri = item.mediaMetadata.artworkUri.toString(),
+                                title = item.mediaMetadata.title.toString(),
+                                showTrackNum = false,
+                                artist = item.mediaMetadata.artist.toString(),
+                                trackNum = item.mediaMetadata.trackNumber ?: 0,
+                                onMusicItemClick = {
+                                },
+                                onOptionButtonClick = {
+                                },
                             )
                         }
                     }
@@ -144,7 +170,7 @@ private fun BottomPlayQueueSheetPreview() {
     val state =
         remember {
             AnchoredDraggableState(
-                initialValue = BottomSheetState.Shrink,
+                initialValue = BottomSheetState.Expand,
                 anchors = anchors,
                 positionalThreshold = { with(density) { 26.dp.toPx() } },
                 velocityThreshold = { with(density) { 20.dp.toPx() } },
@@ -155,5 +181,7 @@ private fun BottomPlayQueueSheetPreview() {
     BottomPlayQueueSheet(
         sheetMaxHeightDp = 360.dp,
         state = state,
+        playListQueue = emptyList(),
+        activeMediaItem = MediaItem.EMPTY,
     )
 }

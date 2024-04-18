@@ -3,7 +3,6 @@ package com.andanana.musicplayer.core.player
 import androidx.media3.common.MediaItem
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayerState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerMonitor {
@@ -11,11 +10,13 @@ interface PlayerMonitor {
 
     val playerState: PlayerState
 
-    fun observePlayerState(): Flow<PlayerState>
+    val playingIndexInQueue: Int
 
-    fun observePlayListQueue(): Flow<List<MediaItem>>
+    fun observePlayerState(): StateFlow<PlayerState>
 
-    fun observePlayingMedia(): Flow<MediaItem?>
+    fun observePlayListQueue(): StateFlow<List<MediaItem>>
+
+    fun observePlayingMedia(): StateFlow<MediaItem?>
 
     fun observeIsShuffle(): StateFlow<Boolean>
 

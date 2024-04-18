@@ -13,15 +13,4 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
-
-    @Test
-    fun lambda_equals() {
-        val lambdaA = { string: String ->
-            "stringA" + string
-        }
-        val lambdaB = { string: String ->
-            "stringA" + string
-        }
-        assertEquals(true, lambdaA == lambdaB)
-    }
 }

@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -96,6 +97,10 @@ private fun HomeScreen(
         modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
+                colors =
+                    TopAppBarDefaults.centerAlignedTopAppBarColors().run {
+                        copy(scrolledContainerColor = containerColor)
+                    },
                 title = {
                     Text(text = "Simple music player")
                 },

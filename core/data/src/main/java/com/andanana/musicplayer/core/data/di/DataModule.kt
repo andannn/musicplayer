@@ -16,6 +16,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -32,9 +34,10 @@ interface DataModule {
 }
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityRetainedComponent::class)
 object DataModuleProvider {
     @Provides
+    @ActivityRetainedScoped
     fun providerMusicBrowser(application: Application): ListenableFuture<MediaBrowser> {
         return MediaBrowser.Builder(
             application,

@@ -7,8 +7,8 @@ import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import com.andanana.musicplayer.core.model.PlayMode
 import com.andanana.musicplayer.core.model.PlayerState
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -135,6 +135,7 @@ class PlayerMonitorImpl
 
         init {
             player.addListener(playerListener)
+            player.repeatMode = Player.REPEAT_MODE_ALL
         }
 
         override val currentPositionMs: Long
@@ -143,11 +144,14 @@ class PlayerMonitorImpl
         override val playerState: PlayerState
             get() = playerStateFlow.value
 
-        override fun observePlayerState(): Flow<PlayerState> = playerStateFlow
+        override val playingIndexInQueue: Int
+            get() = playListFlow.value.indexOf(playingMediaItemStateFlow.value)
 
-        override fun observePlayListQueue(): Flow<List<MediaItem>> = playListFlow
+        override fun observePlayerState(): StateFlow<PlayerState> = playerStateFlow
 
-        override fun observePlayingMedia(): Flow<MediaItem?> = playingMediaItemStateFlow
+        override fun observePlayListQueue() = playListFlow
+
+        override fun observePlayingMedia() = playingMediaItemStateFlow
 
         override fun observeIsShuffle() = isShuffleFlow
 

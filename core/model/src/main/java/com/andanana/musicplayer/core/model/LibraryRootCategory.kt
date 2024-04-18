@@ -51,3 +51,16 @@ enum class LibraryRootCategory(
         }
     }
 }
+
+enum class MediaSourceType(
+    private val mediaIdPrefix: String,
+) {
+    MUSIC(PLAYABLE_MEDIA_ITEM_PREFIX),
+    ARTIST(ARTIST_PREFIX),
+    ALBUM(ALBUM_PREFIX),
+    ;
+
+    companion object {
+        fun getMediaSourceType(mediaId: String) = entries.firstOrNull { mediaId.contains(it.mediaIdPrefix) }
+    }
+}
