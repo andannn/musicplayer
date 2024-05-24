@@ -10,8 +10,8 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             compose = true
         }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.findVersion("androidxComposeCompiler").get().toString()
+        with(pluginManager) {
+            apply("org.jetbrains.kotlin.plugin.compose")
         }
 
         dependencies {
