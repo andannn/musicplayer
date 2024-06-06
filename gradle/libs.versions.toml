@@ -76,7 +76,7 @@ protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref 
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3" }
 androidx-media3-session = { group = "androidx.media3", name = "media3-session", version = "media3" }
-skydoves-flexible-bottomsheet-material3 = { group = "com.github.skydoves", name = "flexible-bottomsheet-material3", version = "0.1.2" }
+skydoves-flexible-bottomsheet-material3 = { group = "com.github.skydoves", name = "flexible-bottomsheet-material3", version = "0.1.3" }
 
 # dependecy in build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
