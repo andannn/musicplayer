@@ -1,8 +1,8 @@
 package com.andanana.musicplayer.core.datastore
 
 import androidx.datastore.core.DataStore
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.UserSetting
+import com.andanana.musicplayer.core.domain.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.UserSetting
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 

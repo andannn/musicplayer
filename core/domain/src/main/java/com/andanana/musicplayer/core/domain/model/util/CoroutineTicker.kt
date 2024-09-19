@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.model.util
+package com.andanana.musicplayer.core.domain.model.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,6 @@
-package com.andanana.musicplayer.core.data.util
+@file:Suppress("UNCHECKED_CAST")
+
+package com.andanana.musicplayer.core.domain.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

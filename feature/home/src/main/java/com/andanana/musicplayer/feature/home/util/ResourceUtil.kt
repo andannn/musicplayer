@@ -1,9 +1,9 @@
 package com.andanana.musicplayer.feature.home.util
 
-import com.andanana.musicplayer.core.model.ALBUM_ID
-import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
-import com.andanana.musicplayer.core.model.ARTIST_ID
-import com.andanana.musicplayer.core.model.MINE_PLAYLIST_ID
+import com.andanana.musicplayer.core.domain.model.ALBUM_ID
+import com.andanana.musicplayer.core.domain.model.ALL_MUSIC_ID
+import com.andanana.musicplayer.core.domain.model.ARTIST_ID
+import com.andanana.musicplayer.core.domain.model.MINE_PLAYLIST_ID
 import com.andanana.musicplayer.feature.home.R
 
 object ResourceUtil {

@@ -1,7 +1,7 @@
-package com.andanana.musicplayer.core.data.repository
+package com.andanana.musicplayer.core.domain.repository
 
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.UserSetting
+import com.andanana.musicplayer.core.domain.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.UserSetting
 import kotlinx.coroutines.flow.Flow
 
 interface SmpPreferenceRepository {
