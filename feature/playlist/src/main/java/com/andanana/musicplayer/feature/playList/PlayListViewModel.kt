@@ -3,11 +3,11 @@ package com.andanana.musicplayer.feature.playList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.data.model.AlbumItem
-import com.andanana.musicplayer.core.data.model.AppMediaItem
-import com.andanana.musicplayer.core.data.model.AudioItem
-import com.andanana.musicplayer.core.data.repository.MediaControllerRepository
-import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.domain.model.AlbumItemModel
+import com.andanana.musicplayer.core.domain.model.MediaItemModel
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
+import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
+import com.andanana.musicplayer.core.domain.repository.PlayerStateRepository
 import com.andanana.musicplayer.feature.playList.navigation.ID
 import com.andannn.musicplayer.common.drawer.BottomSheetController
 import com.andannn.musicplayer.common.drawer.BottomSheetModel
@@ -30,7 +30,7 @@ sealed interface PlayListEvent {
     data object OnShuffleButtonClick : PlayListEvent
 
     data class OnOptionClick(
-        val mediaItem: AppMediaItem,
+        val mediaItem: MediaItemModel,
     ) : PlayListEvent
 
     data object OnHeaderOptionClick : PlayListEvent
@@ -110,7 +110,7 @@ constructor(
     }
 
     private fun setPlayListAndStartIndex(
-        mediaItems: List<AudioItem>,
+        mediaItems: List<AudioItemModel>,
         index: Int,
         isShuffle: Boolean = false,
     ) {
@@ -119,7 +119,7 @@ constructor(
 }
 
 data class PlayListUiState(
-    val album: AlbumItem = AlbumItem.DEFAULT,
-    val audioList: List<AudioItem> = emptyList(),
-    val playingMediaItem: AudioItem? = null,
+    val album: AlbumItemModel = AlbumItemModel.DEFAULT,
+    val audioList: List<AudioItemModel> = emptyList(),
+    val playingMediaItem: AudioItemModel? = null,
 )

@@ -43,11 +43,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.andanana.musicplayer.core.data.model.AudioItem
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
-import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andannn.musicplayer.common.drawer.MediaBottomSheet
 
 @Composable
@@ -120,7 +119,7 @@ fun CommonPlayListContent(
             items(
                 items = uiState.audioList,
                 key = { item -> item.id },
-            ) { item: AudioItem ->
+            ) { item: AudioItemModel ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
                     isActive = uiState.playingMediaItem?.id == item.id,

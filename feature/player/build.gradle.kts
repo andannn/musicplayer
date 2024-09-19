@@ -14,8 +14,7 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
+    implementation(project(":core:domain"))
     implementation(project(":feature:common"))
 
     implementation(libs.kotlinx.coroutines.guava)
@@ -30,7 +29,4 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
-
-    // Media3
-    implementation(libs.androidx.media3.session)
 }

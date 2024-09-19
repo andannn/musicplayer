@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.model
+package com.andanana.musicplayer.core.domain.model
 
 sealed interface PlayerState {
     data object Idle : PlayerState

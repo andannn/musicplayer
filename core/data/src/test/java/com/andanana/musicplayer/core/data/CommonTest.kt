@@ -1,6 +1,6 @@
 package com.andanana.musicplayer.core.data
 
-import com.andanana.musicplayer.core.model.LibraryRootCategory
+import com.andanana.musicplayer.core.domain.model.LibraryRootCategory
 import org.junit.Assert.*
 import org.junit.Test
 

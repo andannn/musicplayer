@@ -16,12 +16,11 @@ android {
 dependencies {
     implementation(project(":core:mediastore"))
     implementation(project(":core:datastore"))
-    implementation(project(":core:model"))
+    implementation(project(":core:domain"))
     implementation(project(":core:player"))
 
     implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.session)
 }

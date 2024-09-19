@@ -33,9 +33,7 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
-    implementation(project(":core:player"))
+    implementation(project(":core:domain"))
 
     implementation(project(":feature:common"))
     implementation(project(":feature:home"))
@@ -55,10 +53,6 @@ dependencies {
 
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material)
-
-    // Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

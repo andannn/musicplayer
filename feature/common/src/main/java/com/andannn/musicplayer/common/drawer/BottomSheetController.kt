@@ -1,46 +1,40 @@
 package com.andannn.musicplayer.common.drawer
 
-import android.util.Log
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player.COMMAND_CHANGE_MEDIA_ITEMS
-import androidx.media3.session.MediaBrowser
-import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
-import com.andanana.musicplayer.core.data.util.getChildrenById
-import com.andanana.musicplayer.core.data.util.playMediaListFromStart
-import com.andanana.musicplayer.core.model.MediaSourceType
-import com.google.common.util.concurrent.ListenableFuture
+import com.andanana.musicplayer.core.domain.model.AlbumItemModel
+import com.andanana.musicplayer.core.domain.model.ArtistItemModel
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
+import com.andanana.musicplayer.core.domain.model.MediaItemModel
+import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
+import com.andanana.musicplayer.core.domain.repository.PlayerStateRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 
-private const val TAG = "BottomSheetController"
-
 data class BottomSheetModel(
-    val source: MediaItem,
+    val source: MediaItemModel,
     val bottomSheet: BottomSheet,
 )
 
 interface BottomSheetController {
     val bottomSheetModel: StateFlow<BottomSheetModel?>
 
-    fun onRequestShowSheet(mediaItem: MediaItem)
+    fun onRequestShowSheet(mediaItem: MediaItemModel)
 
     fun CoroutineScope.onDismissRequest(item: SheetItem?)
 }
 
 internal class BottomSheetControllerImpl(
-    private val browserFuture: ListenableFuture<MediaBrowser>,
-    private val playerMoRepository: PlayerStateRepository,
+    private val mediaControllerRepository: MediaControllerRepository,
+    private val playerStateRepository: PlayerStateRepository,
 ) : BottomSheetController {
     override val bottomSheetModel: StateFlow<BottomSheetModel?>
         get() = _bottomSheetModelFlow.asStateFlow()
 
     private val _bottomSheetModelFlow = MutableStateFlow<BottomSheetModel?>(null)
 
-    override fun onRequestShowSheet(mediaItem: MediaItem) {
+    override fun onRequestShowSheet(mediaItem: MediaItemModel) {
         _bottomSheetModelFlow.value =
             BottomSheetModel(
                 source = mediaItem,
@@ -48,14 +42,11 @@ internal class BottomSheetControllerImpl(
             )
     }
 
-    private fun buildDrawer(mediaItem: MediaItem): BottomSheet {
-        val source =
-            MediaSourceType.getMediaSourceType(mediaItem.mediaId)
-                ?: error("no need to show drawer for ${mediaItem.mediaId}")
-        return when (source) {
-            MediaSourceType.MUSIC -> BottomSheet.MusicBottomSheet
-            MediaSourceType.ARTIST -> BottomSheet.ArtistBottomSheet
-            MediaSourceType.ALBUM -> BottomSheet.AlbumBottomSheet
+    private fun buildDrawer(mediaItem: MediaItemModel): BottomSheet {
+        return when (mediaItem) {
+            is AlbumItemModel -> BottomSheet.AlbumBottomSheet
+            is ArtistItemModel -> BottomSheet.ArtistBottomSheet
+            is AudioItemModel -> BottomSheet.MusicBottomSheet
         }
     }
 
@@ -74,27 +65,27 @@ internal class BottomSheetControllerImpl(
         _bottomSheetModelFlow.value = null
     }
 
-    private fun CoroutineScope.onPlayNextClick(source: MediaItem) = launch {
-        with(browserFuture.await()) {
-            if (!availableCommands.contains(COMMAND_CHANGE_MEDIA_ITEMS)) {
-                Log.d(TAG, "MediaBrowser do not contains COMMAND_CHANGE_MEDIA_ITEMS")
-                return@launch
-            }
-
-            val havePlayingQueue = playerMoRepository.playListQueueStateFlow.value.isNotEmpty()
-
-            val items =
-                if (source.mediaMetadata.isBrowsable == true) {
-                    getChildrenById(source.mediaId)
-                } else {
-                    listOf(source)
-                }
-
-            if (havePlayingQueue) {
-                addMediaItems(playerMoRepository.playingIndexInQueue + 1, items)
-            } else {
-                playMediaListFromStart(items)
-            }
-        }
+    private fun CoroutineScope.onPlayNextClick(source: MediaItemModel) = launch {
+//        with(browserFuture.await()) {
+//            if (!availableCommands.contains(COMMAND_CHANGE_MEDIA_ITEMS)) {
+//                Log.d(TAG, "MediaBrowser do not contains COMMAND_CHANGE_MEDIA_ITEMS")
+//                return@launch
+//            }
+//
+//            val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
+//
+//            val items =
+//                if (source.mediaMetadata.isBrowsable == true) {
+//                    getChildrenById(source.mediaId)
+//                } else {
+//                    listOf(source)
+//                }
+//
+//            if (havePlayingQueue) {
+//                addMediaItems(playerStateRepository.playingIndexInQueue + 1, items)
+//            } else {
+//                playMediaListFromStart(items)
+//            }
+//        }
     }
 }

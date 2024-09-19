@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.andanana.musicplayer.core.designsystem.component.SmpMainIconButton
 import com.andanana.musicplayer.core.designsystem.component.SmpSubIconButton
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import com.andanana.musicplayer.feature.player.util.getIcon
 

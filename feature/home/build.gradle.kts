@@ -14,8 +14,7 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
+    implementation(project(":core:domain"))
 
     implementation(libs.androidx.core.ktx)
 
@@ -25,10 +24,4 @@ dependencies {
     // Navigation
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
-
-    // Media3
-    implementation(libs.androidx.media3.common)
-    implementation(libs.androidx.media3.session)
-
-    implementation(libs.kotlinx.coroutines.guava)
 }

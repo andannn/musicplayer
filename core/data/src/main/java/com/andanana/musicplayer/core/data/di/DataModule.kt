@@ -2,11 +2,11 @@ package com.andanana.musicplayer.core.data.di
 
 import android.app.Application
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
-import com.andanana.musicplayer.core.data.repository.MediaControllerRepository
+import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
 import com.andanana.musicplayer.core.data.repository.MediaControllerRepositoryImpl
-import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.domain.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepositoryImpl
-import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepository
+import com.andanana.musicplayer.core.domain.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepositoryImpl
 import dagger.Binds
 import dagger.Module
