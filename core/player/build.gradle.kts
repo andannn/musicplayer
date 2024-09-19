@@ -13,6 +13,9 @@ android {
 
 dependencies {
     implementation(project(":core:model"))
+    implementation(project(":core:mediastore"))
+
+    implementation(libs.kotlinx.coroutines.guava)
 
     // Media3
     implementation(libs.androidx.media3.exoplayer)

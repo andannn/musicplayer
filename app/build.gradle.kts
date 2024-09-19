@@ -35,6 +35,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
+    implementation(project(":core:player"))
 
     implementation(project(":feature:common"))
     implementation(project(":feature:home"))
@@ -42,8 +43,6 @@ dependencies {
     implementation(project(":feature:playlist"))
 
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.androidx.core.splashscreen)
 

@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.data.repository
+package com.andanana.musicplayer.core.player
 
 import android.net.Uri
 import android.provider.MediaStore
@@ -9,7 +9,6 @@ import com.andanana.musicplayer.core.data.data.MediaStoreSource
 import com.andanana.musicplayer.core.data.model.AlbumData
 import com.andanana.musicplayer.core.data.model.ArtistData
 import com.andanana.musicplayer.core.data.model.AudioData
-import com.andanana.musicplayer.core.data.util.buildMediaItem
 import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andanana.musicplayer.core.model.PLAYABLE_MEDIA_ITEM_PREFIX
 import com.andanana.musicplayer.core.model.ROOT_ID
@@ -17,11 +16,11 @@ import javax.inject.Inject
 
 private const val TAG = "MusicRepositoryImpl"
 
-class MusicRepositoryImpl
+class MediaLibrarySourceImpl
     @Inject
     constructor(
         private val mediaStoreSource: MediaStoreSource,
-    ) : MusicRepository {
+    ) : MediaLibrarySource {
         override fun getLibraryRoot(): MediaItem {
             return buildMediaItem(
                 title = "Root Folder",

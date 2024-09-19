@@ -43,8 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.andanana.musicplayer.core.data.util.buildMediaItem
-import com.andanana.musicplayer.core.data.util.isSameDatasource
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
@@ -125,7 +123,7 @@ fun CommonPlayListContent(
             ) { item ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
-                    isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
+                    isActive = uiState.playingMediaItem?.mediaId == item.mediaId,
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
                     showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
@@ -259,7 +257,7 @@ private fun AlbumPlayListContent(
             ) { item ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 14.dp),
-                    isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
+                    isActive = uiState.playingMediaItem?.mediaId == (item.mediaId),
                     albumArtUri = item.mediaMetadata.artworkUri.toString(),
                     title = item.mediaMetadata.title.toString(),
                     showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
@@ -340,24 +338,24 @@ private fun CustomAppTopBar(
 @Preview
 @Composable
 private fun PlayListScreenContentPreview() {
-    MusicPlayerTheme {
-        AlbumPlayListContent(
-            uiState =
-                PlayListUiState(
-                    title = "Title",
-                    trackCount = 12,
-                    musicItems =
-                        listOf(
-                            buildMediaItem(
-                                title = "test song A",
-                                mediaId = "AAA",
-                                isPlayable = true,
-                                isBrowsable = false,
-                                mediaType = 0,
-                            ),
-                        ),
-                ),
-            onBackPressed = {},
-        )
-    }
+//    MusicPlayerTheme {
+//        AlbumPlayListContent(
+//            uiState =
+//                PlayListUiState(
+//                    title = "Title",
+//                    trackCount = 12,
+//                    musicItems =
+//                        listOf(
+//                            com.andanana.musicplayer.core.player.buildMediaItem(
+//                                title = "test song A",
+//                                mediaId = "AAA",
+//                                isPlayable = true,
+//                                isBrowsable = false,
+//                                mediaType = 0,
+//                            ),
+//                        ),
+//                ),
+//            onBackPressed = {},
+//        )
+//    }
 }

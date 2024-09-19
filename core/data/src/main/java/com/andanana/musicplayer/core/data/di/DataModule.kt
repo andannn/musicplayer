@@ -5,8 +5,6 @@ import android.content.ComponentName
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
-import com.andanana.musicplayer.core.data.repository.MusicRepository
-import com.andanana.musicplayer.core.data.repository.MusicRepositoryImpl
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepositoryImpl
 import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepository
@@ -23,8 +21,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 interface DataModule {
-    @Binds
-    fun bindsMusicRepository(musicRepository: MusicRepositoryImpl): MusicRepository
 
     @Binds
     fun bindsPlayerStateRepository(musicRepository: PlayerStateRepositoryImpl): PlayerStateRepository
@@ -43,7 +39,7 @@ object DataModuleProvider {
             application,
             SessionToken(
                 application,
-                ComponentName(application, "com.andanana.musicplayer.PlayerService"),
+                ComponentName(application, "com.andanana.musicplayer.core.player.PlayerService"),
             ),
         )
             .buildAsync()

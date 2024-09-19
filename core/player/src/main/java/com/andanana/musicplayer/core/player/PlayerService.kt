@@ -1,4 +1,4 @@
-package com.andanana.musicplayer
+package com.andanana.musicplayer.core.player
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -7,7 +7,6 @@ import androidx.media3.common.Player
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
-import com.andanana.musicplayer.core.data.repository.MusicRepository
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -19,15 +18,13 @@ import kotlinx.coroutines.guava.future
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-private const val TAG = "PlayerService"
-
 @AndroidEntryPoint
 class PlayerService : MediaLibraryService(), CoroutineScope {
     @Inject
     lateinit var player: Player
 
     @Inject
-    lateinit var musicRepository: MusicRepository
+    lateinit var mediaLibrarySource: MediaLibrarySource
 
     private lateinit var mediaLibrarySession: MediaLibrarySession
 
@@ -61,7 +58,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
         ): ListenableFuture<LibraryResult<MediaItem>> =
             future {
                 LibraryResult.ofItem(
-                    musicRepository.getLibraryRoot(),
+                    mediaLibrarySource.getLibraryRoot(),
                     params,
                 )
             }
@@ -76,7 +73,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> =
             future {
                 LibraryResult.ofItemList(
-                    musicRepository.getChildren(parentId),
+                    mediaLibrarySource.getChildren(parentId),
                     params,
                 )
             }
@@ -87,7 +84,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             mediaId: String,
         ): ListenableFuture<LibraryResult<MediaItem>> =
             future {
-                musicRepository.getMediaItem(mediaId)?.let {
+                mediaLibrarySource.getMediaItem(mediaId)?.let {
                     LibraryResult.ofItem(it, null)
                 } ?: LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED)
             }
@@ -119,7 +116,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
         return PendingIntent.getActivity(
             this,
             0,
-            Intent(this, MainActivity::class.java),
+            Intent(this, Class.forName("com.andanana.musicplayer.MainActivity")),
             immutableFlag or PendingIntent.FLAG_UPDATE_CURRENT,
         )
     }

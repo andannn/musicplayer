@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.data.util
+package com.andanana.musicplayer.core.player
 
 import android.net.Uri
 import androidx.media3.common.MediaItem

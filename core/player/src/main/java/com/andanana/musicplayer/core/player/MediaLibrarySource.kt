@@ -1,8 +1,8 @@
-package com.andanana.musicplayer.core.data.repository
+package com.andanana.musicplayer.core.player
 
 import androidx.media3.common.MediaItem
 
-interface MusicRepository {
+interface MediaLibrarySource {
 
     fun getLibraryRoot(): MediaItem
 

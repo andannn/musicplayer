@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.andanana.musicplayer.core.player.MediaLibrarySource
+import com.andanana.musicplayer.core.player.MediaLibrarySourceImpl
 import com.andanana.musicplayer.core.player.PlayerMonitor
 import com.andanana.musicplayer.core.player.PlayerMonitorImpl
 import dagger.Binds
@@ -29,6 +31,9 @@ class PlayerModule {
 @Module
 @InstallIn(SingletonComponent::class)
 interface PlayerBinds {
+    @Binds
+    fun bindsMusicRepository(musicRepository: MediaLibrarySourceImpl): MediaLibrarySource
+
     @Binds
     fun bindsPlayerRepository(playerRepositoryImpl: PlayerMonitorImpl): PlayerMonitor
 }
