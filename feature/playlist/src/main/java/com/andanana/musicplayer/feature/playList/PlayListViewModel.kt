@@ -44,7 +44,7 @@ class PlayListViewModel
 @Inject
 constructor(
     savedStateHandle: SavedStateHandle,
-    private val playerMonitor: PlayerStateRepository,
+    private val playerStateRepository: PlayerStateRepository,
     private val mediaControllerRepository: MediaControllerRepository,
     private val bottomSheetController: BottomSheetController,
 ) : ViewModel() {
@@ -68,10 +68,10 @@ constructor(
         }
 
         viewModelScope.launch {
-            playerMonitor.playingMediaStateFlow.collect { playingMediaItem ->
-//                _state.update {
-//                    it.copy(playingMediaItem = playingMediaItem)
-//                }
+            playerStateRepository.playingMediaStateFlow.collect { playingMediaItem ->
+                _state.update {
+                    it.copy(playingMediaItem = playingMediaItem)
+                }
             }
         }
     }
@@ -94,7 +94,7 @@ constructor(
             }
 
             is PlayListEvent.OnOptionClick -> {
-//                bottomSheetController.onRequestShowSheet(event.mediaItem)
+                bottomSheetController.onRequestShowSheet(event.mediaItem)
             }
 
             is PlayListEvent.OnDismissRequest -> {
@@ -104,7 +104,7 @@ constructor(
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
-//                bottomSheetController.onRequestShowSheet(state.value.parentItem)
+                bottomSheetController.onRequestShowSheet(state.value.album)
             }
         }
     }

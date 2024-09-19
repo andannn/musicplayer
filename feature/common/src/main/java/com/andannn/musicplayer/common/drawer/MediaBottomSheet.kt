@@ -44,7 +44,6 @@ fun MediaBottomSheet(
 
     ModalBottomSheet(
         sheetState = sheetState,
-        windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         onDismissRequest = {
             onDismissRequest.invoke(null)
         },

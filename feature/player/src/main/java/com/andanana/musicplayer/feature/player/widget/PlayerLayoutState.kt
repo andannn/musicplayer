@@ -1,5 +1,6 @@
 package com.andanana.musicplayer.feature.player.widget
 
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -45,7 +46,8 @@ class PlayerLayoutState(
             anchors = sheetAnchors,
             positionalThreshold = { 300f },
             velocityThreshold = { 400f },
-            animationSpec = spring(),
+            snapAnimationSpec = spring(),
+            decayAnimationSpec = exponentialDecay(),
         )
 
     // 1f when sheet shrink, 0f when sheet fully expanded.
@@ -70,7 +72,8 @@ class PlayerLayoutState(
             anchors = playerExpandHeightAnchors,
             positionalThreshold = { with(density) { 26.dp.toPx() } },
             velocityThreshold = { with(density) { 20.dp.toPx() } },
-            animationSpec = spring(),
+            snapAnimationSpec = spring(),
+            decayAnimationSpec = exponentialDecay(),
         )
 
     val playerExpandFactor by derivedStateOf {
@@ -81,9 +84,9 @@ class PlayerLayoutState(
     }
 
     val playerState: PlayerState by
-        derivedStateOf {
-            playerExpandState.currentValue
-        }
+    derivedStateOf {
+        playerExpandState.currentValue
+    }
 
     fun shrinkPlayerLayout() {
         animaScope.launch {

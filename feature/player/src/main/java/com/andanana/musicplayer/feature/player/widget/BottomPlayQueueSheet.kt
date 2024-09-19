@@ -1,6 +1,7 @@
 package com.andanana.musicplayer.feature.player.widget
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -172,7 +173,8 @@ private fun BottomPlayQueueSheetPreview() {
                 anchors = anchors,
                 positionalThreshold = { with(density) { 26.dp.toPx() } },
                 velocityThreshold = { with(density) { 20.dp.toPx() } },
-                animationSpec = spring(),
+                snapAnimationSpec = spring(),
+                decayAnimationSpec= exponentialDecay(),
             )
         }
 
