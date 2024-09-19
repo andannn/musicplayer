@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.andanana.musicplayer"
-        versionCode = 2
-        versionName = "0.0.1-alpha7"
+        versionCode = 3
+        versionName = "0.0.1-alpha8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
