@@ -7,7 +7,7 @@ import com.andanana.musicplayer.feature.home.HomeRoute
 const val HOME_ROUTE = "home_route"
 
 fun NavGraphBuilder.homeScreen(
-    onNavigateToPlayList: (mediaId: String) -> Unit,
+    onNavigateToPlayList: (id: String) -> Unit,
 ) {
     composable(route = HOME_ROUTE) {
         HomeRoute(

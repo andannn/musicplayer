@@ -7,8 +7,8 @@ const val ALBUM_ID = "[albumID]"
 const val ARTIST_ID = "[artistID]"
 const val MINE_PLAYLIST_ID = "[mine_play_list_ID]"
 
-private const val ALBUM_PREFIX = "album_"
-private const val ARTIST_PREFIX = "artist_"
+const val ALBUM_PREFIX = "album_"
+const val ARTIST_PREFIX = "artist_"
 private const val MINE_PLAYLIST_PREFIX = "playlist_"
 
 const val PLAYABLE_MEDIA_ITEM_PREFIX = "media_item_"

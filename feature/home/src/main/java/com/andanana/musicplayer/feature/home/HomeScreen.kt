@@ -50,11 +50,11 @@ import com.andanana.musicplayer.feature.home.util.ResourceUtil
 fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPlayList: (mediaId: String) -> Unit,
+    onNavigateToPlayList: (id: String) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItem) {
         if (mediaItem.mediaMetadata.isBrowsable == true) {
-            onNavigateToPlayList(mediaItem.mediaId)
+            onNavigateToPlayList("83895728025839124")
         } else {
             homeViewModel.playMusic(mediaItem)
         }

@@ -1,46 +1,36 @@
 package com.andanana.musicplayer.feature.playList
 
-import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaBrowser
+import com.andanana.musicplayer.core.data.model.AlbumItem
+import com.andanana.musicplayer.core.data.model.AppMediaItem
+import com.andanana.musicplayer.core.data.model.AudioItem
+import com.andanana.musicplayer.core.data.repository.MediaControllerRepository
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
-import com.andanana.musicplayer.core.data.util.getChildrenById
-import com.andanana.musicplayer.core.data.util.getOrNull
-import com.andanana.musicplayer.core.data.util.playMediaList
-import com.andanana.musicplayer.core.model.LibraryRootCategory
-import com.andanana.musicplayer.feature.playList.navigation.MEDIA_ID
+import com.andanana.musicplayer.feature.playList.navigation.ID
 import com.andannn.musicplayer.common.drawer.BottomSheetController
 import com.andannn.musicplayer.common.drawer.BottomSheetModel
 import com.andannn.musicplayer.common.drawer.SheetItem
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface PlayListEvent {
     data class OnStartPlayAtIndex(
-        val mediaItems: List<MediaItem>,
         val index: Int,
     ) : PlayListEvent
 
-    data class OnPlayAllButtonClick(
-        val mediaItems: List<MediaItem>,
-    ) : PlayListEvent
+    data object OnPlayAllButtonClick : PlayListEvent
 
-    data class OnShuffleButtonClick(
-        val mediaItems: List<MediaItem>,
-    ) : PlayListEvent
+    data object OnShuffleButtonClick : PlayListEvent
 
     data class OnOptionClick(
-        val mediaItem: MediaItem,
+        val mediaItem: AppMediaItem,
     ) : PlayListEvent
 
     data object OnHeaderOptionClick : PlayListEvent
@@ -55,50 +45,33 @@ class PlayListViewModel
 constructor(
     savedStateHandle: SavedStateHandle,
     private val playerMonitor: PlayerStateRepository,
-    private val browserFuture: ListenableFuture<MediaBrowser>,
+    private val mediaControllerRepository: MediaControllerRepository,
     private val bottomSheetController: BottomSheetController,
 ) : ViewModel() {
-    private val mediaId =
-        savedStateHandle.get<String>(MEDIA_ID) ?: ""
+    private val id =
+        savedStateHandle.get<String>(ID) ?: ""
 
     private val _state = MutableStateFlow(PlayListUiState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            // wait browser build complete.
-            val browser = browserFuture.await()
-
-            val parentItem = browser.getItem(mediaId).await().value ?: return@launch
-
-            val (type, _) =
-                LibraryRootCategory.getMatchedChildTypeAndId(parentItem.mediaId)
-                    ?: return@launch
-
-            val playableItems =
-                browser.getChildrenById(mediaId).run {
-                    sortedBy {
-                        it.mediaMetadata.trackNumber
-                    }
-                }
-
+            val albumItem =
+                mediaControllerRepository.getAlbumByAlbumId(id.toLong()) ?: error("Not found")
+            val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
             _state.update {
                 it.copy(
-                    playListType = type,
-                    parentItem = parentItem,
-                    title = parentItem.mediaMetadata.title.toString(),
-                    artCoverUri = parentItem.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                    trackCount = parentItem.mediaMetadata.totalTrackCount ?: 0,
-                    musicItems = playableItems,
+                    album = albumItem,
+                    audioList = playableItems,
                 )
             }
         }
 
         viewModelScope.launch {
             playerMonitor.playingMediaStateFlow.collect { playingMediaItem ->
-                _state.update {
-                    it.copy(playingMediaItem = playingMediaItem)
-                }
+//                _state.update {
+//                    it.copy(playingMediaItem = playingMediaItem)
+//                }
             }
         }
     }
@@ -109,19 +82,19 @@ constructor(
     fun onEvent(event: PlayListEvent) {
         when (event) {
             is PlayListEvent.OnStartPlayAtIndex -> {
-                setPlayListAndStartIndex(event.mediaItems, event.index)
+                setPlayListAndStartIndex(_state.value.audioList, event.index)
             }
 
             is PlayListEvent.OnPlayAllButtonClick -> {
-                setPlayListAndStartIndex(event.mediaItems, 0)
+                setPlayListAndStartIndex(_state.value.audioList, 0)
             }
 
             is PlayListEvent.OnShuffleButtonClick -> {
-                setPlayListAndStartIndex(event.mediaItems, 0, isShuffle = true)
+                setPlayListAndStartIndex(_state.value.audioList, 0, isShuffle = true)
             }
 
             is PlayListEvent.OnOptionClick -> {
-                bottomSheetController.onRequestShowSheet(event.mediaItem)
+//                bottomSheetController.onRequestShowSheet(event.mediaItem)
             }
 
             is PlayListEvent.OnDismissRequest -> {
@@ -131,30 +104,22 @@ constructor(
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
-                bottomSheetController.onRequestShowSheet(state.value.parentItem)
+//                bottomSheetController.onRequestShowSheet(state.value.parentItem)
             }
         }
     }
 
     private fun setPlayListAndStartIndex(
-        mediaItems: List<MediaItem>,
+        mediaItems: List<AudioItem>,
         index: Int,
         isShuffle: Boolean = false,
     ) {
-        browserFuture.getOrNull()?.run {
-            shuffleModeEnabled = isShuffle
-            playMediaList(mediaItems, index)
-        }
+        mediaControllerRepository.playMediaList(mediaItems, index, isShuffle)
     }
 }
 
 data class PlayListUiState(
-    val playListType: LibraryRootCategory = LibraryRootCategory.MINE_PLAYLIST,
-    val parentItem: MediaItem = MediaItem.EMPTY,
-    val title: String = "",
-    val artCoverUri: Uri = Uri.EMPTY,
-    val trackCount: Int = 0,
-    val musicItems: List<MediaItem> = emptyList(),
-    val playingMediaItem: MediaItem? = null,
-    val contentUri: Uri = Uri.EMPTY,
+    val album: AlbumItem = AlbumItem.DEFAULT,
+    val audioList: List<AudioItem> = emptyList(),
+    val playingMediaItem: AudioItem? = null,
 )

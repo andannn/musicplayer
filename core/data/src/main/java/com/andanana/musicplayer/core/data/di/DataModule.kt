@@ -1,21 +1,18 @@
 package com.andanana.musicplayer.core.data.di
 
 import android.app.Application
-import android.content.ComponentName
-import androidx.media3.session.MediaBrowser
-import androidx.media3.session.SessionToken
 import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
+import com.andanana.musicplayer.core.data.repository.MediaControllerRepository
+import com.andanana.musicplayer.core.data.repository.MediaControllerRepositoryImpl
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
 import com.andanana.musicplayer.core.data.repository.PlayerStateRepositoryImpl
 import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepository
 import com.andanana.musicplayer.core.data.repository.SmpPreferenceRepositoryImpl
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -27,24 +24,14 @@ interface DataModule {
 
     @Binds
     fun bindsSmpPreferenceRepository(musicRepository: SmpPreferenceRepositoryImpl): SmpPreferenceRepository
+
+    @Binds
+    fun bindsMediaContentsRepository(mediaContentsRepository: MediaControllerRepositoryImpl): MediaControllerRepository
 }
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 object DataModuleProvider {
-    @Provides
-    @ActivityRetainedScoped
-    fun providerMusicBrowser(application: Application): ListenableFuture<MediaBrowser> {
-        return MediaBrowser.Builder(
-            application,
-            SessionToken(
-                application,
-                ComponentName(application, "com.andanana.musicplayer.core.player.PlayerService"),
-            ),
-        )
-            .buildAsync()
-    }
-
     @Provides
     fun provideContentChangeFlowProvider(application: Application): ContentChangeFlowProvider {
         return ContentChangeFlowProvider(application)
