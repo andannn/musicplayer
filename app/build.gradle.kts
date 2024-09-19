@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.andanana.musicplayer"
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "0.0.1-alpha7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -21,10 +21,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
-        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -37,8 +33,7 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
-    implementation(project(":core:model"))
+    implementation(project(":core:domain"))
 
     implementation(project(":feature:common"))
     implementation(project(":feature:home"))
@@ -46,8 +41,6 @@ dependencies {
     implementation(project(":feature:playlist"))
 
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.androidx.core.splashscreen)
 
@@ -61,7 +54,8 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material)
 
-    // Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

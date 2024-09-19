@@ -35,22 +35,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.media3.common.MediaItem
-import androidx.media3.common.util.UnstableApi
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPlayQueueSheet(
     sheetMaxHeightDp: Dp,
     state: AnchoredDraggableState<BottomSheetState>,
-    playListQueue: List<MediaItem>,
-    activeMediaItem: MediaItem,
+    playListQueue: List<AudioItemModel>,
+    activeMediaItem: AudioItemModel,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
     onEvent: (PlayerUiEvent) -> Unit = {},
@@ -121,12 +119,12 @@ fun BottomPlayQueueSheet(
                                     Modifier
                                         .padding(vertical = 4.dp)
                                         .animateItemPlacement(),
-                                isActive = item.mediaId == activeMediaItem.mediaId,
-                                albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                                title = item.mediaMetadata.title.toString(),
+                                isActive = item.id == activeMediaItem.id,
+                                albumArtUri = item.artWorkUri,
+                                title = item.name,
                                 showTrackNum = false,
-                                artist = item.mediaMetadata.artist.toString(),
-                                trackNum = item.mediaMetadata.trackNumber ?: 0,
+                                artist = item.artist,
+                                trackNum = item.cdTrackNumber,
                                 onMusicItemClick = {
                                 },
                                 onOptionButtonClick = {
@@ -182,6 +180,6 @@ private fun BottomPlayQueueSheetPreview() {
         sheetMaxHeightDp = 360.dp,
         state = state,
         playListQueue = emptyList(),
-        activeMediaItem = MediaItem.EMPTY,
+        activeMediaItem = AudioItemModel.DEFAULT,
     )
 }

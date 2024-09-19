@@ -2,19 +2,16 @@ package com.andanana.musicplayer.feature.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaBrowser
-import com.andanana.musicplayer.core.data.repository.PlayerStateRepository
-import com.andanana.musicplayer.core.data.util.combine
-import com.andanana.musicplayer.core.data.util.getOrNull
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.PlayerState
-import com.andanana.musicplayer.core.model.toExoPlayerMode
-import com.andanana.musicplayer.core.model.util.CoroutineTicker
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
+import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
+import com.andanana.musicplayer.core.domain.repository.PlayerStateRepository
+import com.andanana.musicplayer.core.domain.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.PlayerState
+import com.andanana.musicplayer.core.domain.model.util.CoroutineTicker
+import com.andanana.musicplayer.core.domain.util.combine
 import com.andannn.musicplayer.common.drawer.BottomSheetController
 import com.andannn.musicplayer.common.drawer.BottomSheetModel
 import com.andannn.musicplayer.common.drawer.SheetItem
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +24,7 @@ sealed interface PlayerUiEvent {
     data object OnFavoriteButtonClick : PlayerUiEvent
 
     data class OnOptionIconClick(
-        val mediaItem: MediaItem,
+        val mediaItem: AudioItemModel,
     ) : PlayerUiEvent
 
     data object OnPlayButtonClick : PlayerUiEvent
@@ -49,7 +46,7 @@ sealed interface PlayerUiEvent {
 class PlayerStateViewModel
 @Inject
 constructor(
-    private val browserFuture: ListenableFuture<MediaBrowser>,
+    private val mediaControllerRepository: MediaControllerRepository,
     private val playerMonitor: PlayerStateRepository,
     private val bottomSheetController: BottomSheetController
 ) : ViewModel() {
@@ -77,7 +74,7 @@ constructor(
             if (interactingMusicItem == null) {
                 PlayerUiState.Inactive
             } else {
-                val duration = browserFuture.getOrNull()?.duration ?: 0L
+                val duration = mediaControllerRepository.duration ?: 0L
                 PlayerUiState.Active(
                     mediaItem = interactingMusicItem,
                     duration = duration,
@@ -126,15 +123,15 @@ constructor(
         when (event) {
             PlayerUiEvent.OnFavoriteButtonClick -> {}
             PlayerUiEvent.OnPlayModeButtonClick -> {
-                val currentPlayMode = playModeFlow.value
-                browserFuture.getOrNull()?.repeatMode = currentPlayMode.next().toExoPlayerMode()
+                val nextPlayMode = playerMonitor.playMode.next()
+                mediaControllerRepository.setPlayMode(nextPlayMode)
             }
 
             PlayerUiEvent.OnPlayButtonClick -> togglePlayState()
             PlayerUiEvent.OnPreviousButtonClick -> previous()
             PlayerUiEvent.OnNextButtonClick -> next()
             PlayerUiEvent.OnShuffleButtonClick -> {
-                browserFuture.getOrNull()?.shuffleModeEnabled = !isShuffleFlow.value
+                mediaControllerRepository.setShuffleModeEnabled(!isShuffleFlow.value)
             }
 
             is PlayerUiEvent.OnOptionIconClick -> {
@@ -162,8 +159,8 @@ constructor(
         if (state is PlayerUiState.Active) {
             playerUiStateFlow.value.let {
                 when (state.state) {
-                    PlayState.PAUSED -> browserFuture.getOrNull()?.play()
-                    PlayState.PLAYING -> browserFuture.getOrNull()?.pause()
+                    PlayState.PAUSED -> mediaControllerRepository.play()
+                    PlayState.PLAYING -> mediaControllerRepository.pause()
                 }
             }
         }
@@ -173,15 +170,15 @@ constructor(
         get() = bottomSheetController.bottomSheetModel
 
     fun next() {
-        browserFuture.getOrNull()?.seekToNext()
+        mediaControllerRepository.seekToNext()
     }
 
     private fun previous() {
-        browserFuture.getOrNull()?.seekToPrevious()
+        mediaControllerRepository.seekToPrevious()
     }
 
     private fun seekToTime(time: Long) {
-        browserFuture.getOrNull()?.seekTo(time)
+        mediaControllerRepository.seekToTime(time)
     }
 }
 
@@ -195,8 +192,8 @@ sealed class PlayerUiState {
         val progress: Float = 0f,
         val isFavorite: Boolean = false,
         val playMode: PlayMode = PlayMode.REPEAT_ALL,
-        val mediaItem: MediaItem,
-        val playListQueue: List<MediaItem>,
+        val mediaItem: AudioItemModel,
+        val playListQueue: List<AudioItemModel>,
     ) : PlayerUiState()
 }
 

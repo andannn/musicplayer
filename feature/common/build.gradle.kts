@@ -25,11 +25,9 @@ android {
 
 dependencies {
     implementation(project(":core:designsystem"))
-    implementation(project(":core:model"))
+    implementation(project(":core:domain"))
     implementation(project(":core:data"))
 
-    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.media3.session)
     implementation(libs.skydoves.flexible.bottomsheet.material3)
 }

@@ -43,13 +43,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.andanana.musicplayer.core.data.util.buildMediaItem
-import com.andanana.musicplayer.core.data.util.isSameDatasource
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
-import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
-import com.andanana.musicplayer.core.model.LibraryRootCategory
 import com.andannn.musicplayer.common.drawer.MediaBottomSheet
 
 @Composable
@@ -61,10 +58,10 @@ fun PlayListScreen(
     val uiState by viewModel.state.collectAsState()
     val bottomSheetModel by viewModel.bottomSheetModel.collectAsState()
 
-    val isAlbumType =
-        remember(uiState.playListType) {
-            uiState.playListType == LibraryRootCategory.ALBUM
-        }
+    val isAlbumType = true
+//        remember(uiState.playListType) {
+//            uiState.playListType == LibraryRootCategory.ALBUM
+//        }
 
     if (isAlbumType) {
         AlbumPlayListContent(
@@ -105,7 +102,7 @@ fun CommonPlayListContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = uiState.title)
+                    Text(text = "uiState.title")
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
@@ -120,24 +117,24 @@ fun CommonPlayListContent(
     ) {
         LazyColumn(modifier = Modifier.padding(top = it.calculateTopPadding())) {
             items(
-                items = uiState.musicItems,
-                key = { it.mediaId },
-            ) { item ->
+                items = uiState.audioList,
+                key = { item -> item.id },
+            ) { item: AudioItemModel ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
-                    isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
-                    albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                    title = item.mediaMetadata.title.toString(),
-                    showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
-                    artist = item.mediaMetadata.artist.toString(),
-                    trackNum = item.mediaMetadata.trackNumber ?: 0,
+                    isActive = uiState.playingMediaItem?.id == item.id,
+                    albumArtUri = "",
+                    title = item.name,
+                    showTrackNum = true,
+                    artist = item.artist,
+                    trackNum = item.cdTrackNumber,
                     onMusicItemClick = {
-                        onEvent(
-                            PlayListEvent.OnStartPlayAtIndex(
-                                mediaItems = uiState.musicItems,
-                                index = uiState.musicItems.indexOf(item),
-                            ),
-                        )
+//                        onEvent(
+//                            PlayListEvent.OnStartPlayAtIndex(
+//                                mediaItems = uiState.musicItems,
+//                                index = uiState.musicItems.indexOf(item),
+//                            ),
+//                        )
                     },
                     onOptionButtonClick = {
                         onEvent.invoke(PlayListEvent.OnOptionClick(item))
@@ -224,26 +221,25 @@ private fun AlbumPlayListContent(
                     )
                     PlayListHeader(
                         modifier =
-                            Modifier.padding(10.dp).graphicsLayer {
+                        Modifier
+                            .padding(10.dp)
+                            .graphicsLayer {
                                 alpha = 1 - headerScrollFactor
-                            }.onSizeChanged {
+                            }
+                            .onSizeChanged {
                                 headerHeight = it.height
                             },
-                        coverArtUri = uiState.artCoverUri.toString(),
-                        title = uiState.title,
-                        trackCount = uiState.trackCount,
+                        coverArtUri = uiState.album.artWorkUri,
+                        title = uiState.album.name,
+                        trackCount = uiState.album.trackCount,
                         onPlayAllButtonClick = {
                             onEvent(
-                                PlayListEvent.OnPlayAllButtonClick(
-                                    mediaItems = uiState.musicItems,
-                                ),
+                                PlayListEvent.OnPlayAllButtonClick
                             )
                         },
                         onShuffleButtonClick = {
                             onEvent(
-                                PlayListEvent.OnShuffleButtonClick(
-                                    mediaItems = uiState.musicItems,
-                                ),
+                                PlayListEvent.OnShuffleButtonClick
                             )
                         },
                         onOptionClick = {
@@ -254,22 +250,21 @@ private fun AlbumPlayListContent(
             }
 
             items(
-                items = uiState.musicItems,
-                key = { it.mediaId },
+                items = uiState.audioList,
+                key = { it.id },
             ) { item ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 14.dp),
-                    isActive = uiState.playingMediaItem?.isSameDatasource(item) == true,
-                    albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                    title = item.mediaMetadata.title.toString(),
-                    showTrackNum = uiState.playListType == LibraryRootCategory.ALBUM,
-                    artist = item.mediaMetadata.artist.toString(),
-                    trackNum = item.mediaMetadata.trackNumber ?: 0,
+                    isActive = uiState.playingMediaItem?.id == item.id,
+                    albumArtUri = uiState.album.artWorkUri,
+                    title = item.name,
+                    showTrackNum = true,
+                    artist = item.artist,
+                    trackNum = item.cdTrackNumber,
                     onMusicItemClick = {
                         onEvent(
                             PlayListEvent.OnStartPlayAtIndex(
-                                mediaItems = uiState.musicItems,
-                                index = uiState.musicItems.indexOf(item),
+                                index = uiState.audioList.indexOf(item),
                             ),
                         )
                     },
@@ -287,13 +282,12 @@ private fun AlbumPlayListContent(
         }
 
         CustomAppTopBar(
-            modifier =
-                Modifier.onSizeChanged {
-                    appBarHeight = it.height
-                },
+            modifier = Modifier.onSizeChanged {
+                appBarHeight = it.height
+            },
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
-            title = uiState.title,
+            title = uiState.album.name,
             onBackPressed = onBackPressed,
         )
     }
@@ -309,8 +303,11 @@ private fun CustomAppTopBar(
 ) {
     Row(
         modifier =
-            modifier.background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.statusBars).fillMaxWidth().height(64.dp),
+        modifier
+            .background(color = if (isBackgroundTransparent) Color.Transparent else MaterialTheme.colorScheme.surface)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .fillMaxWidth()
+            .height(64.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
@@ -340,24 +337,24 @@ private fun CustomAppTopBar(
 @Preview
 @Composable
 private fun PlayListScreenContentPreview() {
-    MusicPlayerTheme {
-        AlbumPlayListContent(
-            uiState =
-                PlayListUiState(
-                    title = "Title",
-                    trackCount = 12,
-                    musicItems =
-                        listOf(
-                            buildMediaItem(
-                                title = "test song A",
-                                mediaId = "AAA",
-                                isPlayable = true,
-                                isBrowsable = false,
-                                mediaType = 0,
-                            ),
-                        ),
-                ),
-            onBackPressed = {},
-        )
-    }
+//    MusicPlayerTheme {
+//        AlbumPlayListContent(
+//            uiState =
+//                PlayListUiState(
+//                    title = "Title",
+//                    trackCount = 12,
+//                    musicItems =
+//                        listOf(
+//                            com.andanana.musicplayer.core.player.buildMediaItem(
+//                                title = "test song A",
+//                                mediaId = "AAA",
+//                                isPlayable = true,
+//                                isBrowsable = false,
+//                                mediaType = 0,
+//                            ),
+//                        ),
+//                ),
+//            onBackPressed = {},
+//        )
+//    }
 }

@@ -1,8 +1,8 @@
 package com.andanana.musicplayer.core.player
 
 import androidx.media3.common.MediaItem
-import com.andanana.musicplayer.core.model.PlayMode
-import com.andanana.musicplayer.core.model.PlayerState
+import com.andanana.musicplayer.core.domain.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.PlayerState
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerMonitor {
@@ -20,5 +20,5 @@ interface PlayerMonitor {
 
     fun observeIsShuffle(): StateFlow<Boolean>
 
-    fun observePlayMode(): StateFlow<PlayMode>
+    fun observePlayMode(): StateFlow<Int>
 }

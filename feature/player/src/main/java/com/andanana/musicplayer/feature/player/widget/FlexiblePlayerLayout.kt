@@ -38,11 +38,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import androidx.media3.common.MediaItem
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.CircleBorderImage
 import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.core.designsystem.util.verticalGradientScrim
-import com.andanana.musicplayer.core.model.PlayMode
+import com.andanana.musicplayer.core.domain.model.PlayMode
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 
 val MinImageSize = 60.dp
@@ -63,8 +63,8 @@ val BottomSheetDragAreaHeight = 90.dp
 fun FlexiblePlayerLayout(
     layoutState: PlayerLayoutState,
     coverUri: String,
-    activeMediaItem: MediaItem,
-    playListQueue: List<MediaItem>,
+    activeMediaItem: AudioItemModel,
+    playListQueue: List<AudioItemModel>,
     modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     isShuffle: Boolean = false,
@@ -286,7 +286,7 @@ private fun FlexiblePlayerLayoutExpandPreview() {
             title = "Song name",
             artist = "Artist name",
             playListQueue = emptyList(),
-            activeMediaItem = MediaItem.EMPTY
+            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }
@@ -310,7 +310,7 @@ private fun FlexiblePlayerLayoutShrinkPreview() {
             title = "Song name",
             artist = "Artist name",
             playListQueue = emptyList(),
-            activeMediaItem = MediaItem.EMPTY
+            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }

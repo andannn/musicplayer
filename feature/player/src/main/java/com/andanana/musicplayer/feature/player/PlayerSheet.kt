@@ -21,13 +21,13 @@ fun PlayerSheet(
             color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
         }
 
-    val url = state.mediaItem.mediaMetadata.artworkUri
+    val url = state.mediaItem.artWorkUri
 
     DynamicThemePrimaryColorsFromImage(dominantColorState) {
         // When the selected image url changes, call updateColorsFromImageUrl() or reset()
         LaunchedEffect(url) {
-            if (url != null) {
-                dominantColorState.updateColorsFromImageUrl(url.toString())
+            if (url.isEmpty()) {
+                dominantColorState.updateColorsFromImageUrl(url)
             } else {
                 dominantColorState.reset()
             }

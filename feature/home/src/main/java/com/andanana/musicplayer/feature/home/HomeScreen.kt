@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.andanana.musicplayer.feature.home
 
 import android.net.Uri
@@ -27,49 +29,49 @@ import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.MediaItem
+import com.andanana.musicplayer.core.domain.model.AlbumItemModel
+import com.andanana.musicplayer.core.domain.model.MediaItemModel
+import com.andanana.musicplayer.core.domain.model.ArtistItemModel
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
-import com.andanana.musicplayer.core.model.ALBUM_ID
-import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
-import com.andanana.musicplayer.core.model.ARTIST_ID
-import com.andanana.musicplayer.feature.home.util.ResourceUtil
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPlayList: (mediaId: String) -> Unit,
+    onNavigateToPlayList: (id: String) -> Unit,
 ) {
-    fun onMediaItemClick(mediaItem: MediaItem) {
-        if (mediaItem.mediaMetadata.isBrowsable == true) {
-            onNavigateToPlayList(mediaItem.mediaId)
-        } else {
-            homeViewModel.playMusic(mediaItem)
+    fun onMediaItemClick(mediaItem: MediaItemModel) {
+        when (mediaItem) {
+            is AlbumItemModel,
+            is ArtistItemModel -> {
+                onNavigateToPlayList(mediaItem.id.toString())
+            }
+
+            is AudioItemModel -> {
+                homeViewModel.playMusic(mediaItem)
+            }
         }
     }
 
     val state by homeViewModel.state.collectAsState()
 
-    if (state.categories.isNotEmpty()) {
-        HomeScreen(
-            modifier = modifier,
-            state = state,
-            onSelectCategory = homeViewModel::onSelectedCategoryChanged,
-            onMediaItemClick = ::onMediaItemClick,
-        )
-    }
+    HomeScreen(
+        modifier = modifier,
+        state = state,
+        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
+        onMediaItemClick = ::onMediaItemClick,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,20 +79,14 @@ fun HomeRoute(
 private fun HomeScreen(
     state: HomeUiState,
     modifier: Modifier = Modifier,
-    onMediaItemClick: (MediaItem) -> Unit = {},
-    onSelectCategory: (String) -> Unit = {},
+    onMediaItemClick: (MediaItemModel) -> Unit = {},
+    onSelectCategory: (MediaCategory) -> Unit = {},
 ) {
-    val categories =
-        state.categories.map {
-            it.mediaId
-        }
+    val categories = MediaCategory.entries.toTypedArray()
 
-    val selectedIndex = categories.indexOf(state.mediaItemPair.first)
+    val selectedIndex = categories.indexOf(state.currentCategory)
 
-    val mediaItems =
-        remember(state) {
-            state.categoryPageContents
-        }
+    val mediaItems = state.mediaItems
 
     val scrollBehavior = enterAlwaysScrollBehavior()
     Scaffold(
@@ -98,9 +94,9 @@ private fun HomeScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 colors =
-                    TopAppBarDefaults.centerAlignedTopAppBarColors().run {
-                        copy(scrolledContainerColor = containerColor)
-                    },
+                TopAppBarDefaults.centerAlignedTopAppBarColors().run {
+                    copy(scrolledContainerColor = containerColor)
+                },
                 title = {
                     Text(text = "Simple music player")
                 },
@@ -110,10 +106,10 @@ private fun HomeScreen(
     ) { padding ->
         Column(
             modifier =
-                Modifier
-                    .padding(padding)
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .fillMaxSize(),
+            Modifier
+                .padding(padding)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .fillMaxSize(),
         ) {
             CenterTabLayout(
                 modifier = Modifier.fillMaxWidth(),
@@ -131,7 +127,8 @@ private fun HomeScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
                             Text(
-                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
+//                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
+                                text = item.toString(),
                             )
                         },
                         onClick = {
@@ -141,71 +138,99 @@ private fun HomeScreen(
                 }
             }
 
-            when (state.mediaItemPair.first) {
-                ALL_MUSIC_ID -> {
+            when (state.currentCategory) {
+                MediaCategory.ALL_MUSIC ->
                     LazyAllAudioContent(
                         modifier =
-                            Modifier.fillMaxSize(),
-                        mediaItems = mediaItems,
+                        Modifier.fillMaxSize(),
+                        mediaItems = mediaItems as List<AudioItemModel>,
                         onMusicItemClick = onMediaItemClick,
+                    )
+
+                MediaCategory.ALBUM -> {
+                    LazyAllAlbumContent(
+                        modifier =
+                        Modifier.fillMaxSize(),
+                        mediaItems = mediaItems as List<AlbumItemModel>,
+                        onItemClick = onMediaItemClick,
                     )
                 }
 
-                ALBUM_ID -> {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Fixed(2),
-                    ) {
-                        items(
-                            items = mediaItems,
-                            key = { it.mediaId },
-                        ) { media ->
-                            LargePreviewCard(
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                                artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                                title = media.mediaMetadata.title.toString(),
-                                trackCount = media.mediaMetadata.totalTrackCount ?: 0,
-                                onClick = {
-                                    onMediaItemClick.invoke(media)
-                                },
-                            )
-                        }
-
-                        item { ExtraPaddingBottom() }
-                    }
-                }
-
-                ARTIST_ID -> {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier.fillMaxSize(),
-                        columns = StaggeredGridCells.Fixed(2),
-                    ) {
-                        items(
-                            items = mediaItems,
-                            key = { it.mediaId },
-                        ) { media ->
-                            LargePreviewCard(
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
-                                imageModifier =
-                                    Modifier
-                                        .clip(shape = CircleShape)
-                                        .alpha(0.4f)
-                                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
-                                placeholder = rememberVectorPainter(Icons.Rounded.Person),
-                                artCoverUri = media.mediaMetadata.artworkUri ?: Uri.EMPTY,
-                                title = media.mediaMetadata.title.toString(),
-                                trackCount = media.mediaMetadata.totalTrackCount ?: 0,
-                                onClick = {
-                                    onMediaItemClick.invoke(media)
-                                },
-                            )
-                        }
-
-                        item { ExtraPaddingBottom() }
-                    }
+                MediaCategory.ARTIST -> {
+                    LazyAllArtistContent(
+                        modifier =
+                        Modifier.fillMaxSize(),
+                        mediaItems = mediaItems as List<ArtistItemModel>,
+                        onItemClick = onMediaItemClick,
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LazyAllAlbumContent(
+    mediaItems: List<AlbumItemModel>,
+    modifier: Modifier = Modifier,
+    onItemClick: (AlbumItemModel) -> Unit = {},
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = StaggeredGridCells.Fixed(2),
+    ) {
+        items(
+            items = mediaItems,
+            key = { it.id },
+        ) { media ->
+            LargePreviewCard(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                artCoverUri = Uri.parse(media.artWorkUri),
+                title = media.name,
+                trackCount = media.trackCount,
+                onClick = {
+                    onItemClick.invoke(media)
+                },
+            )
+        }
+
+        item { ExtraPaddingBottom() }
+    }
+
+}
+
+@Composable
+fun LazyAllArtistContent(
+    mediaItems: List<ArtistItemModel>,
+    modifier: Modifier = Modifier,
+    onItemClick: (ArtistItemModel) -> Unit = {},
+) {
+    LazyVerticalStaggeredGrid(
+        modifier = modifier.fillMaxSize(),
+        columns = StaggeredGridCells.Fixed(2),
+    ) {
+        items(
+            items = mediaItems,
+            key = { it.id },
+        ) { media ->
+            LargePreviewCard(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                imageModifier =
+                Modifier
+                    .clip(shape = CircleShape)
+                    .alpha(0.4f)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
+                placeholder = rememberVectorPainter(Icons.Rounded.Person),
+                artCoverUri = Uri.parse(media.artistCoverUri),
+                title = media.name,
+                trackCount = media.trackCount,
+                onClick = {
+                    onItemClick.invoke(media)
+                },
+            )
+        }
+
+        item { ExtraPaddingBottom() }
     }
 }
 
@@ -213,9 +238,9 @@ private fun HomeScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyAllAudioContent(
-    mediaItems: List<MediaItem>,
+    mediaItems: List<AudioItemModel>,
     modifier: Modifier = Modifier,
-    onMusicItemClick: (MediaItem) -> Unit = {},
+    onMusicItemClick: (AudioItemModel) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -223,19 +248,19 @@ fun LazyAllAudioContent(
     ) {
         items(
             items = mediaItems,
-            key = { it.mediaId },
+            key = { it.id },
         ) { item ->
             MusicCard(
                 modifier =
-                    Modifier
-                        .padding(vertical = 4.dp)
-                        .animateItemPlacement(),
+                Modifier
+                    .padding(vertical = 4.dp)
+                    .animateItemPlacement(),
                 isActive = false,
-                albumArtUri = item.mediaMetadata.artworkUri.toString(),
-                title = item.mediaMetadata.title.toString(),
+//                albumArtUri = item.artworkUri.toString(),
+                title = item.name,
                 showTrackNum = false,
-                artist = item.mediaMetadata.artist.toString(),
-                trackNum = item.mediaMetadata.trackNumber ?: 0,
+                artist = item.artist,
+                trackNum = item.cdTrackNumber,
                 onMusicItemClick = {
                     onMusicItemClick.invoke(item)
                 },

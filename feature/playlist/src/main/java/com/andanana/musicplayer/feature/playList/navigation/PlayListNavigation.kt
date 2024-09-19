@@ -8,18 +8,18 @@ import androidx.navigation.navArgument
 import com.andanana.musicplayer.feature.playList.PlayListScreen
 
 const val MUSIC_LIST_ROUTE = "music_list_route"
-const val MEDIA_ID = "music_list_id"
+const val ID = "album_id"
 
-fun NavController.navigateToPlayList(mediaId: String) {
-    this.navigate("$MUSIC_LIST_ROUTE/$mediaId")
+fun NavController.navigateToPlayList(id: String) {
+    this.navigate("$MUSIC_LIST_ROUTE/$id")
 }
 
 fun NavGraphBuilder.playListScreen(onBackPressed: () -> Unit) {
     composable(
-        route = "$MUSIC_LIST_ROUTE/{$MEDIA_ID}",
+        route = "$MUSIC_LIST_ROUTE/{$ID}",
         arguments =
             listOf(
-                navArgument(name = MEDIA_ID) {
+                navArgument(name = ID) {
                     type = NavType.StringType
                 },
             ),

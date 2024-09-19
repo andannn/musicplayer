@@ -3,20 +3,14 @@ package com.andanana.musicplayer.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.C
-import androidx.media3.common.MediaItem
-import androidx.media3.session.MediaBrowser
-import com.andanana.musicplayer.core.data.ContentChangeFlowProvider
-import com.andanana.musicplayer.core.data.util.getChildrenById
-import com.andanana.musicplayer.core.data.util.getOrNull
-import com.andanana.musicplayer.core.model.ALL_MUSIC_ID
-import com.google.common.util.concurrent.ListenableFuture
+import com.andanana.musicplayer.core.domain.model.MediaItemModel
+import com.andanana.musicplayer.core.domain.model.AudioItemModel
+import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,86 +18,63 @@ private const val TAG = "HomeViewModel"
 
 @HiltViewModel
 class HomeViewModel
-    @Inject
-    constructor(
-        private val browserFuture: ListenableFuture<MediaBrowser>,
-        private val contentChangeFlowProvider: ContentChangeFlowProvider,
-    ) : ViewModel() {
-        private val _state = MutableStateFlow(HomeUiState())
-        val state = _state.asStateFlow()
+@Inject
+constructor(
+    private val mediaControllerRepository: MediaControllerRepository,
+//    private val contentChangeFlowProvider: ContentChangeFlowProvider,
+) : ViewModel() {
+    private val _state = MutableStateFlow(HomeUiState())
+    val state = _state.asStateFlow()
 
-        private var queryJob: Job? = null
+    private var queryJob: Job? = null
 
-        init {
-            viewModelScope.launch {
-                // wait browser build complete.
-                val browser = browserFuture.await()
-
-                val root = browser.getLibraryRoot(null).await()
-                val categories = browser.getChildrenById(root.value!!.mediaId)
-
-                _state.update {
-                    HomeUiState(
-                        categories = categories,
-                    )
-                }
-
-                contentChangeFlowProvider.audioChangedEventFlow.collect { _ ->
-                    getMediaItemsAndUpdateState(_state.value.mediaItemPair.first)
-                }
-            }
-        }
-
-        fun onSelectedCategoryChanged(mediaId: String) {
-            if (mediaId == _state.value.mediaItemPair.first) {
-                // already loaded.
-                return
-            }
-
-            getMediaItemsAndUpdateState(mediaId)
-        }
-
-        private fun getMediaItemsAndUpdateState(mediaId: String) {
-            Log.d(TAG, "getMediaItemsAndUpdateState: $mediaId")
-            queryJob?.cancel()
-
-            queryJob =
-                viewModelScope.launch {
-                    val browser = this@HomeViewModel.browserFuture.getOrNull() ?: return@launch
-
-                    val children =
-                        browser.getChildren(
-                            mediaId,
-                            0,
-                            Int.MAX_VALUE,
-                            null,
-                        ).await().value!!
-
-                    val state = this@HomeViewModel._state.value
-                    _state.update {
-                        state.copy(mediaItemPair = mediaId to children.toList())
-                    }
-                }
-        }
-
-        fun playMusic(mediaItem: MediaItem) {
-            val mediaItems = _state.value.mediaItemPair.second
-
-            browserFuture.getOrNull()?.run {
-                setMediaItems(
-                    mediaItems,
-                    mediaItems.indexOfFirst { it.mediaId == mediaItem.mediaId },
-                    C.TIME_UNSET,
-                )
-                prepare()
-                play()
-            }
+    init {
+        viewModelScope.launch {
+            getMediaItemsAndUpdateState(MediaCategory.ALL_MUSIC)
+//                contentChangeFlowProvider.audioChangedEventFlow.collect { _ ->
+//                    getMediaItemsAndUpdateState(_state.value.mediaItemPair.first)
+//                }
         }
     }
 
-data class HomeUiState(
-    val categories: List<MediaItem> = emptyList(),
-    val mediaItemPair: Pair<String, List<MediaItem>> = ALL_MUSIC_ID to emptyList(),
-) {
-    val categoryPageContents get() = mediaItemPair.second
+    fun onSelectedCategoryChanged(category: MediaCategory) {
+//            if (mediaId == _state.value.mediaItemPair.first) {
+//                // already loaded.
+//                return
+//            }
+
+        getMediaItemsAndUpdateState(category)
+    }
+
+    private fun getMediaItemsAndUpdateState(category: MediaCategory) {
+        Log.d(TAG, "getMediaItemsAndUpdateState: $category")
+        queryJob?.cancel()
+
+        queryJob =
+            viewModelScope.launch {
+                val items = when (category) {
+                    MediaCategory.ALL_MUSIC -> mediaControllerRepository.getAllMediaItems()
+                    MediaCategory.ALBUM -> mediaControllerRepository.getAllAlbums()
+                    MediaCategory.ARTIST -> mediaControllerRepository.getAllArtist()
+                }
+                val state = this@HomeViewModel._state.value
+                _state.update {
+                    state.copy(
+                        currentCategory = category,
+                        mediaItems = items
+                    )
+                }
+            }
+    }
+
+    fun playMusic(mediaItem: AudioItemModel) {
+//        val mediaItems = _state.value.mediaItemPair.second
+
+//        mediaControllerRepository.playMediaList(mediaItems, 0, false)
+    }
 }
+
+data class HomeUiState(
+    val currentCategory: MediaCategory = MediaCategory.ALL_MUSIC,
+    val mediaItems: List<MediaItemModel> = emptyList(),
+)

@@ -52,7 +52,7 @@ fun ShrinkablePlayBox(
                 color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
             }
 
-        val url = state.mediaItem.mediaMetadata.artworkUri
+        val url = state.mediaItem.artWorkUri
 
         val layoutState: PlayerLayoutState =
             remember(density, maxHeight, navigationBarHeight, statusBarHeight) {
@@ -80,7 +80,7 @@ fun ShrinkablePlayBox(
         DynamicThemePrimaryColorsFromImage(dominantColorState) {
             // When the selected image url changes, call updateColorsFromImageUrl() or reset()
             LaunchedEffect(url, layoutState.isPlayerExpanding) {
-                if (url != null && layoutState.isPlayerExpanding) {
+                if (layoutState.isPlayerExpanding) {
                     dominantColorState.updateColorsFromImageUrl(url.toString())
                 } else {
                     dominantColorState.reset()
@@ -105,15 +105,15 @@ fun ShrinkablePlayBox(
                             onClick = layoutState::expandPlayerLayout,
                         ),
                 layoutState = layoutState,
-                coverUri = state.mediaItem.mediaMetadata.artworkUri.toString(),
+                coverUri = state.mediaItem.artWorkUri,
                 playMode = state.playMode,
                 isShuffle = state.isShuffle,
                 isPlaying = state.state == PlayState.PLAYING,
                 isFavorite = state.isFavorite,
                 playListQueue = state.playListQueue,
                 activeMediaItem = state.mediaItem,
-                title = state.mediaItem.mediaMetadata.title.toString(),
-                artist = state.mediaItem.mediaMetadata.artist.toString(),
+                title = state.mediaItem.name,
+                artist = state.mediaItem.artist,
                 progress = state.progress,
                 onShrinkButtonClick = layoutState::shrinkPlayerLayout,
                 onEvent = onEvent,
