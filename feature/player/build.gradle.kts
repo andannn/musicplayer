@@ -17,7 +17,6 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:common"))
 
-    implementation(libs.kotlinx.coroutines.guava)
     implementation(libs.androidx.core.ktx)
 
     api(libs.androidx.compose.material3)

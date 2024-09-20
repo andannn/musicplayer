@@ -3,16 +3,19 @@ package com.andanana.musicplayer.feature.playList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andanana.musicplayer.core.domain.model.AlbumItemModel
 import com.andanana.musicplayer.core.domain.model.MediaItemModel
 import com.andanana.musicplayer.core.domain.model.AudioItemModel
+import com.andanana.musicplayer.core.domain.model.MediaListSource
 import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
 import com.andanana.musicplayer.core.domain.repository.PlayerStateRepository
 import com.andanana.musicplayer.feature.playList.navigation.ID
+import com.andanana.musicplayer.feature.playList.navigation.SOURCE
 import com.andannn.musicplayer.common.drawer.BottomSheetController
 import com.andannn.musicplayer.common.drawer.BottomSheetModel
 import com.andannn.musicplayer.common.drawer.SheetItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +39,6 @@ sealed interface PlayListEvent {
     data object OnHeaderOptionClick : PlayListEvent
 
     data class OnDismissRequest(val item: SheetItem?) : PlayListEvent
-
 }
 
 @HiltViewModel
@@ -51,19 +53,41 @@ constructor(
     private val id =
         savedStateHandle.get<String>(ID) ?: ""
 
+    val mediaListSource =
+        savedStateHandle.get<MediaListSource>(SOURCE) ?: MediaListSource.ALBUM
+
     private val _state = MutableStateFlow(PlayListUiState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val albumItem =
-                mediaControllerRepository.getAlbumByAlbumId(id.toLong()) ?: error("Not found")
-            val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
-            _state.update {
-                it.copy(
-                    album = albumItem,
-                    audioList = playableItems,
-                )
+            when (mediaListSource) {
+                MediaListSource.ALBUM -> {
+                    val albumItem =
+                        mediaControllerRepository.getAlbumByAlbumId(id.toLong())
+                            ?: error("Not found")
+                    val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
+                    _state.update {
+                        it.copy(
+                            headerInfoItem = albumItem,
+                            audioList = playableItems.toImmutableList(),
+                        )
+                    }
+                }
+
+                MediaListSource.ARTIST -> {
+                    val headerItem =
+                        mediaControllerRepository.getArtistByAlbumId(id.toLong())
+                            ?: error("Not found")
+
+                    val playableItems = mediaControllerRepository.getAudiosOfArtist(id.toLong())
+                    _state.update {
+                        it.copy(
+                            headerInfoItem = headerItem,
+                            audioList = playableItems.toImmutableList(),
+                        )
+                    }
+                }
             }
         }
 
@@ -104,7 +128,9 @@ constructor(
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
-                bottomSheetController.onRequestShowSheet(state.value.album)
+                state.value.headerInfoItem?.let {
+                    bottomSheetController.onRequestShowSheet(it)
+                }
             }
         }
     }
@@ -119,7 +145,7 @@ constructor(
 }
 
 data class PlayListUiState(
-    val album: AlbumItemModel = AlbumItemModel.DEFAULT,
-    val audioList: List<AudioItemModel> = emptyList(),
+    val headerInfoItem: MediaItemModel? = null,
+    val audioList: ImmutableList<AudioItemModel> = emptyList<AudioItemModel>().toImmutableList(),
     val playingMediaItem: AudioItemModel? = null,
 )

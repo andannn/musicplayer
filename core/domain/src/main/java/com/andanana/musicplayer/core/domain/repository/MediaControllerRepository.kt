@@ -18,6 +18,8 @@ interface MediaControllerRepository {
 
     suspend fun getAlbumByAlbumId(albumId: Long): AlbumItemModel?
 
+    suspend fun getArtistByAlbumId(artistId: Long): ArtistItemModel?
+
     val duration: Long?
 
     fun playMediaList(mediaList: List<AudioItemModel>, index: Int, isShuffle: Boolean)

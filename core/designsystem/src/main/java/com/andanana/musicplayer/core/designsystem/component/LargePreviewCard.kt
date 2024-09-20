@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -37,20 +38,18 @@ fun LargePreviewCard(
     error: Painter? = placeholder,
     onClick: () -> Unit = {},
 ) {
-    Card(
+    Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
         onClick = onClick,
     ) {
-        Column(
-            modifier = Modifier.padding(10.dp),
-        ) {
+        Column {
             AsyncImage(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .then(imageModifier),
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .then(imageModifier),
                 placeholder = placeholder,
                 error = error,
                 model = artCoverUri,
@@ -59,14 +58,19 @@ fun LargePreviewCard(
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Text(
-                text = "$trackCount Tracks",
-                style = MaterialTheme.typography.bodyLarge,
-            )
+            Column(modifier = Modifier.padding(vertical = 3.dp, horizontal = 5.dp)) {
+                Text(
+                    text = title,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = "$trackCount Tracks",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
         }
     }
 }
@@ -78,12 +82,13 @@ private fun AlbumCardPreview() {
         Surface {
             LargePreviewCard(
                 imageModifier =
-                    Modifier.clip(shape = CircleShape)
-                        .alpha(0.3f)
-                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
+                Modifier
+                    .clip(shape = CircleShape)
+                    .alpha(0.3f)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
                 placeholder = rememberVectorPainter(Icons.Rounded.Person),
                 artCoverUri = Uri.parse(""),
-                title = "Title",
+                title = "TitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitle",
                 trackCount = 3,
             )
         }

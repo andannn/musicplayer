@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.andanana.musicplayer.core.domain.model.AudioItemModel
-import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.designsystem.component.AudioItemView
 import com.andanana.musicplayer.feature.player.PlayerUiEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -115,7 +115,7 @@ fun BottomPlayQueueSheet(
                             items = playListQueue,
                             key = { it.hashCode() },
                         ) { item ->
-                            MusicCard(
+                            AudioItemView(
                                 modifier =
                                     Modifier
                                         .padding(vertical = 4.dp)

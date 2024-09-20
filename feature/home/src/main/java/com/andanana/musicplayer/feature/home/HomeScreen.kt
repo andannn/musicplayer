@@ -1,9 +1,6 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.andanana.musicplayer.feature.home
 
 import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.domain.model.AlbumItemModel
@@ -43,19 +44,26 @@ import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
-import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.designsystem.component.AudioItemView
+import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
+import com.andanana.musicplayer.core.domain.model.MediaListSource
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPlayList: (id: String) -> Unit,
+    onNavigateToPlayList: (id: String, source: MediaListSource) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItemModel) {
         when (mediaItem) {
-            is AlbumItemModel,
+            is AlbumItemModel -> {
+                onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ALBUM)
+            }
+
             is ArtistItemModel -> {
-                onNavigateToPlayList(mediaItem.id.toString())
+                onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ARTIST)
             }
 
             is AudioItemModel -> {
@@ -74,6 +82,7 @@ fun HomeRoute(
     )
 }
 
+@Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
@@ -143,7 +152,7 @@ private fun HomeScreen(
                     LazyAllAudioContent(
                         modifier =
                         Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as List<AudioItemModel>,
+                        mediaItems = mediaItems as ImmutableList<AudioItemModel>,
                         onMusicItemClick = onMediaItemClick,
                     )
 
@@ -151,7 +160,7 @@ private fun HomeScreen(
                     LazyAllAlbumContent(
                         modifier =
                         Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as List<AlbumItemModel>,
+                        mediaItems = mediaItems as ImmutableList<AlbumItemModel>,
                         onItemClick = onMediaItemClick,
                     )
                 }
@@ -160,7 +169,7 @@ private fun HomeScreen(
                     LazyAllArtistContent(
                         modifier =
                         Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as List<ArtistItemModel>,
+                        mediaItems = mediaItems as ImmutableList<ArtistItemModel>,
                         onItemClick = onMediaItemClick,
                     )
                 }
@@ -171,13 +180,13 @@ private fun HomeScreen(
 
 @Composable
 private fun LazyAllAlbumContent(
-    mediaItems: List<AlbumItemModel>,
+    mediaItems: ImmutableList<AlbumItemModel>,
     modifier: Modifier = Modifier,
     onItemClick: (AlbumItemModel) -> Unit = {},
 ) {
-    LazyVerticalStaggeredGrid(
-        modifier = Modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
+    LazyVerticalGrid(
+        modifier = modifier.fillMaxSize(),
+        columns = GridCells.Adaptive(180.dp),
     ) {
         items(
             items = mediaItems,
@@ -201,7 +210,7 @@ private fun LazyAllAlbumContent(
 
 @Composable
 fun LazyAllArtistContent(
-    mediaItems: List<ArtistItemModel>,
+    mediaItems: ImmutableList<ArtistItemModel>,
     modifier: Modifier = Modifier,
     onItemClick: (ArtistItemModel) -> Unit = {},
 ) {
@@ -234,11 +243,9 @@ fun LazyAllArtistContent(
     }
 }
 
-// TODO: remove dependency of MediaItem
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LazyAllAudioContent(
-    mediaItems: List<AudioItemModel>,
+    mediaItems: ImmutableList<AudioItemModel>,
     modifier: Modifier = Modifier,
     onMusicItemClick: (AudioItemModel) -> Unit = {},
 ) {
@@ -250,13 +257,12 @@ fun LazyAllAudioContent(
             items = mediaItems,
             key = { it.id },
         ) { item ->
-            MusicCard(
+            AudioItemView(
                 modifier =
                 Modifier
-                    .padding(vertical = 4.dp)
-                    .animateItemPlacement(),
+                    .padding(vertical = 4.dp),
                 isActive = false,
-//                albumArtUri = item.artworkUri.toString(),
+                albumArtUri = item.artWorkUri,
                 title = item.name,
                 showTrackNum = false,
                 artist = item.artist,
@@ -271,5 +277,22 @@ fun LazyAllAudioContent(
         }
 
         item { ExtraPaddingBottom() }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    MusicPlayerTheme {
+        LazyAllAlbumContent(
+            mediaItems = (1..4).map {
+                AlbumItemModel(
+                    id = it.toLong(),
+                    name = "Album $it",
+                    artWorkUri = "",
+                    trackCount = 10
+                )
+            }.toImmutableList()
+        )
     }
 }
