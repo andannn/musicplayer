@@ -41,19 +41,22 @@ import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.domain.model.MediaListSource
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToPlayList: (id: String) -> Unit,
+    onNavigateToPlayList: (id: String, source: MediaListSource) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItemModel) {
         when (mediaItem) {
-            is AlbumItemModel,
+            is AlbumItemModel -> {
+                onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ALBUM)
+            }
             is ArtistItemModel -> {
-                onNavigateToPlayList(mediaItem.id.toString())
+                onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ARTIST)
             }
 
             is AudioItemModel -> {
@@ -72,6 +75,7 @@ fun HomeRoute(
     )
 }
 
+@Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(

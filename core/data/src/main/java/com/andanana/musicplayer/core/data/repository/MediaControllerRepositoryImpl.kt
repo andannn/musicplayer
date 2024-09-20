@@ -76,6 +76,12 @@ constructor(
         it.toAppItem() as? AlbumItemModel ?: throw IllegalStateException("Invalid $it")
     }
 
+    override suspend fun getArtistByAlbumId(artistId: Long) = getMediaBrowser().getItem(
+        ARTIST_PREFIX + artistId,
+    ).await().value?.let {
+        it.toAppItem() as? ArtistItemModel ?: throw IllegalStateException("Invalid $it")
+    }
+
     override val duration: Long?
         get() = getMediaBrowserOrNull()?.duration
 

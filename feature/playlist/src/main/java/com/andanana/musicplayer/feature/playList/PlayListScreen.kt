@@ -47,7 +47,11 @@ import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.MusicCard
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
+import com.andanana.musicplayer.core.domain.model.AlbumItemModel
+import com.andanana.musicplayer.core.domain.model.ArtistItemModel
+import com.andanana.musicplayer.core.domain.model.MediaListSource
 import com.andannn.musicplayer.common.drawer.MediaBottomSheet
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun PlayListScreen(
@@ -58,25 +62,33 @@ fun PlayListScreen(
     val uiState by viewModel.state.collectAsState()
     val bottomSheetModel by viewModel.bottomSheetModel.collectAsState()
 
-    val isAlbumType = true
-//        remember(uiState.playListType) {
-//            uiState.playListType == LibraryRootCategory.ALBUM
-//        }
+    val source =
+        remember {
+            viewModel.mediaListSource
+        }
 
-    if (isAlbumType) {
-        AlbumPlayListContent(
-            modifier = modifier,
-            uiState = uiState,
-            onEvent = viewModel::onEvent,
-            onBackPressed = onBackPressed,
-        )
-    } else {
-        CommonPlayListContent(
-            modifier = modifier,
-            uiState = uiState,
-            onEvent = viewModel::onEvent,
-            onBackPressed = onBackPressed,
-        )
+    when (source) {
+        MediaListSource.ALBUM -> {
+            AlbumPlayListContent(
+                modifier = modifier,
+                albumHeader = uiState.headerInfoItem as AlbumItemModel? ?: AlbumItemModel.DEFAULT,
+                audioList = uiState.audioList,
+                playingMediaItem = uiState.playingMediaItem,
+                onEvent = viewModel::onEvent,
+                onBackPressed = onBackPressed,
+            )
+        }
+
+        MediaListSource.ARTIST -> {
+            CommonPlayListContent(
+                modifier = modifier,
+                header = uiState.headerInfoItem as ArtistItemModel? ?: ArtistItemModel.DEFAULT,
+                audioList = uiState.audioList,
+                playingMediaItem = uiState.playingMediaItem,
+                onEvent = viewModel::onEvent,
+                onBackPressed = onBackPressed,
+            )
+        }
     }
 
     if (bottomSheetModel != null) {
@@ -92,7 +104,9 @@ fun PlayListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonPlayListContent(
-    uiState: PlayListUiState,
+    header: ArtistItemModel,
+    audioList: ImmutableList<AudioItemModel>,
+    playingMediaItem: AudioItemModel?,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
     onEvent: (PlayListEvent) -> Unit = {},
@@ -102,7 +116,7 @@ fun CommonPlayListContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "uiState.title")
+                    Text(text = header.name)
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
@@ -117,24 +131,23 @@ fun CommonPlayListContent(
     ) {
         LazyColumn(modifier = Modifier.padding(top = it.calculateTopPadding())) {
             items(
-                items = uiState.audioList,
+                items = audioList,
                 key = { item -> item.id },
             ) { item: AudioItemModel ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
-                    isActive = uiState.playingMediaItem?.id == item.id,
-                    albumArtUri = "",
+                    isActive = playingMediaItem?.id == item.id,
+                    albumArtUri = item.artWorkUri,
                     title = item.name,
-                    showTrackNum = true,
+                    showTrackNum = false,
                     artist = item.artist,
                     trackNum = item.cdTrackNumber,
                     onMusicItemClick = {
-//                        onEvent(
-//                            PlayListEvent.OnStartPlayAtIndex(
-//                                mediaItems = uiState.musicItems,
-//                                index = uiState.musicItems.indexOf(item),
-//                            ),
-//                        )
+                        onEvent(
+                            PlayListEvent.OnStartPlayAtIndex(
+                                index = audioList.indexOf(item),
+                            ),
+                        )
                     },
                     onOptionButtonClick = {
                         onEvent.invoke(PlayListEvent.OnOptionClick(item))
@@ -149,7 +162,9 @@ fun CommonPlayListContent(
 
 @Composable
 private fun AlbumPlayListContent(
-    uiState: PlayListUiState,
+    albumHeader: AlbumItemModel,
+    audioList: ImmutableList<AudioItemModel>,
+    playingMediaItem: AudioItemModel?,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit = {},
     onEvent: (PlayListEvent) -> Unit = {},
@@ -229,9 +244,9 @@ private fun AlbumPlayListContent(
                             .onSizeChanged {
                                 headerHeight = it.height
                             },
-                        coverArtUri = uiState.album.artWorkUri,
-                        title = uiState.album.name,
-                        trackCount = uiState.album.trackCount,
+                        coverArtUri = albumHeader.artWorkUri,
+                        title = albumHeader.name,
+                        trackCount = albumHeader.trackCount,
                         onPlayAllButtonClick = {
                             onEvent(
                                 PlayListEvent.OnPlayAllButtonClick
@@ -250,13 +265,13 @@ private fun AlbumPlayListContent(
             }
 
             items(
-                items = uiState.audioList,
+                items = audioList,
                 key = { it.id },
             ) { item ->
                 MusicCard(
                     modifier = Modifier.padding(vertical = 4.dp, horizontal = 14.dp),
-                    isActive = uiState.playingMediaItem?.id == item.id,
-                    albumArtUri = uiState.album.artWorkUri,
+                    isActive = playingMediaItem?.id == item.id,
+                    albumArtUri = albumHeader.artWorkUri,
                     title = item.name,
                     showTrackNum = true,
                     artist = item.artist,
@@ -264,7 +279,7 @@ private fun AlbumPlayListContent(
                     onMusicItemClick = {
                         onEvent(
                             PlayListEvent.OnStartPlayAtIndex(
-                                index = uiState.audioList.indexOf(item),
+                                index = audioList.indexOf(item),
                             ),
                         )
                     },
@@ -287,7 +302,7 @@ private fun AlbumPlayListContent(
             },
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
-            title = uiState.album.name,
+            title = albumHeader.name,
             onBackPressed = onBackPressed,
         )
     }

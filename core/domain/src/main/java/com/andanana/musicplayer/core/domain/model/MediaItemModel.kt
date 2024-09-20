@@ -38,4 +38,8 @@ data class ArtistItemModel(
     override val name: String,
     val trackCount: Int,
     val artistCoverUri: String,
-) : MediaItemModel
+) : MediaItemModel {
+    companion object {
+        val DEFAULT = ArtistItemModel(0, "", 0, "")
+    }
+}
