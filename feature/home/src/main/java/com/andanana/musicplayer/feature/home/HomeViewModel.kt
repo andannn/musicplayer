@@ -7,6 +7,8 @@ import com.andanana.musicplayer.core.domain.model.MediaItemModel
 import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.domain.repository.MediaControllerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -61,7 +63,7 @@ constructor(
                 _state.update {
                     state.copy(
                         currentCategory = category,
-                        mediaItems = items
+                        mediaItems = items.toImmutableList()
                     )
                 }
             }
@@ -76,5 +78,5 @@ constructor(
 
 data class HomeUiState(
     val currentCategory: MediaCategory = MediaCategory.ALL_MUSIC,
-    val mediaItems: List<MediaItemModel> = emptyList(),
+    val mediaItems: ImmutableList<MediaItemModel> = emptyList<MediaItemModel>().toImmutableList()
 )

@@ -1,0 +1,40 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.andanana.musicplayer.core.model.test" >
+4
+5    <uses-sdk
+5-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:5:5-74
+6        android:minSdkVersion="24"
+6-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:5:15-41
+7        android:targetSdkVersion="34" />
+7-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:5:42-71
+8
+9    <instrumentation
+9-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:11:5-15:90
+10        android:name="androidx.test.runner.AndroidJUnitRunner"
+10-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:11:22-76
+11        android:functionalTest="false"
+11-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:14:22-52
+12        android:handleProfiling="false"
+12-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:13:22-53
+13        android:label="Tests for com.andanana.musicplayer.core.model.test"
+13-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:15:22-88
+14        android:targetPackage="com.andanana.musicplayer.core.model.test" />
+14-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:12:22-86
+15
+16    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+16-->[androidx.media3:media3-common:1.4.1] /Users/jiangqn/.gradle/caches/transforms-3/ba3587ebb2463cf41ccfec9d450a3c23/transformed/media3-common-1.4.1/AndroidManifest.xml:22:5-79
+16-->[androidx.media3:media3-common:1.4.1] /Users/jiangqn/.gradle/caches/transforms-3/ba3587ebb2463cf41ccfec9d450a3c23/transformed/media3-common-1.4.1/AndroidManifest.xml:22:22-76
+17
+18    <application
+18-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:7:5-9:19
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.8.0] /Users/jiangqn/.gradle/caches/transforms-3/f45b2d211c75e9e03ded20acd79b12d4/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
+20        android:debuggable="true"
+21        android:extractNativeLibs="false" >
+22        <uses-library android:name="android.test.runner" />
+22-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:8:9-60
+22-->/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest4311238413375127481.xml:8:23-57
+23    </application>
+24
+25</manifest>

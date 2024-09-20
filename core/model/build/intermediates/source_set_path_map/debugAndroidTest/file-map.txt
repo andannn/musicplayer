@@ -1,0 +1,14 @@
+com.andanana.musicplayer.core.model.test.model-lifecycle-viewmodel-savedstate-2.5.1-0 /Users/jiangqn/.gradle/caches/transforms-3/1bac8678f9c8301de0fc6b5689ccebef/transformed/lifecycle-viewmodel-savedstate-2.5.1/res
+com.andanana.musicplayer.core.model.test.model-activity-1.5.1-1 /Users/jiangqn/.gradle/caches/transforms-3/4cfb56b12adafa7f21386e5ab9f9e3a1/transformed/activity-1.5.1/res
+com.andanana.musicplayer.core.model.test.model-annotation-experimental-1.3.1-2 /Users/jiangqn/.gradle/caches/transforms-3/870594c116e80ceeeb74dbda81a97d79/transformed/annotation-experimental-1.3.1/res
+com.andanana.musicplayer.core.model.test.model-fragment-1.5.1-3 /Users/jiangqn/.gradle/caches/transforms-3/96cd8cff9a5d25686210b955f7f0b631/transformed/fragment-1.5.1/res
+com.andanana.musicplayer.core.model.test.model-lifecycle-livedata-core-2.5.1-4 /Users/jiangqn/.gradle/caches/transforms-3/996056e64e87314c7fef92606cd120b9/transformed/lifecycle-livedata-core-2.5.1/res
+com.andanana.musicplayer.core.model.test.model-savedstate-1.2.0-5 /Users/jiangqn/.gradle/caches/transforms-3/d55df6a33e1ed0fc662d543324b2132b/transformed/savedstate-1.2.0/res
+com.andanana.musicplayer.core.model.test.model-lifecycle-viewmodel-2.5.1-6 /Users/jiangqn/.gradle/caches/transforms-3/dfe3408ce0fe4de97ccfaa1cf3f4ea6a/transformed/lifecycle-viewmodel-2.5.1/res
+com.andanana.musicplayer.core.model.test.model-lifecycle-runtime-2.5.1-7 /Users/jiangqn/.gradle/caches/transforms-3/eaf54837d1b5a345d17049e509602fc1/transformed/lifecycle-runtime-2.5.1/res
+com.andanana.musicplayer.core.model.test.model-core-1.8.0-8 /Users/jiangqn/.gradle/caches/transforms-3/f45b2d211c75e9e03ded20acd79b12d4/transformed/core-1.8.0/res
+com.andanana.musicplayer.core.model.test.model-androidTest-9 /Users/jiangqn/source/mine/musicplayer/core/model/build/generated/res/resValues/androidTest/debug
+com.andanana.musicplayer.core.model.test.model-mergeDebugAndroidTestResources-10 /Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/merged.dir
+com.andanana.musicplayer.core.model.test.model-mergeDebugAndroidTestResources-11 /Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/stripped.dir
+com.andanana.musicplayer.core.model.test.model-merged_res-12 /Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/merged_res/debugAndroidTest
+com.andanana.musicplayer.core.model.test.model-packaged_res-13 /Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/packaged_res/debug

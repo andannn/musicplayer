@@ -1,0 +1,16 @@
+#Thu Sep 19 17:38:01 JST 2024
+base.0=/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/dex/debugAndroidTest/mergeExtDexDebugAndroidTest/classes.dex
+base.1=/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/dex/debugAndroidTest/mergeLibDexDebugAndroidTest/14/classes.dex
+base.2=/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/dex/debugAndroidTest/mergeLibDexDebugAndroidTest/15/classes.dex
+base.3=/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/0/classes.dex
+base.4=/Users/jiangqn/source/mine/musicplayer/core/model/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/12/classes.dex
+path.0=classes.dex
+path.1=14/classes.dex
+path.2=15/classes.dex
+path.3=0/classes.dex
+path.4=12/classes.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
+renamed.2=classes3.dex
+renamed.3=classes4.dex
+renamed.4=classes5.dex
