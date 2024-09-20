@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @Composable
-fun MusicCard(
+fun AudioItemView(
     modifier: Modifier = Modifier,
     albumArtUri: String = "",
     isActive: Boolean = false,
@@ -42,44 +40,42 @@ fun MusicCard(
     onMusicItemClick: () -> Unit = {},
     onOptionButtonClick: () -> Unit = {},
 ) {
-    Card(
+    Surface(
         modifier = modifier.fillMaxWidth(),
-        colors =
-            if (isActive) {
-                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
-            } else {
-                CardDefaults.cardColors()
-            },
-        shape = MaterialTheme.shapes.medium,
+        color = if (isActive) {
+            MaterialTheme.colorScheme.inversePrimary
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
         onClick = onMusicItemClick,
     ) {
         Row(
             modifier =
-                Modifier
-                    .padding(10.dp)
-                    .height(IntrinsicSize.Min),
+            Modifier
+                .padding(10.dp)
+                .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(modifier = Modifier) {
                 if (showTrackNum) {
                     Text(
                         modifier =
-                            Modifier
-                                .background(
-                                    color = MaterialTheme.colorScheme.inverseOnSurface,
-                                    shape = MaterialTheme.shapes.extraSmall,
-                                )
-                                .align(Alignment.Center)
-                                .padding(horizontal = 10.dp),
+                        Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = MaterialTheme.shapes.extraSmall,
+                            )
+                            .align(Alignment.Center)
+                            .padding(horizontal = 10.dp),
                         text = trackNum.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 } else {
                     AsyncImage(
                         modifier =
-                            Modifier
-                                .size(50.dp)
-                                .clip(MaterialTheme.shapes.extraSmall),
+                        Modifier
+                            .size(50.dp)
+                            .clip(MaterialTheme.shapes.extraSmall),
                         model = albumArtUri,
                         contentDescription = "",
                     )
@@ -123,12 +119,29 @@ fun MusicCard(
 
 @Preview
 @Composable
-private fun MusicCardPreview() {
-    MusicCard(
-        albumArtUri = "",
-        title = "Title",
-        artist = "artist",
-        showTrackNum = true,
-        showSwapIcon = true,
-    )
+private fun MusicCardPreview1() {
+    MaterialTheme {
+        AudioItemView(
+            albumArtUri = "",
+            title = "Title",
+            artist = "artist",
+            showTrackNum = true,
+            showSwapIcon = true,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun MusicCardPreviewActive() {
+    MaterialTheme {
+        AudioItemView(
+            albumArtUri = "",
+            title = "Title",
+            artist = "artist",
+            isActive = true,
+            showTrackNum = true,
+            showSwapIcon = true,
+        )
+    }
 }

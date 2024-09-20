@@ -45,13 +45,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
-import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.designsystem.component.AudioItemView
 import com.andanana.musicplayer.core.designsystem.component.PlayListHeader
+import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.core.domain.model.AlbumItemModel
 import com.andanana.musicplayer.core.domain.model.ArtistItemModel
 import com.andanana.musicplayer.core.domain.model.MediaListSource
 import com.andannn.musicplayer.common.drawer.MediaBottomSheet
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun PlayListScreen(
@@ -71,7 +73,7 @@ fun PlayListScreen(
         MediaListSource.ALBUM -> {
             AlbumPlayListContent(
                 modifier = modifier,
-                albumHeader = uiState.headerInfoItem as AlbumItemModel? ?: AlbumItemModel.DEFAULT,
+                header = uiState.headerInfoItem as AlbumItemModel? ?: AlbumItemModel.DEFAULT,
                 audioList = uiState.audioList,
                 playingMediaItem = uiState.playingMediaItem,
                 onEvent = viewModel::onEvent,
@@ -134,8 +136,8 @@ fun CommonPlayListContent(
                 items = audioList,
                 key = { item -> item.id },
             ) { item: AudioItemModel ->
-                MusicCard(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
+                AudioItemView(
+                    modifier = Modifier.padding(vertical = 4.dp),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = item.artWorkUri,
                     title = item.name,
@@ -162,7 +164,7 @@ fun CommonPlayListContent(
 
 @Composable
 private fun AlbumPlayListContent(
-    albumHeader: AlbumItemModel,
+    header: AlbumItemModel,
     audioList: ImmutableList<AudioItemModel>,
     playingMediaItem: AudioItemModel?,
     modifier: Modifier = Modifier,
@@ -244,9 +246,9 @@ private fun AlbumPlayListContent(
                             .onSizeChanged {
                                 headerHeight = it.height
                             },
-                        coverArtUri = albumHeader.artWorkUri,
-                        title = albumHeader.name,
-                        trackCount = albumHeader.trackCount,
+                        coverArtUri = header.artWorkUri,
+                        title = header.name,
+                        trackCount = header.trackCount,
                         onPlayAllButtonClick = {
                             onEvent(
                                 PlayListEvent.OnPlayAllButtonClick
@@ -268,10 +270,10 @@ private fun AlbumPlayListContent(
                 items = audioList,
                 key = { it.id },
             ) { item ->
-                MusicCard(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 14.dp),
+                AudioItemView(
+                    modifier = Modifier.padding(vertical = 4.dp),
                     isActive = playingMediaItem?.id == item.id,
-                    albumArtUri = albumHeader.artWorkUri,
+                    albumArtUri = header.artWorkUri,
                     title = item.name,
                     showTrackNum = true,
                     artist = item.artist,
@@ -302,7 +304,7 @@ private fun AlbumPlayListContent(
             },
             isBackgroundTransparent = isHeaderVisible,
             isTitleVisible = isAppbarTitleVisible,
-            title = albumHeader.name,
+            title = header.name,
             onBackPressed = onBackPressed,
         )
     }
@@ -352,24 +354,81 @@ private fun CustomAppTopBar(
 @Preview
 @Composable
 private fun PlayListScreenContentPreview() {
-//    MusicPlayerTheme {
-//        AlbumPlayListContent(
-//            uiState =
-//                PlayListUiState(
-//                    title = "Title",
-//                    trackCount = 12,
-//                    musicItems =
-//                        listOf(
-//                            com.andanana.musicplayer.core.player.buildMediaItem(
-//                                title = "test song A",
-//                                mediaId = "AAA",
-//                                isPlayable = true,
-//                                isBrowsable = false,
-//                                mediaType = 0,
-//                            ),
-//                        ),
-//                ),
-//            onBackPressed = {},
-//        )
-//    }
+    MusicPlayerTheme {
+        CommonPlayListContent(
+            header = ArtistItemModel.DEFAULT,
+            audioList = listOf(
+                AudioItemModel(
+                    id = 0,
+                    name = "Song 1",
+                    modifiedDate = 0,
+                    album = "Album 1",
+                    albumId = 0,
+                    artist = "Artist 1",
+                    artistId = 0,
+                    cdTrackNumber = 1,
+                    discNumberIndex = 0,
+                    artWorkUri = "",
+                ),
+                AudioItemModel(
+                    id = 1,
+                    name = "Song 2",
+                    modifiedDate = 0,
+                    album = "Album 1",
+                    albumId = 0,
+                    artist = "Artist 1",
+                    artistId = 0,
+                    cdTrackNumber = 2,
+                    discNumberIndex = 0,
+                    artWorkUri = "",
+                ),
+            ).toImmutableList(),
+            playingMediaItem = null
+        )
+    }
 }
+
+
+@Preview
+@Composable
+private fun AlbumPlayListContentPreview() {
+    MusicPlayerTheme {
+        AlbumPlayListContent(
+            header = AlbumItemModel(
+                id = 0,
+                name = "Album 1",
+                trackCount = 2,
+                artWorkUri = "",
+            ),
+            audioList = listOf(
+                AudioItemModel(
+                    id = 0,
+                    name = "Song 1",
+                    modifiedDate = 0,
+                    album = "Album 1",
+                    albumId = 0,
+                    artist = "Artist 1",
+                    artistId = 0,
+                    cdTrackNumber = 1,
+                    discNumberIndex = 0,
+                    artWorkUri = "",
+                ),
+                AudioItemModel(
+                    id = 1,
+                    name = "Song 2",
+                    modifiedDate = 0,
+                    album = "Album 1",
+                    albumId = 0,
+                    artist = "Artist 1",
+                    artistId = 0,
+                    cdTrackNumber = 2,
+                    discNumberIndex = 0,
+                    artWorkUri = "",
+                ),
+            ).toImmutableList(),
+            playingMediaItem = null
+        )
+    }
+}
+
+

@@ -39,7 +39,6 @@ sealed interface PlayListEvent {
     data object OnHeaderOptionClick : PlayListEvent
 
     data class OnDismissRequest(val item: SheetItem?) : PlayListEvent
-
 }
 
 @HiltViewModel

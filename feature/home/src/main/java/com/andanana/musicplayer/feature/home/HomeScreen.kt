@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -31,6 +34,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andanana.musicplayer.core.domain.model.AlbumItemModel
@@ -40,9 +44,11 @@ import com.andanana.musicplayer.core.domain.model.AudioItemModel
 import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
-import com.andanana.musicplayer.core.designsystem.component.MusicCard
+import com.andanana.musicplayer.core.designsystem.component.AudioItemView
+import com.andanana.musicplayer.core.designsystem.theme.MusicPlayerTheme
 import com.andanana.musicplayer.core.domain.model.MediaListSource
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeRoute(
@@ -55,6 +61,7 @@ fun HomeRoute(
             is AlbumItemModel -> {
                 onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ALBUM)
             }
+
             is ArtistItemModel -> {
                 onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.ARTIST)
             }
@@ -177,9 +184,9 @@ private fun LazyAllAlbumContent(
     modifier: Modifier = Modifier,
     onItemClick: (AlbumItemModel) -> Unit = {},
 ) {
-    LazyVerticalStaggeredGrid(
+    LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
+        columns = GridCells.Adaptive(180.dp),
     ) {
         items(
             items = mediaItems,
@@ -250,7 +257,7 @@ fun LazyAllAudioContent(
             items = mediaItems,
             key = { it.id },
         ) { item ->
-            MusicCard(
+            AudioItemView(
                 modifier =
                 Modifier
                     .padding(vertical = 4.dp),
@@ -270,5 +277,22 @@ fun LazyAllAudioContent(
         }
 
         item { ExtraPaddingBottom() }
+    }
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    MusicPlayerTheme {
+        LazyAllAlbumContent(
+            mediaItems = (1..4).map {
+                AlbumItemModel(
+                    id = it.toLong(),
+                    name = "Album $it",
+                    artWorkUri = "",
+                    trackCount = 10
+                )
+            }.toImmutableList()
+        )
     }
 }
