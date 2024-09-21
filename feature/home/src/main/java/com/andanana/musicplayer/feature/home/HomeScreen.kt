@@ -42,7 +42,6 @@ import com.andanana.musicplayer.core.domain.model.AlbumItemModel
 import com.andanana.musicplayer.core.domain.model.MediaItemModel
 import com.andanana.musicplayer.core.domain.model.ArtistItemModel
 import com.andanana.musicplayer.core.domain.model.AudioItemModel
-import com.andanana.musicplayer.core.designsystem.component.CenterTabLayout
 import com.andanana.musicplayer.core.designsystem.component.ExtraPaddingBottom
 import com.andanana.musicplayer.core.designsystem.component.LargePreviewCard
 import com.andanana.musicplayer.core.designsystem.component.AudioItemView
