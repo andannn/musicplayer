@@ -22,6 +22,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -120,13 +121,9 @@ private fun HomeScreen(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize(),
         ) {
-            CenterTabLayout(
+            ScrollableTabRow (
                 modifier = Modifier.fillMaxWidth(),
-                paddingVertical = 5.dp,
-                selectedIndex = selectedIndex,
-                onScrollFinishToSelectIndex = { index ->
-                    onSelectCategory.invoke(categories[index])
-                },
+                selectedTabIndex = selectedIndex,
             ) {
                 categories.forEachIndexed { index, item ->
                     Tab(
