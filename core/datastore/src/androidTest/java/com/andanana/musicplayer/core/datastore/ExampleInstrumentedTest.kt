@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.datastore
+package com.andannn.melodify.core.datastore
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.andanana.musicplayer.core.datastore.test", appContext.packageName)
+        assertEquals("com.andannn.melodify.core.datastore.test", appContext.packageName)
     }
 }

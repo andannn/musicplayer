@@ -13,7 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MusicPlayer"
+rootProject.name = "Melodify"
 include(":app")
 include(":feature:home")
 include(":feature:player")

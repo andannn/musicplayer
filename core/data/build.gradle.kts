@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.andanana.musicplayer.core.data"
+    namespace = "com.andannn.melodify.core.data"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
