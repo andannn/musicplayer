@@ -28,4 +28,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Reorderable
+    implementation(libs.reorderable)
 }

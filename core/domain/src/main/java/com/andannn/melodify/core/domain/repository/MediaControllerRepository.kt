@@ -37,4 +37,8 @@ interface MediaControllerRepository {
     fun play()
 
     fun pause()
+
+    fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>)
+
+    fun moveMediaItem(from: Int, to: Int)
 }

@@ -43,7 +43,9 @@ import com.andannn.melodify.core.designsystem.component.CircleBorderImage
 import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
 import com.andannn.melodify.core.designsystem.util.verticalGradientScrim
 import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.feature.player.PlayQueueView
 import com.andannn.melodify.feature.player.PlayerUiEvent
+import kotlinx.collections.immutable.toImmutableList
 
 val MinImageSize = 60.dp
 // MaxImageSize is calculated.
@@ -231,11 +233,11 @@ fun FlexiblePlayerLayout(
                 exit = fadeOut(),
                 visible = isLayoutFullyExpand,
             ) {
-                BottomPlayQueueSheet(
+                PlayQueueView(
                     sheetMaxHeightDp = with(LocalDensity.current) { layoutState.sheetHeight.toDp() },
                     state = layoutState.sheetState,
                     activeMediaItem = activeMediaItem,
-                    playListQueue = playListQueue,
+                    playListQueue = playListQueue.toImmutableList(),
                     onEvent = onEvent,
                 )
             }

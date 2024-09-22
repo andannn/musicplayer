@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -30,22 +31,23 @@ import coil.compose.AsyncImage
 @Composable
 fun AudioItemView(
     modifier: Modifier = Modifier,
+    swapIconModifier: Modifier? = null,
     albumArtUri: String = "",
     isActive: Boolean = false,
+    defaultColor: Color = MaterialTheme.colorScheme.surface,
     title: String = "",
     artist: String = "",
     trackNum: Int = 0,
     showTrackNum: Boolean = false,
-    showSwapIcon: Boolean = false,
     onMusicItemClick: () -> Unit = {},
-    onOptionButtonClick: () -> Unit = {},
+    onOptionButtonClick: () -> Unit = {}
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = if (isActive) {
             MaterialTheme.colorScheme.inversePrimary
         } else {
-            MaterialTheme.colorScheme.surface
+            defaultColor
         },
         onClick = onMusicItemClick,
     ) {
@@ -98,20 +100,17 @@ fun AudioItemView(
                 )
             }
 
-            if (showSwapIcon) {
+            if (swapIconModifier == null) {
                 IconButton(
-                    modifier = Modifier,
-                    onClick = onOptionButtonClick,
-                ) {
-                    Icon(imageVector = Icons.Filled.Menu, contentDescription = "menu")
-                }
-            } else {
-                IconButton(
-                    modifier = Modifier,
                     onClick = onOptionButtonClick,
                 ) {
                     Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "menu")
                 }
+            } else {
+                Icon(
+                    modifier = Modifier.padding(12.dp).then(swapIconModifier),
+                    imageVector = Icons.Filled.Menu, contentDescription = "menu"
+                )
             }
         }
     }
@@ -126,7 +125,6 @@ private fun MusicCardPreview1() {
             title = "Title",
             artist = "artist",
             showTrackNum = true,
-            showSwapIcon = true,
         )
     }
 }
@@ -141,7 +139,19 @@ private fun MusicCardPreviewActive() {
             artist = "artist",
             isActive = true,
             showTrackNum = true,
-            showSwapIcon = true,
+        )
+    }
+}
+@Preview
+@Composable
+private fun MusicCardSwap() {
+    MaterialTheme {
+        AudioItemView(
+            albumArtUri = "",
+            swapIconModifier = Modifier,
+            title = "Title",
+            artist = "artist",
+            showTrackNum = true,
         )
     }
 }
