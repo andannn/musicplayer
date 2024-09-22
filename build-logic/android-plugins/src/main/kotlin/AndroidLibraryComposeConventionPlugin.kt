@@ -1,4 +1,4 @@
-import com.andanana.musicplayer.configureAndroidCompose
+import com.andanana.melodify.configureAndroidCompose
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

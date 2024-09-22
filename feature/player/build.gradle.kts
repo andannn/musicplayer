@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.andanana.musicplayer.feature.player"
+    namespace = "com.andanana.melodify.feature.player"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

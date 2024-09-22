@@ -1,4 +1,4 @@
-package com.andanana.musicplayer.core.datastore
+package com.andanana.melodify.core.datastore
 
 import org.junit.Test
 

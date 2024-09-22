@@ -1,4 +1,4 @@
-package com.andanana.musicplayer
+package com.andanana.melodify
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project

@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-option java_package = "com.andanana.musicplayer.core.datastore";
+option java_package = "com.andanana.melodify.core.datastore";
 option java_multiple_files = true;
 
 enum PlayModeProto {

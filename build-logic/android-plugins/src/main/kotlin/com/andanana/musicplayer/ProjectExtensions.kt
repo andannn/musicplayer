@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package com.andanana.musicplayer
+package com.andanana.melodify
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
