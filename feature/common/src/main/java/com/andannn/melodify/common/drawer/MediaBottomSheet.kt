@@ -1,10 +1,9 @@
-package com.andanana.melodify.common.drawer
+package com.andannn.melodify.common.drawer
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -26,8 +25,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andanana.melodify.core.designsystem.icons.SmpIcon
-import com.andanana.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.icons.SmpIcon
+import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -85,7 +84,7 @@ fun SheetItem(
 }
 
 @Composable
-fun SmpIcon(item: SmpIcon) {
+private fun SmpIcon(item: SmpIcon) {
     when (item) {
         is SmpIcon.ImageVectorIcon -> {
             Icon(imageVector = item.imageVector, contentDescription = "")
@@ -95,7 +94,7 @@ fun SmpIcon(item: SmpIcon) {
 
 @Preview
 @Composable
-private fun MediaBottomDrawerPreview() {
+private fun MediaBottomDrawerDemo() {
     MusicPlayerTheme {
         var isShow by remember {
             mutableStateOf(false)

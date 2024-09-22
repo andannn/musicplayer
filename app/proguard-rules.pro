@@ -30,5 +30,5 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 
--keep class com.andanana.melodify.core.datastore.UserPreferences { *; }
--keep class com.andanana.melodify.core.datastore.PlayMode { *; }
+-keep class com.andannn.melodify.core.datastore.UserPreferences { *; }
+-keep class com.andannn.melodify.core.datastore.PlayMode { *; }

@@ -1,4 +1,4 @@
-package com.andanana.melodify.core.datastore
+package com.andannn.melodify.core.datastore
 
 import org.junit.Test
 

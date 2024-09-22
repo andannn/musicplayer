@@ -1,4 +1,4 @@
-import com.andanana.melodify.libs
+import com.andannn.melodify.libs
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.andanana.melodify
+package com.andannn.melodify
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion

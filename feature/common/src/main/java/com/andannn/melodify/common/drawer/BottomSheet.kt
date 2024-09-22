@@ -1,7 +1,7 @@
-package com.andanana.melodify.common.drawer
+package com.andannn.melodify.common.drawer
 
-import com.andanana.melodify.core.designsystem.icons.SmpIcon
-import com.andanana.melodify.core.designsystem.icons.SimpleMusicIcons
+import com.andannn.melodify.core.designsystem.icons.SmpIcon
+import com.andannn.melodify.core.designsystem.icons.SimpleMusicIcons
 
 enum class SheetItem(
     val smpIcon: SmpIcon,

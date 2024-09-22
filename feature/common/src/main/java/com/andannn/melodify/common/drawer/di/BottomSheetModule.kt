@@ -1,9 +1,9 @@
-package com.andanana.melodify.common.drawer.di
+package com.andannn.melodify.common.drawer.di
 
-import com.andanana.melodify.core.domain.repository.MediaControllerRepository
-import com.andanana.melodify.core.domain.repository.PlayerStateRepository
-import com.andanana.melodify.common.drawer.BottomSheetController
-import com.andanana.melodify.common.drawer.BottomSheetControllerImpl
+import com.andannn.melodify.core.domain.repository.MediaControllerRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.common.drawer.BottomSheetController
+import com.andannn.melodify.common.drawer.BottomSheetControllerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

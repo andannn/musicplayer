@@ -1,4 +1,4 @@
-package com.andanana.melodify.core.data.model
+package com.andannn.melodify.core.data.model
 
 data class AudioData(
     val id: Long,

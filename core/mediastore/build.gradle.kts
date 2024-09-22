@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.andanana.melodify.core.mediastore"
+    namespace = "com.andannn.melodify.core.mediastore"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

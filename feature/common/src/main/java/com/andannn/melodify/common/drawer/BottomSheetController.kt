@@ -1,11 +1,11 @@
-package com.andanana.melodify.common.drawer
+package com.andannn.melodify.common.drawer
 
-import com.andanana.melodify.core.domain.model.AlbumItemModel
-import com.andanana.melodify.core.domain.model.ArtistItemModel
-import com.andanana.melodify.core.domain.model.AudioItemModel
-import com.andanana.melodify.core.domain.model.MediaItemModel
-import com.andanana.melodify.core.domain.repository.MediaControllerRepository
-import com.andanana.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.core.domain.model.AlbumItemModel
+import com.andannn.melodify.core.domain.model.ArtistItemModel
+import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.domain.model.MediaItemModel
+import com.andannn.melodify.core.domain.repository.MediaControllerRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

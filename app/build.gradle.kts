@@ -6,10 +6,10 @@ plugins {
 }
 
 android {
-    namespace = "com.andanana.melodify"
+    namespace = "com.andannn.melodify"
 
     defaultConfig {
-        applicationId = "com.andanana.melodify"
+        applicationId = "com.andannn.melodify"
         versionCode = 3
         versionName = "0.0.1-alpha8"
 

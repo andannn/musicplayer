@@ -1,7 +1,7 @@
-package com.andanana.melodify.core.mediastore.di
+package com.andannn.melodify.core.mediastore.di
 
-import com.andanana.melodify.core.mediastore.MediaStoreSource
-import com.andanana.melodify.core.mediastore.MediaStoreSourceImpl
+import com.andannn.melodify.core.mediastore.MediaStoreSource
+import com.andannn.melodify.core.mediastore.MediaStoreSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
