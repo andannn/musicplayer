@@ -66,26 +66,25 @@ internal class BottomSheetControllerImpl(
     }
 
     private fun CoroutineScope.onPlayNextClick(source: MediaItemModel) = launch {
-//        with(browserFuture.await()) {
-//            if (!availableCommands.contains(COMMAND_CHANGE_MEDIA_ITEMS)) {
-//                Log.d(TAG, "MediaBrowser do not contains COMMAND_CHANGE_MEDIA_ITEMS")
-//                return@launch
-//            }
-//
-//            val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
-//
-//            val items =
-//                if (source.mediaMetadata.isBrowsable == true) {
-//                    getChildrenById(source.mediaId)
-//                } else {
-//                    listOf(source)
-//                }
-//
-//            if (havePlayingQueue) {
+
+        val items = when (source) {
+            is AlbumItemModel -> {
+                mediaControllerRepository.getAudiosOfAlbum(source.id)
+            }
+
+            is ArtistItemModel -> {
+                mediaControllerRepository.getAudiosOfArtist(source.id)
+            }
+
+            is AudioItemModel -> {
+                listOf(source)
+            }
+        }
+        val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
+        if (havePlayingQueue) {
 //                addMediaItems(playerStateRepository.playingIndexInQueue + 1, items)
-//            } else {
-//                playMediaListFromStart(items)
-//            }
-//        }
+        } else {
+            mediaControllerRepository.playMediaList(items, 0, false)
+        }
     }
 }
