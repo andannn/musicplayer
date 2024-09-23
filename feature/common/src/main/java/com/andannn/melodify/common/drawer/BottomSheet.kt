@@ -38,24 +38,19 @@ sealed class BottomSheet(
 ) {
     data object MusicBottomSheet : BottomSheet(
         listOf(
-            SheetItem.ADD_TO_FAVORITE,
-            SheetItem.ADD_TO_PLAY_LIST,
             SheetItem.PLAY_NEXT,
-            SheetItem.INFORMATION,
         ),
     )
 
     data object AlbumBottomSheet : BottomSheet(
         listOf(
             SheetItem.PLAY_NEXT,
-            SheetItem.INFORMATION,
         ),
     )
 
     data object ArtistBottomSheet : BottomSheet(
         listOf(
             SheetItem.PLAY_NEXT,
-            SheetItem.INFORMATION,
         ),
     )
 

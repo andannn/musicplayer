@@ -3,6 +3,7 @@ package com.andannn.melodify.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
@@ -23,7 +24,7 @@ class HomeViewModel
 @Inject
 constructor(
     private val mediaControllerRepository: MediaControllerRepository,
-//    private val contentChangeFlowProvider: ContentChangeFlowProvider,
+    private val bottomSheetController: BottomSheetController,
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeUiState())
     val state = _state.asStateFlow()
@@ -33,18 +34,10 @@ constructor(
     init {
         viewModelScope.launch {
             getMediaItemsAndUpdateState(MediaCategory.ALL_MUSIC)
-//                contentChangeFlowProvider.audioChangedEventFlow.collect { _ ->
-//                    getMediaItemsAndUpdateState(_state.value.mediaItemPair.first)
-//                }
         }
     }
 
     fun onSelectedCategoryChanged(category: MediaCategory) {
-//            if (mediaId == _state.value.mediaItemPair.first) {
-//                // already loaded.
-//                return
-//            }
-
         getMediaItemsAndUpdateState(category)
     }
 
@@ -78,6 +71,10 @@ constructor(
             mediaItems.indexOf(mediaItem),
             false
         )
+    }
+
+    fun onShowMusicItemOption(audioItemModel: AudioItemModel) {
+        bottomSheetController.onRequestShowSheet(audioItemModel)
     }
 }
 

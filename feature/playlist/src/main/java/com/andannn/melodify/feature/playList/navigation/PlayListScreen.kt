@@ -51,7 +51,6 @@ import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
 import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.MediaListSource
-import com.andannn.melodify.common.drawer.MediaBottomSheet
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -62,7 +61,6 @@ fun PlayListScreen(
     onBackPressed: () -> Unit,
 ) {
     val uiState by viewModel.state.collectAsState()
-    val bottomSheetModel by viewModel.bottomSheetModel.collectAsState()
 
     val source =
         remember {
@@ -91,15 +89,6 @@ fun PlayListScreen(
                 onBackPressed = onBackPressed,
             )
         }
-    }
-
-    if (bottomSheetModel != null) {
-        MediaBottomSheet(
-            bottomSheet = bottomSheetModel!!.bottomSheet,
-            onDismissRequest = {
-                viewModel.onEvent(PlayListEvent.OnDismissRequest(it))
-            },
-        )
     }
 }
 

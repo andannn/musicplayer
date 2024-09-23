@@ -77,10 +77,11 @@ fun HomeRoute(
     val state by homeViewModel.state.collectAsState()
 
     HomeScreen(
-        modifier = modifier,
         state = state,
-        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
+        modifier = modifier,
         onMediaItemClick = ::onMediaItemClick,
+        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
+        onShowMusicItemOption = homeViewModel::onShowMusicItemOption,
     )
 }
 
@@ -92,6 +93,7 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     onMediaItemClick: (MediaItemModel) -> Unit = {},
     onSelectCategory: (MediaCategory) -> Unit = {},
+    onShowMusicItemOption: (AudioItemModel) -> Unit,
 ) {
     val categories = MediaCategory.entries.toTypedArray()
 
@@ -151,6 +153,7 @@ private fun HomeScreen(
                         Modifier.fillMaxSize(),
                         mediaItems = mediaItems as ImmutableList<AudioItemModel>,
                         onMusicItemClick = onMediaItemClick,
+                        onShowMusicItemOption = onShowMusicItemOption
                     )
 
                 MediaCategory.ALBUM -> {
@@ -245,6 +248,7 @@ fun LazyAllAudioContent(
     mediaItems: ImmutableList<AudioItemModel>,
     modifier: Modifier = Modifier,
     onMusicItemClick: (AudioItemModel) -> Unit = {},
+    onShowMusicItemOption: (AudioItemModel) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -268,7 +272,7 @@ fun LazyAllAudioContent(
                     onMusicItemClick.invoke(item)
                 },
                 onOptionButtonClick = {
-//                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                    onShowMusicItemOption(item)
                 },
             )
         }
