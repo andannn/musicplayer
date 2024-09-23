@@ -31,7 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.R
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.feature.player.PlayerUiEvent
 
 @Composable
@@ -135,7 +135,7 @@ fun MiniPlayerLayout(
 @Preview
 @Composable
 private fun MiniPlayerLayoutPreview() {
-    MusicPlayerTheme{
+    MelodifyTheme{
         Surface {
             MiniPlayerLayout(
                 modifier = Modifier.fillMaxWidth().height(PlayerShrinkHeight),

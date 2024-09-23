@@ -46,7 +46,7 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
 import com.andannn.melodify.core.designsystem.component.LargePreviewCard
 import com.andannn.melodify.core.designsystem.component.AudioItemView
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
@@ -230,7 +230,7 @@ fun LazyAllArtistContent(
                     .alpha(0.4f)
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
                 placeholder = rememberVectorPainter(Icons.Rounded.Person),
-                artCoverUri = Uri.parse(media.artistCoverUri),
+                artCoverUri = Uri.parse(media.artWorkUri),
                 title = media.name,
                 trackCount = media.trackCount,
                 onClick = {
@@ -284,7 +284,7 @@ fun LazyAllAudioContent(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         LazyAllAlbumContent(
             mediaItems = (1..4).map {
                 AlbumItemModel(

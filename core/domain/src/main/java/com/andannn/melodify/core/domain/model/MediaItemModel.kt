@@ -3,11 +3,13 @@ package com.andannn.melodify.core.domain.model
 sealed interface MediaItemModel {
     val id: Long
     val name: String
+    val artWorkUri: String
 }
 
 data class AudioItemModel(
     override val id: Long,
     override val name: String,
+    override val artWorkUri: String,
     val modifiedDate: Long,
     val album: String,
     val albumId: Long,
@@ -15,31 +17,30 @@ data class AudioItemModel(
     val artistId: Long,
     val cdTrackNumber: Int,
     val discNumberIndex: Int,
-    val artWorkUri: String,
 ) : MediaItemModel {
     companion object {
-        val DEFAULT = AudioItemModel(0, "", 0, "", 0, "", 0, 0, 0, "")
+        val DEFAULT = AudioItemModel(0, "", "", 0, "", 0, "", 0, 0, 0)
     }
 }
 
 data class AlbumItemModel(
     override val id: Long,
     override val name: String,
+    override val artWorkUri: String,
     val trackCount: Int,
-    val artWorkUri: String,
 ) : MediaItemModel {
     companion object {
-        val DEFAULT = AlbumItemModel(0, "", 0, "")
+        val DEFAULT = AlbumItemModel(0, "", "", 0)
     }
 }
 
 data class ArtistItemModel(
     override val id: Long,
     override val name: String,
+    override val artWorkUri: String,
     val trackCount: Int,
-    val artistCoverUri: String,
 ) : MediaItemModel {
     companion object {
-        val DEFAULT = ArtistItemModel(0, "", 0, "")
+        val DEFAULT = ArtistItemModel(0, "", "", 0)
     }
 }

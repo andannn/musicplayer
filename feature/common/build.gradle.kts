@@ -28,6 +28,8 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
 
+    // Coil
+    implementation(libs.coil.compose)
+
     implementation(libs.androidx.compose.material3)
-    implementation(libs.skydoves.flexible.bottomsheet.material3)
 }

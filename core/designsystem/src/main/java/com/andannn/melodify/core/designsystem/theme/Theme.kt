@@ -15,7 +15,7 @@ private val DarkColorPalette = darkColorScheme()
 private val LightColorPalette = lightColorScheme()
 
 @Composable
-fun MusicPlayerTheme(
+fun MelodifyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     isDynamicColor: Boolean = false,
     content: @Composable () -> Unit,

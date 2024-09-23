@@ -47,7 +47,7 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
 import com.andannn.melodify.core.designsystem.component.AudioItemView
 import com.andannn.melodify.core.designsystem.component.PlayListHeader
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.MediaListSource
@@ -343,7 +343,7 @@ private fun CustomAppTopBar(
 @Preview
 @Composable
 private fun PlayListScreenContentPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         CommonPlayListContent(
             header = ArtistItemModel.DEFAULT,
             audioList = listOf(
@@ -381,7 +381,7 @@ private fun PlayListScreenContentPreview() {
 @Preview
 @Composable
 private fun AlbumPlayListContentPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         AlbumPlayListContent(
             header = AlbumItemModel(
                 id = 0,

@@ -38,7 +38,7 @@ fun MediaItem.toAppItem(): MediaItemModel = when {
         id = mediaId.substringAfter(LibraryRootCategory.ARTIST.childrenPrefix).toLong(),
         name = mediaMetadata.title.toString(),
         trackCount = mediaMetadata.totalTrackCount ?: 0,
-        artistCoverUri = mediaMetadata.artworkUri.toString()
+        artWorkUri = mediaMetadata.artworkUri.toString()
     )
 
     else -> error("Not a AppMediaItem $this")

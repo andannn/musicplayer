@@ -17,13 +17,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.andannn.melodify.MainActivityViewModel
 import com.andannn.melodify.common.drawer.BottomSheet
+import com.andannn.melodify.common.drawer.BottomSheetModel
 import com.andannn.melodify.feature.player.PlayerSheet
 import com.andannn.melodify.feature.player.PlayerStateViewModel
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.PlayerUiState
 import com.andannn.melodify.feature.player.widget.PlayerShrinkHeight
 import com.andannn.melodify.navigation.SmpNavHost
-import com.andannn.melodify.common.drawer.MediaBottomSheet
+import com.andannn.melodify.common.drawer.MediaBottomSheetView
 import com.andannn.melodify.common.drawer.SheetItem
 
 @Composable
@@ -48,7 +49,7 @@ fun MelodifyApp(
         }
 
         BottomSheetContainer(
-            bottomSheet = bottomSheetModel?.bottomSheet,
+            bottomSheet = bottomSheetModel,
             onDismissRequest = {
                 playerStateViewModel.onEvent(PlayerUiEvent.OnDismissDrawerRequest(it))
             }
@@ -58,13 +59,13 @@ fun MelodifyApp(
 
 @Composable
 private fun BottomSheetContainer(
-    bottomSheet: BottomSheet?,
+    bottomSheet: BottomSheetModel?,
     onDismissRequest: (SheetItem?) -> Unit = {},
 ) {
     val onDismissState = rememberUpdatedState(onDismissRequest)
     if (bottomSheet != null) {
-        MediaBottomSheet(
-            bottomSheet = bottomSheet,
+        MediaBottomSheetView(
+            bottomSheetModel = bottomSheet,
             onDismissRequest = {
                 onDismissState.value(it)
             },

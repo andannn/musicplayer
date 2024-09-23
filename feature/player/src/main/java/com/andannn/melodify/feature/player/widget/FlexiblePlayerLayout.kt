@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.CircleBorderImage
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.designsystem.util.verticalGradientScrim
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.feature.player.PlayQueueView
@@ -270,7 +270,7 @@ fun FlexiblePlayerLayout(
 @Preview
 @Composable
 private fun FlexiblePlayerLayoutExpandPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         val layoutState =
             PlayerLayoutState(
                 screenHeight = 2300,
@@ -296,7 +296,7 @@ private fun FlexiblePlayerLayoutExpandPreview() {
 @Preview
 @Composable
 private fun FlexiblePlayerLayoutShrinkPreview() {
-    MusicPlayerTheme(darkTheme = false) {
+    MelodifyTheme(darkTheme = false) {
         val layoutState =
             PlayerLayoutState(
                 screenHeight = 2300,
