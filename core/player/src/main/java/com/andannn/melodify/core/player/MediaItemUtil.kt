@@ -1,9 +1,12 @@
 package com.andannn.melodify.core.player
 
 import android.net.Uri
+import android.os.Bundle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaItem.RequestMetadata
 import androidx.media3.common.MediaMetadata
+
+const val UNIQUE_ID_KEY = "unique_id"
 
 fun buildMediaItem(
     title: String,
@@ -19,6 +22,7 @@ fun buildMediaItem(
     imageUri: Uri? = null,
     totalTrackCount: Int? = null,
     trackNumber: Int? = null,
+    uniqueId: String? = null,
 ): MediaItem {
     val metadata =
         MediaMetadata.Builder()
@@ -32,6 +36,11 @@ fun buildMediaItem(
             .setMediaType(mediaType)
             .setTotalTrackCount(totalTrackCount)
             .setTrackNumber(trackNumber)
+            .setExtras(
+                Bundle().apply {
+                    uniqueId?.let { putString(UNIQUE_ID_KEY, it) }
+                }
+            )
             .build()
 
     val requestMetadata = RequestMetadata.Builder()
@@ -45,8 +54,4 @@ fun buildMediaItem(
         .setUri(sourceUri)
         .setRequestMetadata(requestMetadata)
         .build()
-}
-
-fun MediaItem.isSameDatasource(mediaItem: MediaItem): Boolean {
-    return this.mediaId == mediaItem.mediaId
 }

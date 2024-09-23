@@ -89,7 +89,7 @@ constructor(
         val browser = browserFuture.getOrNull() ?: error("MediaBrowser is not ready")
         with(browser) {
             setMediaItems(
-                mediaList.map { it.toMediaItem() },
+                mediaList.map { it.toMediaItem(generateUniqueId = true) },
                 index,
                 C.TIME_UNSET,
             )
@@ -130,7 +130,7 @@ constructor(
     override fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>) {
         getMediaBrowserOrNull()?.addMediaItems(
             /* index = */ index,
-            /* mediaItems = */ mediaItems.map { it.toMediaItem() }
+            /* mediaItems = */ mediaItems.map { it.toMediaItem(generateUniqueId = true) }
         )
     }
 

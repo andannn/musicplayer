@@ -17,6 +17,7 @@ data class AudioItemModel(
     val artistId: Long,
     val cdTrackNumber: Int,
     val discNumberIndex: Int,
+    val extraUniqueId: String? = null,
 ) : MediaItemModel {
     companion object {
         val DEFAULT = AudioItemModel(0, "", "", 0, "", 0, "", 0, 0, 0)

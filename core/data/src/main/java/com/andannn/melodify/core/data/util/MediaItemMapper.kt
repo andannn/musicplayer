@@ -10,6 +10,7 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.LibraryRootCategory
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.PLAYABLE_MEDIA_ITEM_PREFIX
+import com.andannn.melodify.core.player.UNIQUE_ID_KEY
 import com.andannn.melodify.core.player.buildMediaItem
 
 
@@ -24,7 +25,8 @@ fun MediaItem.toAppItem(): MediaItemModel = when {
         artistId = 0,
         cdTrackNumber = mediaMetadata.trackNumber ?: 0,
         discNumberIndex = 0,
-        artWorkUri = mediaMetadata.artworkUri.toString()
+        artWorkUri = mediaMetadata.artworkUri.toString(),
+        extraUniqueId = mediaMetadata.extras?.getString(UNIQUE_ID_KEY)
     )
 
     mediaId.contains(LibraryRootCategory.ALBUM.childrenPrefix) -> AlbumItemModel(
@@ -44,7 +46,11 @@ fun MediaItem.toAppItem(): MediaItemModel = when {
     else -> error("Not a AppMediaItem $this")
 }
 
-fun AudioItemModel.toMediaItem(): MediaItem {
+private var counter = 1
+
+private val uniqueId get() = "media_item_unique_id" + counter++
+
+fun AudioItemModel.toMediaItem(generateUniqueId: Boolean = false): MediaItem {
     return buildMediaItem(
         title = name,
         sourceUri =
@@ -60,5 +66,6 @@ fun AudioItemModel.toMediaItem(): MediaItem {
         isPlayable = true,
         isBrowsable = false,
         mediaType = MediaMetadata.MEDIA_TYPE_MUSIC,
+        uniqueId = if (generateUniqueId) uniqueId else null
     )
 }
