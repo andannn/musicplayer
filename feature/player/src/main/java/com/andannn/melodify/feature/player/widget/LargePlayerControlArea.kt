@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.component.SmpMainIconButton
 import com.andannn.melodify.core.designsystem.component.SmpSubIconButton
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.util.getIcon
@@ -139,7 +139,7 @@ fun LargePlayerControlArea(
 @Preview
 @Composable
 private fun LargeControlAreaPreview() {
-    MusicPlayerTheme(darkTheme = false) {
+    MelodifyTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(
                 modifier = Modifier,

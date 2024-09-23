@@ -2,6 +2,7 @@ package com.andannn.melodify.core.player
 
 import androidx.media3.common.MediaItem
 import com.andannn.melodify.core.domain.model.PlayerState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerMonitor {
@@ -15,7 +16,7 @@ interface PlayerMonitor {
 
     fun observePlayListQueue(): StateFlow<List<MediaItem>>
 
-    fun observePlayingMedia(): StateFlow<MediaItem?>
+    fun observePlayingMedia(): Flow<MediaItem?>
 
     fun observeIsShuffle(): StateFlow<Boolean>
 

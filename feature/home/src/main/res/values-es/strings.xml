@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+     <string name="home">Inicio</string>
+     <string name="audio_page_title">Canciones</string>
+     <string name="album_page_title">Álbum</string>
+     <string name="artist_page_title">Artista</string>
+</resources>

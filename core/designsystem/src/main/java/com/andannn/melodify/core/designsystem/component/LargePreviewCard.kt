@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 
 @Composable
 fun LargePreviewCard(
@@ -78,7 +77,7 @@ fun LargePreviewCard(
 @Preview
 @Composable
 private fun AlbumCardPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         Surface {
             LargePreviewCard(
                 imageModifier =

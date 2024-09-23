@@ -17,9 +17,11 @@ data class BottomSheetModel(
     val bottomSheet: BottomSheet,
 )
 
-interface BottomSheetController {
+interface BottomSheetStateProvider {
     val bottomSheetModel: StateFlow<BottomSheetModel?>
+}
 
+interface BottomSheetController: BottomSheetStateProvider {
     fun onRequestShowSheet(mediaItem: MediaItemModel)
 
     fun CoroutineScope.onDismissRequest(item: SheetItem?)

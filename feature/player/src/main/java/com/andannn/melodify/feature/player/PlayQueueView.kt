@@ -150,7 +150,7 @@ fun PlayQueueView(
                                             playQueueState.onStopDrag()
                                         }
                                     ),
-                                    isActive = item.id == activeMediaItem.id,
+                                    isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
                                     defaultColor = MaterialTheme.colorScheme.surfaceVariant,
                                     albumArtUri = item.artWorkUri,
                                     title = item.name,

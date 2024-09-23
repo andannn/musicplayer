@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">ホーム</string>
+    <string name="audio_page_title">曲</string>
+    <string name="album_page_title">アルバム</string>
+    <string name="artist_page_title">アーティスト</string>
+</resources>

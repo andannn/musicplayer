@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.ui.MelodifyApp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            MusicPlayerTheme(isDynamicColor = true) {
+            MelodifyTheme(isDynamicColor = true) {
                 if (permissionGranted) {
                     MelodifyApp()
                 }

@@ -9,13 +9,11 @@ import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.BottomSheetModel
 import com.andannn.melodify.common.drawer.SheetItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -97,9 +95,6 @@ constructor(
             }
         }
     }
-
-    val bottomSheetModel: StateFlow<BottomSheetModel?>
-        get() = bottomSheetController.bottomSheetModel
 
     fun onEvent(event: PlayListEvent) {
         when (event) {

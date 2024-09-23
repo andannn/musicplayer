@@ -172,9 +172,6 @@ constructor(
         }
     }
 
-    val bottomSheetModel: StateFlow<BottomSheetModel?>
-        get() = bottomSheetController.bottomSheetModel
-
     fun next() {
         mediaControllerRepository.seekToNext()
     }

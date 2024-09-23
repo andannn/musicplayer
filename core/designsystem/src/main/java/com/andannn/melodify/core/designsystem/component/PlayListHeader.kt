@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Shuffle
@@ -28,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 
 @Composable
 fun PlayListHeader(
@@ -118,7 +117,7 @@ fun PlayListHeader(
 @Preview
 @Composable
 private fun PlayListControlBoxPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         Surface {
             PlayListHeader(
                 coverArtUri = "",
@@ -132,7 +131,7 @@ private fun PlayListControlBoxPreview() {
 @Preview
 @Composable
 private fun PlayListControlBoxLongTitlePreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         Surface {
             PlayListHeader(
                 coverArtUri = "",

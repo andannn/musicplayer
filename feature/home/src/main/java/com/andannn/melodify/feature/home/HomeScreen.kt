@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,6 +35,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,8 +46,9 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
 import com.andannn.melodify.core.designsystem.component.LargePreviewCard
 import com.andannn.melodify.core.designsystem.component.AudioItemView
-import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.MediaListSource
+import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -76,10 +77,11 @@ fun HomeRoute(
     val state by homeViewModel.state.collectAsState()
 
     HomeScreen(
-        modifier = modifier,
         state = state,
-        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
+        modifier = modifier,
         onMediaItemClick = ::onMediaItemClick,
+        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
+        onShowMusicItemOption = homeViewModel::onShowMusicItemOption,
     )
 }
 
@@ -91,6 +93,7 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     onMediaItemClick: (MediaItemModel) -> Unit = {},
     onSelectCategory: (MediaCategory) -> Unit = {},
+    onShowMusicItemOption: (AudioItemModel) -> Unit,
 ) {
     val categories = MediaCategory.entries.toTypedArray()
 
@@ -133,8 +136,7 @@ private fun HomeScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
                             Text(
-//                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
-                                text = item.toString(),
+                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
                             )
                         },
                         onClick = {
@@ -151,6 +153,7 @@ private fun HomeScreen(
                         Modifier.fillMaxSize(),
                         mediaItems = mediaItems as ImmutableList<AudioItemModel>,
                         onMusicItemClick = onMediaItemClick,
+                        onShowMusicItemOption = onShowMusicItemOption
                     )
 
                 MediaCategory.ALBUM -> {
@@ -227,7 +230,7 @@ fun LazyAllArtistContent(
                     .alpha(0.4f)
                     .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
                 placeholder = rememberVectorPainter(Icons.Rounded.Person),
-                artCoverUri = Uri.parse(media.artistCoverUri),
+                artCoverUri = Uri.parse(media.artWorkUri),
                 title = media.name,
                 trackCount = media.trackCount,
                 onClick = {
@@ -245,6 +248,7 @@ fun LazyAllAudioContent(
     mediaItems: ImmutableList<AudioItemModel>,
     modifier: Modifier = Modifier,
     onMusicItemClick: (AudioItemModel) -> Unit = {},
+    onShowMusicItemOption: (AudioItemModel) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -268,7 +272,7 @@ fun LazyAllAudioContent(
                     onMusicItemClick.invoke(item)
                 },
                 onOptionButtonClick = {
-//                                item.localConfiguration?.let { onShowMusicItemOption(it.uri) }
+                    onShowMusicItemOption(item)
                 },
             )
         }
@@ -280,7 +284,7 @@ fun LazyAllAudioContent(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    MusicPlayerTheme {
+    MelodifyTheme {
         LazyAllAlbumContent(
             mediaItems = (1..4).map {
                 AlbumItemModel(
