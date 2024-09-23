@@ -17,20 +17,29 @@ import javax.inject.Singleton
 private const val TAG = "PlayerRepositoryImpl"
 
 @Singleton
-class PlayerMonitorImpl
+class PlayerWrapperImpl
 @Inject
 constructor(
-    private val player: Player,
-) : PlayerMonitor {
-    private val playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
+) : PlayerWrapper {
+    private var _player: Player? = null
+        set(playerOrNull) {
+            if (playerOrNull != null) {
+                setUpPlayer(playerOrNull)
+            } else {
+                release()
+            }
+            field = playerOrNull
+        }
 
-    private val playerModeFlow = MutableStateFlow(Player.REPEAT_MODE_ALL)
-    private val isShuffleFlow = MutableStateFlow(false)
+    private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
-    private val playingMediaItemStateFlow = MutableSharedFlow<MediaItem?>(1)
-    private val playingIndexInQueueFlow = MutableStateFlow<Int?>(null)
+    private val _playerModeFlow = MutableStateFlow(Player.REPEAT_MODE_ALL)
+    private val _isShuffleFlow = MutableStateFlow(false)
 
-    private val playListFlow = MutableStateFlow<List<MediaItem>>(emptyList())
+    private val _playingMediaItemStateFlow = MutableSharedFlow<MediaItem?>(1)
+    private val _playingIndexInQueueFlow = MutableStateFlow<Int?>(null)
+
+    private val _playListFlow = MutableStateFlow<List<MediaItem>>(emptyList())
 
     private val playerListener =
         object : Player.Listener {
@@ -40,10 +49,12 @@ constructor(
                         Player.STATE_IDLE -> PlayerState.Idle
                         Player.STATE_BUFFERING -> PlayerState.Buffering
                         Player.STATE_READY -> {
-                            if (player.isPlaying) {
-                                PlayerState.Playing(player.currentPosition)
-                            } else {
-                                PlayerState.Paused(player.currentPosition)
+                            with(_player!!) {
+                                if (isPlaying) {
+                                    PlayerState.Playing(currentPosition)
+                                } else {
+                                    PlayerState.Paused(currentPosition)
+                                }
                             }
                         }
 
@@ -51,7 +62,7 @@ constructor(
                         else -> error("Impossible")
                     }
 
-                playerStateFlow.update { state }
+                _playerStateFlow.update { state }
             }
 
             override fun onPlayWhenReadyChanged(
@@ -62,21 +73,23 @@ constructor(
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                if (isPlaying) {
-                    playerStateFlow.value = PlayerState.Playing(player.currentPosition)
-                } else {
-                    val suppressed =
-                        player.playbackSuppressionReason != Player.PLAYBACK_SUPPRESSION_REASON_NONE
-                    val playerError = player.playerError != null
-                    if (player.playbackState == Player.STATE_READY && !suppressed && !playerError) {
-                        playerStateFlow.value = PlayerState.Paused(player.currentPosition)
+                with(_player!!) {
+                    if (isPlaying) {
+                        _playerStateFlow.value = PlayerState.Playing(currentPosition)
+                    } else {
+                        val suppressed =
+                            playbackSuppressionReason != Player.PLAYBACK_SUPPRESSION_REASON_NONE
+                        val playerError = playerError != null
+                        if (playbackState == Player.STATE_READY && !suppressed && !playerError) {
+                            _playerStateFlow.value = PlayerState.Paused(currentPosition)
+                        }
                     }
                 }
             }
 
             override fun onPlayerError(error: PlaybackException) {
 // TODO: Define exception type and send back.
-                playerStateFlow.value = PlayerState.Error(error)
+                _playerStateFlow.value = PlayerState.Error(error)
             }
 
             override fun onMediaItemTransition(
@@ -84,8 +97,8 @@ constructor(
                 reason: Int,
             ) {
                 Log.d(TAG, "onMediaItemTransition: $mediaItem")
-                playingIndexInQueueFlow.value = player.currentMediaItemIndex
-                playingMediaItemStateFlow.tryEmit(mediaItem)
+                _playingIndexInQueueFlow.value = _player!!.currentMediaItemIndex
+                _playingMediaItemStateFlow.tryEmit(mediaItem)
             }
 
             override fun onPositionDiscontinuity(
@@ -93,7 +106,7 @@ constructor(
                 newPosition: Player.PositionInfo,
                 reason: Int,
             ) {
-                playerStateFlow.getAndUpdate { state ->
+                _playerStateFlow.getAndUpdate { state ->
                     when (state) {
                         is PlayerState.Playing -> {
                             state.copy(currentPositionMs = newPosition.contentPositionMs)
@@ -117,42 +130,58 @@ constructor(
                 MutableList(timeline.windowCount) { index ->
                     timeline.getWindow(index, Timeline.Window()).mediaItem
                 }.also { mediaItems ->
-                    playListFlow.value = mediaItems.toList()
+                    _playListFlow.value = mediaItems.toList()
                 }
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
                 Log.d(TAG, "onShuffleModeEnabledChanged: $shuffleModeEnabled")
-                isShuffleFlow.value = shuffleModeEnabled
+                _isShuffleFlow.value = shuffleModeEnabled
             }
 
             override fun onRepeatModeChanged(repeatMode: Int) {
                 Log.d(TAG, "onRepeatModeChanged: $repeatMode")
-                playerModeFlow.value = repeatMode
+                _playerModeFlow.value = repeatMode
             }
         }
 
-    init {
+    private fun setUpPlayer(player: Player) {
+        player.prepare()
         player.addListener(playerListener)
         player.repeatMode = Player.REPEAT_MODE_ALL
     }
 
+    private fun release() {
+        _playerStateFlow.value = PlayerState.Idle
+        _playerModeFlow.value = Player.REPEAT_MODE_ALL
+        _isShuffleFlow.value = false
+        _playingIndexInQueueFlow.value = null
+        _playListFlow.value = emptyList()
+
+        _player?.release()
+        _player = null
+    }
+
+    override fun setPlayer(player: Player?) {
+        this._player = player
+    }
+
     override val currentPositionMs: Long
-        get() = player.currentPosition
+        get() = _player?.currentPosition ?: 0
 
     override val playerState: PlayerState
-        get() = playerStateFlow.value
+        get() = _playerStateFlow.value
 
     override val playingIndexInQueue: Int
-        get() = playingIndexInQueueFlow.value!!
+        get() = _playingIndexInQueueFlow.value!!
 
-    override fun observePlayerState(): StateFlow<PlayerState> = playerStateFlow
+    override fun observePlayerState(): StateFlow<PlayerState> = _playerStateFlow
 
-    override fun observePlayListQueue() = playListFlow
+    override fun observePlayListQueue() = _playListFlow
 
-    override fun observePlayingMedia() = playingMediaItemStateFlow
+    override fun observePlayingMedia() = _playingMediaItemStateFlow
 
-    override fun observeIsShuffle() = isShuffleFlow
+    override fun observeIsShuffle() = _isShuffleFlow
 
-    override fun observePlayMode() = playerModeFlow
+    override fun observePlayMode() = _playerModeFlow
 }

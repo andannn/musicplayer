@@ -2,8 +2,9 @@ package com.andannn.melodify.core.player
 
 import android.app.PendingIntent
 import android.content.Intent
+import androidx.media3.common.AudioAttributes
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 @AndroidEntryPoint
 class PlayerService : MediaLibraryService(), CoroutineScope {
     @Inject
-    lateinit var player: Player
+    lateinit var playerWrapper: PlayerWrapper
 
     @Inject
     lateinit var mediaLibrarySource: MediaLibrarySource
@@ -38,14 +39,24 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
-        initializeSessionAndPlayer()
+
+        val player = ExoPlayer.Builder(application)
+            .setAudioAttributes(AudioAttributes.DEFAULT, true)
+            .setHandleAudioBecomingNoisy(true)
+            .build()
+
+        playerWrapper.setPlayer(player)
+        mediaLibrarySession =
+            MediaLibrarySession.Builder(this, player, librarySessionCallback)
+                .setSessionActivity(getSingleTopActivity())
+                .build()
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
+        playerWrapper.setPlayer(null)
         mediaLibrarySession.release()
-        player.release()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
@@ -105,11 +116,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
     }
 
     private fun initializeSessionAndPlayer() {
-        player.prepare()
-        mediaLibrarySession =
-            MediaLibrarySession.Builder(this, player, librarySessionCallback)
-                .setSessionActivity(getSingleTopActivity())
-                .build()
+
     }
 
     private fun getSingleTopActivity(): PendingIntent {
