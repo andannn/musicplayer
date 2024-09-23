@@ -82,7 +82,10 @@ internal class BottomSheetControllerImpl(
         }
         val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
         if (havePlayingQueue) {
-//                addMediaItems(playerStateRepository.playingIndexInQueue + 1, items)
+            mediaControllerRepository.addMediaItems(
+                index = playerStateRepository.playingIndexInQueue + 1,
+                mediaItems = items
+            )
         } else {
             mediaControllerRepository.playMediaList(items, 0, false)
         }

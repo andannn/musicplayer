@@ -127,10 +127,22 @@ constructor(
         getMediaBrowserOrNull()?.pause()
     }
 
+    override fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>) {
+        getMediaBrowserOrNull()?.addMediaItems(
+            /* index = */ index,
+            /* mediaItems = */ mediaItems.map { it.toMediaItem() }
+        )
+    }
+
+    override fun moveMediaItem(from: Int, to: Int) {
+        getMediaBrowserOrNull()?.moveMediaItem(from, to)
+    }
+
     private suspend fun getMediaBrowser(): MediaBrowser {
         return browserFuture.await()
     }
-    private  fun getMediaBrowserOrNull(): MediaBrowser? {
+
+    private fun getMediaBrowserOrNull(): MediaBrowser? {
         return browserFuture.getOrNull()
     }
 }

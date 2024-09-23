@@ -40,6 +40,8 @@ sealed interface PlayerUiEvent {
     data class OnDismissDrawerRequest(val item: SheetItem?) : PlayerUiEvent
 
     data class OnProgressChange(val progress: Float) : PlayerUiEvent
+
+    data class OnSwapPlayQueue(val from: Int, val to: Int) : PlayerUiEvent
 }
 
 @HiltViewModel
@@ -150,6 +152,10 @@ constructor(
                 with(bottomSheetController) {
                     viewModelScope.onDismissRequest(event.item)
                 }
+            }
+
+            is PlayerUiEvent.OnSwapPlayQueue -> {
+                mediaControllerRepository.moveMediaItem(event.from, event.to)
             }
         }
     }
