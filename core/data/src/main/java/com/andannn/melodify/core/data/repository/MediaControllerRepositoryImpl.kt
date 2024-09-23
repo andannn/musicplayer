@@ -1,5 +1,6 @@
 package com.andannn.melodify.core.data.repository
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.session.MediaBrowser
 import com.andannn.melodify.core.domain.model.AlbumItemModel
@@ -19,6 +20,8 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.guava.await
 import javax.inject.Inject
+
+private const val TAG = "MediaControllerRepository"
 
 class MediaControllerRepositoryImpl
 @Inject
@@ -128,6 +131,7 @@ constructor(
     }
 
     override fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>) {
+        Log.d(TAG, "addMediaItems: index $index, mediaItems $mediaItems")
         getMediaBrowserOrNull()?.addMediaItems(
             /* index = */ index,
             /* mediaItems = */ mediaItems.map { it.toMediaItem(generateUniqueId = true) }
