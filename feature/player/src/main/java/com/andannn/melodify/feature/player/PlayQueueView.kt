@@ -13,25 +13,31 @@ import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +52,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import kotlin.math.roundToInt
 
@@ -123,6 +130,10 @@ fun PlayQueueView(
                         onSwapFinished = { from, to ->
                             Log.d(TAG, "PlayQueueView: drag stopped from $from to $to")
                             onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
+                        },
+                        onDeleteFinished = {
+                            Log.d(TAG, "onDeleteFinished $it")
+                            onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
                         }
                     )
 
@@ -141,26 +152,18 @@ fun PlayQueueView(
                                 state = playQueueState.reorderableLazyListState,
                                 key = item.hashCode()
                             ) { _ ->
-                                AudioItemView(
-                                    modifier =
-                                    Modifier
-                                        .padding(vertical = 4.dp),
-                                    swapIconModifier = Modifier.draggableHandle(
-                                        onDragStopped = {
-                                            playQueueState.onStopDrag()
-                                        }
-                                    ),
+                                SwipeQueueItem(
+                                    item = item,
                                     isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
-                                    defaultColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    albumArtUri = item.artWorkUri,
-                                    title = item.name,
-                                    showTrackNum = false,
-                                    artist = item.artist,
-                                    trackNum = item.cdTrackNumber,
-                                    onMusicItemClick = {
+                                    onClick = {
+                                        onEvent(PlayerUiEvent.OnItemClickInQueue(item))
                                     },
-                                    onOptionButtonClick = {
+                                    onSwapFinish = {
+                                        playQueueState.onStopDrag()
                                     },
+                                    onDismissFinish = {
+                                        playQueueState.onDismissItem(item)
+                                    }
                                 )
                             }
                         }
@@ -182,6 +185,52 @@ fun PlayQueueView(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ReorderableCollectionItemScope.SwipeQueueItem(
+    item: AudioItemModel,
+    isActive: Boolean,
+    modifier: Modifier = Modifier,
+    onSwapFinish: () -> Unit = {},
+    onClick: () -> Unit = {},
+    onDismissFinish: () -> Unit = {}
+) {
+    val dismissState = rememberSwipeToDismissBoxState()
+    var dismissed by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissed) return@LaunchedEffect
+
+        val state = dismissState.currentValue
+        if (state == SwipeToDismissBoxValue.EndToStart || state == SwipeToDismissBoxValue.StartToEnd) {
+            onDismissFinish()
+            dismissed = true
+        }
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            Spacer(modifier = Modifier)
+        }
+    ) {
+        AudioItemView(
+            modifier = modifier,
+            swapIconModifier = Modifier.draggableHandle(
+                onDragStopped = onSwapFinish
+            ),
+            isActive = isActive,
+            defaultColor = Color.Transparent,
+            albumArtUri = item.artWorkUri,
+            title = item.name,
+            showTrackNum = false,
+            artist = item.artist,
+            trackNum = item.cdTrackNumber,
+            onMusicItemClick = onClick,
+        )
     }
 }
 

@@ -133,7 +133,7 @@ constructor(
         index: Int,
         isShuffle: Boolean = false,
     ) {
-        mediaControllerRepository.playMediaList(mediaItems, index, isShuffle)
+        mediaControllerRepository.playMediaList(mediaItems, index)
     }
 }
 

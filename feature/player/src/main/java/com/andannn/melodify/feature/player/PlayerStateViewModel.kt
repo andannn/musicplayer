@@ -10,12 +10,10 @@ import com.andannn.melodify.core.domain.model.PlayerState
 import com.andannn.melodify.core.domain.model.util.CoroutineTicker
 import com.andannn.melodify.core.domain.util.combine
 import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.BottomSheetModel
 import com.andannn.melodify.common.drawer.SheetItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,6 +40,10 @@ sealed interface PlayerUiEvent {
     data class OnProgressChange(val progress: Float) : PlayerUiEvent
 
     data class OnSwapPlayQueue(val from: Int, val to: Int) : PlayerUiEvent
+
+    data class OnDeleteMediaItem(val index: Int) : PlayerUiEvent
+
+    data class OnItemClickInQueue(val item: AudioItemModel) : PlayerUiEvent
 }
 
 @HiltViewModel
@@ -156,6 +158,17 @@ constructor(
 
             is PlayerUiEvent.OnSwapPlayQueue -> {
                 mediaControllerRepository.moveMediaItem(event.from, event.to)
+            }
+
+            is PlayerUiEvent.OnItemClickInQueue -> {
+                val state = playerUiStateFlow.value as PlayerUiState.Active
+                mediaControllerRepository.seekMediaItem(
+                    mediaItemIndex = state.playListQueue.indexOf(event.item)
+                )
+            }
+
+            is PlayerUiEvent.OnDeleteMediaItem -> {
+                mediaControllerRepository.removeMediaItem(event.index)
             }
         }
     }

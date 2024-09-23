@@ -1,5 +1,6 @@
 package com.andannn.melodify.core.data.repository
 
+import android.util.Log
 import androidx.media3.common.C
 import androidx.media3.session.MediaBrowser
 import com.andannn.melodify.core.domain.model.AlbumItemModel
@@ -19,6 +20,8 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.guava.await
 import javax.inject.Inject
+
+private const val TAG = "MediaControllerRepository"
 
 class MediaControllerRepositoryImpl
 @Inject
@@ -85,7 +88,7 @@ constructor(
     override val duration: Long?
         get() = getMediaBrowserOrNull()?.duration
 
-    override fun playMediaList(mediaList: List<AudioItemModel>, index: Int, isShuffle: Boolean) {
+    override fun playMediaList(mediaList: List<AudioItemModel>, index: Int) {
         val browser = browserFuture.getOrNull() ?: error("MediaBrowser is not ready")
         with(browser) {
             setMediaItems(
@@ -93,7 +96,6 @@ constructor(
                 index,
                 C.TIME_UNSET,
             )
-            shuffleModeEnabled = isShuffle
             prepare()
             play()
         }
@@ -105,6 +107,10 @@ constructor(
 
     override fun seekToPrevious() {
         getMediaBrowserOrNull()?.seekToPrevious()
+    }
+
+    override fun seekMediaItem(mediaItemIndex: Int, positionMs: Long) {
+        getMediaBrowserOrNull()?.seekTo(mediaItemIndex, positionMs)
     }
 
     override fun seekToTime(time: Long) {
@@ -128,6 +134,7 @@ constructor(
     }
 
     override fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>) {
+        Log.d(TAG, "addMediaItems: index $index, mediaItems $mediaItems")
         getMediaBrowserOrNull()?.addMediaItems(
             /* index = */ index,
             /* mediaItems = */ mediaItems.map { it.toMediaItem(generateUniqueId = true) }
@@ -136,6 +143,10 @@ constructor(
 
     override fun moveMediaItem(from: Int, to: Int) {
         getMediaBrowserOrNull()?.moveMediaItem(from, to)
+    }
+
+    override fun removeMediaItem(index: Int) {
+        getMediaBrowserOrNull()?.removeMediaItem(index)
     }
 
     private suspend fun getMediaBrowser(): MediaBrowser {
