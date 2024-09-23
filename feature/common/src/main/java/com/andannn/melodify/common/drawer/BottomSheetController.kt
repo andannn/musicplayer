@@ -89,7 +89,7 @@ internal class BottomSheetControllerImpl(
                 mediaItems = items
             )
         } else {
-            mediaControllerRepository.playMediaList(items, 0, false)
+            mediaControllerRepository.playMediaList(items, 0)
         }
     }
 }

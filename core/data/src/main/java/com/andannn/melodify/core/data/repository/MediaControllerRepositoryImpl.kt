@@ -88,7 +88,7 @@ constructor(
     override val duration: Long?
         get() = getMediaBrowserOrNull()?.duration
 
-    override fun playMediaList(mediaList: List<AudioItemModel>, index: Int, isShuffle: Boolean) {
+    override fun playMediaList(mediaList: List<AudioItemModel>, index: Int) {
         val browser = browserFuture.getOrNull() ?: error("MediaBrowser is not ready")
         with(browser) {
             setMediaItems(
@@ -96,7 +96,6 @@ constructor(
                 index,
                 C.TIME_UNSET,
             )
-            shuffleModeEnabled = isShuffle
             prepare()
             play()
         }
@@ -108,6 +107,10 @@ constructor(
 
     override fun seekToPrevious() {
         getMediaBrowserOrNull()?.seekToPrevious()
+    }
+
+    override fun seekMediaItem(mediaItemIndex: Int, positionMs: Long) {
+        getMediaBrowserOrNull()?.seekTo(mediaItemIndex, positionMs)
     }
 
     override fun seekToTime(time: Long) {

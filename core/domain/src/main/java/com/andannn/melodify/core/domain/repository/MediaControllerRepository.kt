@@ -22,11 +22,13 @@ interface MediaControllerRepository {
 
     val duration: Long?
 
-    fun playMediaList(mediaList: List<AudioItemModel>, index: Int, isShuffle: Boolean)
+    fun playMediaList(mediaList: List<AudioItemModel>, index: Int)
 
     fun seekToNext()
 
     fun seekToPrevious()
+
+    fun seekMediaItem(mediaItemIndex: Int, positionMs: Long = 0)
 
     fun seekToTime(time: Long)
 

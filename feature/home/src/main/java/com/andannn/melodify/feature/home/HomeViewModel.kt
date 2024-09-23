@@ -68,8 +68,7 @@ constructor(
 
         mediaControllerRepository.playMediaList(
             mediaItems.toList(),
-            mediaItems.indexOf(mediaItem),
-            false
+            mediaItems.indexOf(mediaItem)
         )
     }
 

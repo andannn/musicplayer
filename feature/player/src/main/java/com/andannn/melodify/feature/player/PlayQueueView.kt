@@ -158,8 +158,7 @@ fun PlayQueueView(
                                     artist = item.artist,
                                     trackNum = item.cdTrackNumber,
                                     onMusicItemClick = {
-                                    },
-                                    onOptionButtonClick = {
+                                        onEvent(PlayerUiEvent.OnItemClickInQueue(item))
                                     },
                                 )
                             }
