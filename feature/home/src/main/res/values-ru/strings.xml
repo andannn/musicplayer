@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Главная</string>
+    <string name="audio_page_title">Песни</string>
+    <string name="album_page_title">Альбом</string>
+    <string name="artist_page_title">Исполнитель</string>
+</resources>

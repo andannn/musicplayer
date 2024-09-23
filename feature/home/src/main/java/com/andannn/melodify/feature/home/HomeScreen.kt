@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -36,6 +35,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +48,7 @@ import com.andannn.melodify.core.designsystem.component.LargePreviewCard
 import com.andannn.melodify.core.designsystem.component.AudioItemView
 import com.andannn.melodify.core.designsystem.theme.MusicPlayerTheme
 import com.andannn.melodify.core.domain.model.MediaListSource
+import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -133,8 +134,7 @@ private fun HomeScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
                             Text(
-//                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
-                                text = item.toString(),
+                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
                             )
                         },
                         onClick = {
