@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -106,90 +107,89 @@ fun PlayQueueView(
                 )
             },
     ) {
-        Box {
-            Column(
-                modifier =
-                Modifier
-                    .graphicsLayer { alpha = expandFactor }
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-            ) {
-                Box(
-                    modifier = Modifier.height(BottomSheetDragAreaHeight),
-                )
+        Column(
+            modifier =
+            Modifier
+                .fillMaxHeight()
+                .graphicsLayer { alpha = expandFactor }
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+        ) {
+            Box(
+                modifier = Modifier.height(BottomSheetDragAreaHeight),
+            )
 
-                HorizontalDivider(color = MaterialTheme.colorScheme.primary)
-
-                Box(
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                ) {
-
-                    val playQueueState = rememberPlayQueueState(
-                        onSwapFinished = { from, to ->
-                            Log.d(TAG, "PlayQueueView: drag stopped from $from to $to")
-                            onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
-                        },
-                        onDeleteFinished = {
-                            Log.d(TAG, "onDeleteFinished $it")
-                            onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
-                        }
-                    )
-
-                    LaunchedEffect(playListQueue) {
-                        playQueueState.onApplyNewList(playListQueue)
-                    }
-
-                    LazyColumn(
-                        state = playQueueState.lazyListState
-                    ) {
-                        items(
-                            items = playQueueState.audioItemList,
-                            key = { it.hashCode() },
-                        ) { item ->
-                            ReorderableItem(
-                                state = playQueueState.reorderableLazyListState,
-                                key = item.hashCode()
-                            ) { _ ->
-                                SwipeQueueItem(
-                                    item = item,
-                                    isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
-                                    onClick = {
-                                        onEvent(PlayerUiEvent.OnItemClickInQueue(item))
-                                    },
-                                    onSwapFinish = {
-                                        playQueueState.onStopDrag()
-                                    },
-                                    onDismissFinish = {
-                                        playQueueState.onDismissItem(item)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.primary)
 
             Box(
                 modifier =
                 Modifier
-                    .align(Alignment.TopCenter)
-                    .height(BottomSheetDragAreaHeight)
-                    .anchoredDraggable(state, orientation = Orientation.Vertical)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .weight(1f),
             ) {
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = "UP NEXT",
+                val playQueueState = rememberPlayQueueState(
+                    onSwapFinished = { from, to ->
+                        Log.d(TAG, "PlayQueueView: drag stopped from $from to $to")
+                        onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
+                    },
+                    onDeleteFinished = {
+                        Log.d(TAG, "onDeleteFinished $it")
+                        onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
+                    }
                 )
+
+                LaunchedEffect(playListQueue) {
+                    playQueueState.onApplyNewList(playListQueue)
+                }
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxHeight(),
+                    state = playQueueState.lazyListState
+                ) {
+                    items(
+                        items = playQueueState.audioItemList,
+                        key = { it.hashCode() },
+                    ) { item ->
+                        ReorderableItem(
+                            state = playQueueState.reorderableLazyListState,
+                            key = item.hashCode()
+                        ) { _ ->
+                            QueueItem(
+                                item = item,
+                                isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
+                                onClick = {
+                                    onEvent(PlayerUiEvent.OnItemClickInQueue(item))
+                                },
+                                onSwapFinish = {
+                                    playQueueState.onStopDrag()
+                                },
+                                onDismissFinish = {
+                                    playQueueState.onDismissItem(item)
+                                }
+                            )
+                        }
+                    }
+                }
             }
+        }
+
+        Box(
+            modifier =
+            Modifier
+                .align(Alignment.TopCenter)
+                .height(BottomSheetDragAreaHeight)
+                .anchoredDraggable(state, orientation = Orientation.Vertical)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = "UP NEXT",
+            )
         }
     }
 }
 
 @Composable
-private fun ReorderableCollectionItemScope.SwipeQueueItem(
+private fun ReorderableCollectionItemScope.QueueItem(
     item: AudioItemModel,
     isActive: Boolean,
     modifier: Modifier = Modifier,

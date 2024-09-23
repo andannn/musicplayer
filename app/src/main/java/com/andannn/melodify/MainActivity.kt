@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            MelodifyTheme(isDynamicColor = true) {
+            MelodifyTheme(darkTheme = true, isDynamicColor = true) {
                 if (permissionGranted) {
                     MelodifyApp()
                 }
