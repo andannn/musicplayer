@@ -145,6 +145,10 @@ constructor(
         getMediaBrowserOrNull()?.moveMediaItem(from, to)
     }
 
+    override fun removeMediaItem(index: Int) {
+        getMediaBrowserOrNull()?.removeMediaItem(index)
+    }
+
     private suspend fun getMediaBrowser(): MediaBrowser {
         return browserFuture.await()
     }

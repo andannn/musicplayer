@@ -17,11 +17,14 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun rememberPlayQueueState(
     lazyListState: LazyListState = rememberLazyListState(),
     onSwapFinished: (from: Int, to: Int) -> Unit = { _, _ -> },
+    onDeleteFinished: (index: Int) -> Unit = { },
 ): PlayQueueStateHolder {
     val onSwapFinishedState = rememberUpdatedState(onSwapFinished)
+    val onDeleteFinishedState = rememberUpdatedState(onDeleteFinished)
     val playQueueState = remember {
         PlayListStateImpl(
             onSwapFinishedState = onSwapFinishedState,
+            onDeleteFinishedState = onDeleteFinishedState,
         )
     }
 
@@ -50,10 +53,12 @@ interface PlayListState {
     fun onStopDrag()
     fun onSwapItem(from: Int, to: Int)
     fun onApplyNewList(list: ImmutableList<AudioItemModel>)
+    fun onDismissItem(item: AudioItemModel)
 }
 
 class PlayListStateImpl(
     private val onSwapFinishedState: State<(from: Int, to: Int) -> Unit>,
+    private val onDeleteFinishedState: State<(index: Int) -> Unit>,
 ) : PlayListState {
     override val audioItemList = mutableStateListOf<AudioItemModel>()
 
@@ -87,6 +92,14 @@ class PlayListStateImpl(
         with(audioItemList) {
             clear()
             addAll(list)
+        }
+    }
+
+    override fun onDismissItem(item: AudioItemModel) {
+        with(audioItemList) {
+            val index = indexOf(item)
+            removeAt(index)
+            onDeleteFinishedState.value(index)
         }
     }
 }

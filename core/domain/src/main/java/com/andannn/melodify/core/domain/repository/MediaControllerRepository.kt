@@ -43,4 +43,6 @@ interface MediaControllerRepository {
     fun addMediaItems(index: Int, mediaItems: List<AudioItemModel>)
 
     fun moveMediaItem(from: Int, to: Int)
+
+    fun removeMediaItem(index: Int)
 }

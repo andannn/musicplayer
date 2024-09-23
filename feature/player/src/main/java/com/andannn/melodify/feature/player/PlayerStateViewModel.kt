@@ -41,6 +41,8 @@ sealed interface PlayerUiEvent {
 
     data class OnSwapPlayQueue(val from: Int, val to: Int) : PlayerUiEvent
 
+    data class OnDeleteMediaItem(val index: Int) : PlayerUiEvent
+
     data class OnItemClickInQueue(val item: AudioItemModel) : PlayerUiEvent
 }
 
@@ -163,6 +165,10 @@ constructor(
                 mediaControllerRepository.seekMediaItem(
                     mediaItemIndex = state.playListQueue.indexOf(event.item)
                 )
+            }
+
+            is PlayerUiEvent.OnDeleteMediaItem -> {
+                mediaControllerRepository.removeMediaItem(event.index)
             }
         }
     }
