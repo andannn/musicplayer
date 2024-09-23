@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.andannn.melodify"
-        versionCode = 3
-        versionName = "0.0.1-alpha8"
+        versionCode = 4
+        versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
