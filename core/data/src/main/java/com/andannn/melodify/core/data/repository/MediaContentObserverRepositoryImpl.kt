@@ -22,6 +22,15 @@ constructor(
 ) : MediaContentObserverRepository {
     private val contentResolver = context.contentResolver
 
+    override val allAlbumUri: String
+        get() = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString()
+
+    override val allArtistUri: String
+        get() = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString()
+
+    override val allAudioUri: String
+        get() = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString()
+
     override fun getAlbumUri(albumId: Long): String {
         return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString() + "/" + albumId
     }

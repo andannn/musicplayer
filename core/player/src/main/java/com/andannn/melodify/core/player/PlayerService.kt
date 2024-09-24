@@ -45,7 +45,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             .setHandleAudioBecomingNoisy(true)
             .build()
 
-        playerWrapper.setPlayer(player)
+        playerWrapper.setUpPlayer(player)
         mediaLibrarySession =
             MediaLibrarySession.Builder(this, player, librarySessionCallback)
                 .setSessionActivity(getSingleTopActivity())
@@ -55,7 +55,7 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
     override fun onDestroy() {
         super.onDestroy()
 
-        playerWrapper.setPlayer(null)
+        playerWrapper.release()
         mediaLibrarySession.release()
     }
 

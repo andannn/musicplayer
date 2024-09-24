@@ -23,14 +23,6 @@ class PlayerWrapperImpl
 constructor(
 ) : PlayerWrapper {
     private var _player: Player? = null
-        set(playerOrNull) {
-            if (playerOrNull != null) {
-                setUpPlayer(playerOrNull)
-            } else {
-                release()
-            }
-            field = playerOrNull
-        }
 
     private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
@@ -146,13 +138,17 @@ constructor(
             }
         }
 
-    private fun setUpPlayer(player: Player) {
+    override fun setUpPlayer(player: Player) {
+        Log.d(TAG, "setUpPlayer")
         player.prepare()
         player.addListener(playerListener)
         player.repeatMode = Player.REPEAT_MODE_ALL
+
+        _player = player
     }
 
-    private fun release() {
+    override fun release() {
+        Log.d(TAG, "release")
         _playerStateFlow.value = PlayerState.Idle
         _playerModeFlow.value = Player.REPEAT_MODE_ALL
         _isShuffleFlow.value = false
@@ -161,10 +157,6 @@ constructor(
 
         _player?.release()
         _player = null
-    }
-
-    override fun setPlayer(player: Player?) {
-        this._player = player
     }
 
     override val currentPositionMs: Long
