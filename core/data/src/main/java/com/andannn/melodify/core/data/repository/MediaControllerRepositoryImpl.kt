@@ -33,45 +33,56 @@ constructor(
         0,
         Int.MAX_VALUE,
         null,
-    ).await().value!!.toList().map {
-        it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
-    }
+    ).await().value?.toList()
+        ?.map {
+            it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
+        }
+        ?: emptyList()
 
     override suspend fun getAllAlbums() = getMediaBrowser().getChildren(
         ALBUM_ID,
         0,
         Int.MAX_VALUE,
         null,
-    ).await().value!!.toList().map {
-        it.toAppItem() as? AlbumItemModel ?: throw IllegalStateException("Not a AlbumItem $it")
-    }
+    ).await().value?.toList()
+        ?.map {
+            it.toAppItem() as? AlbumItemModel ?: throw IllegalStateException("Not a AlbumItem $it")
+        }
+        ?: emptyList()
 
     override suspend fun getAllArtist() = getMediaBrowser().getChildren(
         ARTIST_ID,
         0,
         Int.MAX_VALUE,
         null,
-    ).await().value!!.toList().map {
-        it.toAppItem() as? ArtistItemModel ?: throw IllegalStateException("Not a ArtistItem $it")
-    }
+    ).await().value?.toList()
+        ?.map {
+            it.toAppItem() as? ArtistItemModel
+                ?: throw IllegalStateException("Not a ArtistItem $it")
+        }
+        ?: emptyList()
 
     override suspend fun getAudiosOfAlbum(albumId: Long) = getMediaBrowser().getChildren(
         ALBUM_PREFIX + albumId,
         0,
         Int.MAX_VALUE,
         null,
-    ).await().value!!.toList().map {
-        it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
-    }
+    ).await().value?.toList()
+        ?.map {
+            it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
+        }
+        ?: emptyList()
 
     override suspend fun getAudiosOfArtist(artistId: Long) = getMediaBrowser().getChildren(
         ARTIST_PREFIX + artistId,
         0,
         Int.MAX_VALUE,
         null,
-    ).await().value!!.toList().map {
-        it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
-    }
+    ).await().value?.toList()
+        ?.map {
+            it.toAppItem() as? AudioItemModel ?: throw IllegalStateException("Not a audioItem $it")
+        }
+        ?: emptyList()
 
     override suspend fun getAlbumByAlbumId(albumId: Long) = getMediaBrowser().getItem(
         ALBUM_PREFIX + albumId,

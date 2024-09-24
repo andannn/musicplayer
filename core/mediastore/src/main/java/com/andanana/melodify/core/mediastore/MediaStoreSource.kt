@@ -11,9 +11,9 @@ interface MediaStoreSource {
 
     suspend fun getAllArtistData(): List<ArtistData>
 
-    suspend fun getArtistById(id: Long): ArtistData
+    suspend fun getArtistById(id: Long): ArtistData?
 
-    suspend fun getAlbumById(id: Long): AlbumData
+    suspend fun getAlbumById(id: Long): AlbumData?
 
     suspend fun getAudioInAlbum(id: Long): List<AudioData>
 

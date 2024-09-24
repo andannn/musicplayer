@@ -12,7 +12,6 @@ import com.andannn.melodify.core.data.model.ArtistData
 import com.andannn.melodify.core.data.model.AudioData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,7 +49,7 @@ class MediaStoreSourceImpl
                 selectionArgs = listOf(id.toString()).toTypedArray(),
             )?.use { cursor ->
                 parseArtistInfoCursor(cursor)
-            }?.first() ?: throw IllegalArgumentException("id invalid $id")
+            }?.firstOrNull()
 
         override suspend fun getAlbumById(id: Long) =
             app.contentResolver.query2(
@@ -59,7 +58,7 @@ class MediaStoreSourceImpl
                 selectionArgs = listOf(id.toString()).toTypedArray(),
             )?.use { cursor ->
                 parseAlbumInfoCursor(cursor)
-            }?.first() ?: throw IllegalArgumentException("id invalid $id")
+            }?.firstOrNull()
 
         override suspend fun getAudioInAlbum(id: Long) =
             app.contentResolver.query2(

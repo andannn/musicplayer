@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -179,7 +180,7 @@ constructor(
 
     override fun observePlayListQueue() = _playListFlow
 
-    override fun observePlayingMedia() = _playingMediaItemStateFlow
+    override fun observePlayingMedia() = _playingMediaItemStateFlow.onStart { emit(null) }
 
     override fun observeIsShuffle() = _isShuffleFlow
 

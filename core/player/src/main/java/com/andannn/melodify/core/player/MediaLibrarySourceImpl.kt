@@ -91,11 +91,15 @@ class MediaLibrarySourceImpl
                 val (category, id) = LibraryRootCategory.getMatchedChildTypeAndId(mediaId)!!
                 when (category) {
                     LibraryRootCategory.ALBUM -> {
-                        buildAlbumMediaItem(mediaStoreSource.getAlbumById(id))
+                        mediaStoreSource.getAlbumById(id)?.let {
+                            buildAlbumMediaItem(it)
+                        }
                     }
 
                     LibraryRootCategory.ARTIST -> {
-                        buildArtistMediaItem(mediaStoreSource.getArtistById(id))
+                        mediaStoreSource.getArtistById(id)?.let {
+                            buildArtistMediaItem(it)
+                        }
                     }
 
                     LibraryRootCategory.MINE_PLAYLIST -> TODO()

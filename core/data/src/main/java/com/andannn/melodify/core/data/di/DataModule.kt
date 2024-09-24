@@ -1,18 +1,16 @@
 package com.andannn.melodify.core.data.di
 
-import android.app.Application
-import com.andannn.melodify.core.data.ContentChangeFlowProvider
+import com.andannn.melodify.core.data.repository.MediaContentObserverRepositoryImpl
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.data.repository.MediaControllerRepositoryImpl
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.data.repository.PlayerStateRepositoryImpl
 import com.andannn.melodify.core.domain.repository.SmpPreferenceRepository
 import com.andannn.melodify.core.data.repository.SmpPreferenceRepositoryImpl
+import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.components.SingletonComponent
 
 @Module
@@ -27,13 +25,8 @@ interface DataModule {
 
     @Binds
     fun bindsMediaContentsRepository(mediaContentsRepository: MediaControllerRepositoryImpl): MediaControllerRepository
+
+    @Binds
+    fun bindsMediaContentObserverRepository(mediaContentsRepository: MediaContentObserverRepositoryImpl): MediaContentObserverRepository
 }
 
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-object DataModuleProvider {
-    @Provides
-    fun provideContentChangeFlowProvider(application: Application): ContentChangeFlowProvider {
-        return ContentChangeFlowProvider(application)
-    }
-}
