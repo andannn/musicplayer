@@ -39,12 +39,14 @@ sealed class BottomSheet(
     data object MusicBottomSheet : BottomSheet(
         listOf(
             SheetItem.PLAY_NEXT,
+            SheetItem.DELETE,
         ),
     )
 
     data object AlbumBottomSheet : BottomSheet(
         listOf(
             SheetItem.PLAY_NEXT,
+            SheetItem.DELETE,
         ),
     )
 

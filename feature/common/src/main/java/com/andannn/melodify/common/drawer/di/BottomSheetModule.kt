@@ -5,6 +5,7 @@ import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.common.drawer.BottomSheetControllerImpl
 import com.andannn.melodify.common.drawer.BottomSheetStateProvider
+import com.andannn.melodify.common.drawer.DeleteMediaItemEventProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,12 +26,4 @@ class BottomSheetModule {
         playerStateRepository = playerMoRepository,
         mediaControllerRepository = mediaControllerRepository
     )
-}
-
-@Module
-@InstallIn(ActivityRetainedComponent::class)
-interface BottomSheetModuleBinds {
-
-    @Binds
-    fun bindsBottomSheetStateProvider(bottomSheetStateProvider: BottomSheetController): BottomSheetStateProvider
 }
