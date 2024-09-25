@@ -20,11 +20,16 @@ android {
         signingConfig = signingConfigs.getByName("debug")
     }
 
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
+
         release {
             isMinifyEnabled = true
             proguardFiles(
