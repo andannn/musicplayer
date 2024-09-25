@@ -23,6 +23,12 @@ import javax.inject.Inject
 
 private const val TAG = "HomeViewModel"
 
+sealed interface HomeUiEvent {
+    data class OnSelectedCategoryChanged(val category: MediaCategory) : HomeUiEvent
+    data class OnPlayMusic(val mediaItem: AudioItemModel) : HomeUiEvent
+    data class OnShowMusicItemOption(val audioItemModel: MediaItemModel) : HomeUiEvent
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel
@@ -47,6 +53,32 @@ constructor(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), HomeUiState())
 
+    fun onEvent(event: HomeUiEvent) {
+        when (event) {
+            is HomeUiEvent.OnSelectedCategoryChanged -> onSelectedCategoryChanged(event.category)
+            is HomeUiEvent.OnPlayMusic -> playMusic(event.mediaItem)
+            is HomeUiEvent.OnShowMusicItemOption -> onShowMusicItemOption(event.audioItemModel)
+        }
+    }
+
+    private fun onSelectedCategoryChanged(category: MediaCategory) {
+        _selectedCategoryFlow.value = category
+    }
+
+    private fun playMusic(mediaItem: AudioItemModel) {
+        val mediaItems = state.value.mediaItems.toList() as? List<AudioItemModel>
+            ?: error("invalid state")
+
+        mediaControllerRepository.playMediaList(
+            mediaItems.toList(),
+            mediaItems.indexOf(mediaItem)
+        )
+    }
+
+    private fun onShowMusicItemOption(mediaItemModel: MediaItemModel) {
+        bottomSheetController.onRequestShowSheet(mediaItemModel)
+    }
+
     private fun createMediaItemsFlow(category: MediaCategory): Flow<CategoryWithContents> {
         val contentChangedFlow = with(mediaContentObserverRepository) {
             when (category) {
@@ -64,34 +96,14 @@ constructor(
         }
     }
 
-    fun onSelectedCategoryChanged(category: MediaCategory) {
-        _selectedCategoryFlow.value = category
-    }
-
     private suspend fun getMediaItemsAndUpdateState(category: MediaCategory): List<MediaItemModel> {
         Log.d(TAG, "getMediaItemsAndUpdateState: $category")
 
-        val a=  when (category) {
+        return when (category) {
             MediaCategory.ALL_MUSIC -> mediaControllerRepository.getAllMediaItems()
             MediaCategory.ALBUM -> mediaControllerRepository.getAllAlbums()
             MediaCategory.ARTIST -> mediaControllerRepository.getAllArtist()
         }
-//        Log.d(TAG, "result: $a")
-        return  emptyList()
-    }
-
-    fun playMusic(mediaItem: AudioItemModel) {
-        val mediaItems = state.value.mediaItems.toList() as? List<AudioItemModel>
-            ?: error("invalid state")
-
-        mediaControllerRepository.playMediaList(
-            mediaItems.toList(),
-            mediaItems.indexOf(mediaItem)
-        )
-    }
-
-    fun onShowMusicItemOption(audioItemModel: AudioItemModel) {
-        bottomSheetController.onRequestShowSheet(audioItemModel)
     }
 }
 

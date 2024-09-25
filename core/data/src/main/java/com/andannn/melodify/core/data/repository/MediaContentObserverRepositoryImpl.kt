@@ -12,9 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "MediaContentObserverRepository"
 
+@Singleton
 class MediaContentObserverRepositoryImpl
 @Inject
 constructor(

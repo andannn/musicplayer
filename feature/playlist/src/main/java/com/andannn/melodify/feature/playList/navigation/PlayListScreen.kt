@@ -126,7 +126,7 @@ fun CommonPlayListContent(
                 key = { item -> item.id },
             ) { item: AudioItemModel ->
                 AudioItemView(
-                    modifier = Modifier.padding(vertical = 4.dp),
+                    modifier = Modifier.padding(vertical = 4.dp).animateItem(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = item.artWorkUri,
                     title = item.name,
@@ -260,7 +260,7 @@ private fun AlbumPlayListContent(
                 key = { it.id },
             ) { item ->
                 AudioItemView(
-                    modifier = Modifier.padding(vertical = 4.dp),
+                    modifier = Modifier.padding(vertical = 4.dp).animateItem(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = header.artWorkUri,
                     title = item.name,

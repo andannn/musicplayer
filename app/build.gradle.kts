@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:domain"))
+    implementation(project(":core:player"))
 
     implementation(project(":feature:common"))
     implementation(project(":feature:home"))

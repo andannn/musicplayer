@@ -1,8 +1,8 @@
-package com.andannn.melodify.core.mediastore
+package com.andanana.melodify.core.mediastore
 
-import com.andannn.melodify.core.data.model.AlbumData
-import com.andannn.melodify.core.data.model.ArtistData
-import com.andannn.melodify.core.data.model.AudioData
+import com.andanana.melodify.core.mediastore.model.AlbumData
+import com.andanana.melodify.core.mediastore.model.ArtistData
+import com.andanana.melodify.core.mediastore.model.AudioData
 
 interface MediaStoreSource {
     suspend fun getAllMusicData(): List<AudioData>

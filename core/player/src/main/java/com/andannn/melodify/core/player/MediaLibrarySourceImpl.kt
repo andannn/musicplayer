@@ -5,17 +5,19 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.andannn.melodify.core.data.model.AlbumData
-import com.andannn.melodify.core.data.model.ArtistData
-import com.andannn.melodify.core.data.model.AudioData
+import com.andanana.melodify.core.mediastore.model.AlbumData
+import com.andanana.melodify.core.mediastore.model.ArtistData
+import com.andanana.melodify.core.mediastore.model.AudioData
 import com.andannn.melodify.core.domain.model.LibraryRootCategory
 import com.andannn.melodify.core.domain.model.PLAYABLE_MEDIA_ITEM_PREFIX
 import com.andannn.melodify.core.domain.model.ROOT_ID
-import com.andannn.melodify.core.mediastore.MediaStoreSource
+import com.andanana.melodify.core.mediastore.MediaStoreSource
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "MusicRepositoryImpl"
 
+@Singleton
 class MediaLibrarySourceImpl
     @Inject
     constructor(

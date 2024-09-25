@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.mediastore
+package com.andanana.melodify.core.mediastore
 
 import android.app.Application
 import android.content.ContentResolver
@@ -7,9 +7,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import com.andannn.melodify.core.data.model.AlbumData
-import com.andannn.melodify.core.data.model.ArtistData
-import com.andannn.melodify.core.data.model.AudioData
+import com.andanana.melodify.core.mediastore.model.AlbumData
+import com.andanana.melodify.core.mediastore.model.ArtistData
+import com.andanana.melodify.core.mediastore.model.AudioData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

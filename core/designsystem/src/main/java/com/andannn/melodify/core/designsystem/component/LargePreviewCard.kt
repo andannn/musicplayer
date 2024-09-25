@@ -1,7 +1,9 @@
 package com.andannn.melodify.core.designsystem.component
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LargePreviewCard(
     artCoverUri: Uri,
@@ -36,11 +39,14 @@ fun LargePreviewCard(
     placeholder: Painter? = null,
     error: Painter? = placeholder,
     onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.combinedClickable(
+            onClick = onClick,
+            onLongClick = onLongClick,
+        ),
         shape = MaterialTheme.shapes.medium,
-        onClick = onClick,
     ) {
         Column {
             AsyncImage(

@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +23,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.andannn.melodify.core.designsystem.dialog.ConnectFailedAlertDialog
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.ui.MelodifyApp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
@@ -42,9 +47,9 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainActivityViewModel by viewModels()
     private lateinit var intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
-
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
@@ -64,10 +69,33 @@ class MainActivity : ComponentActivity() {
                         /* uris = */ uris.map { Uri.parse(it) },
                         /* value = */ true,
                     )
-                    val request = IntentSenderRequest.Builder(editPendingIntent.intentSender).build()
+                    val request =
+                        IntentSenderRequest.Builder(editPendingIntent.intentSender).build()
 
                     intentSenderLauncher.launch(request)
                 }
+            }
+        }
+
+        var uiState by mutableStateOf<MainUiState>(MainUiState.Init)
+
+        // Update the uiState
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.state
+                    .onEach { uiState = it }
+                    .collect {}
+            }
+        }
+
+
+        // Keep the splash screen on-screen until the UI state is loaded. This condition is
+        // evaluated each time the app needs to be redrawn so it should be fast to avoid blocking
+        // the UI.
+        splashScreen.setKeepOnScreenCondition {
+            when (uiState) {
+                MainUiState.Init -> true
+                else -> false
             }
         }
 
@@ -92,10 +120,8 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     runTimePermissions.filter {
                         ContextCompat.checkSelfPermission(
-                            // context =
-                            this@MainActivity,
-                            // permission =
-                            it,
+                            /* context = */ this@MainActivity,
+                            /* permission = */ it,
                         ) == PackageManager.PERMISSION_DENIED
                     }.let {
                         launcher.launch(it.toTypedArray())
@@ -104,8 +130,18 @@ class MainActivity : ComponentActivity() {
             }
 
             MelodifyTheme(darkTheme = true, isDynamicColor = true) {
-                if (permissionGranted) {
-                    MelodifyApp()
+                when (uiState) {
+                    is MainUiState.Error -> {
+                        ConnectFailedAlertDialog(
+                            onDismiss = { finish() }
+                        )
+                    }
+
+                    MainUiState.Ready -> {
+                        MelodifyApp()
+                    }
+
+                    MainUiState.Init -> {}
                 }
             }
         }
