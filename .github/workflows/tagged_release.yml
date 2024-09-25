@@ -40,7 +40,7 @@ jobs:
       # - name: Run gradle tests
       #   run: ./gradlew testReleaseUnitTest
 
-      - run: ./gradlew assemble
+      - run: ./gradlew assembleRelease
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
