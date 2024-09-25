@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerWrapper {
-    fun setPlayer(player: Player?)
+    fun setUpPlayer(player: Player)
+
+    fun release()
 
     val currentPositionMs: Long
 

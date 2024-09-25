@@ -1,6 +1,7 @@
 package com.andannn.melodify.feature.home
 
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -69,7 +70,7 @@ fun HomeRoute(
             }
 
             is AudioItemModel -> {
-                homeViewModel.playMusic(mediaItem)
+                homeViewModel.onEvent(HomeUiEvent.OnPlayMusic(mediaItem))
             }
         }
     }
@@ -79,9 +80,8 @@ fun HomeRoute(
     HomeScreen(
         state = state,
         modifier = modifier,
+        onEvent = homeViewModel::onEvent,
         onMediaItemClick = ::onMediaItemClick,
-        onSelectCategory = homeViewModel::onSelectedCategoryChanged,
-        onShowMusicItemOption = homeViewModel::onShowMusicItemOption,
     )
 }
 
@@ -92,8 +92,7 @@ private fun HomeScreen(
     state: HomeUiState,
     modifier: Modifier = Modifier,
     onMediaItemClick: (MediaItemModel) -> Unit = {},
-    onSelectCategory: (MediaCategory) -> Unit = {},
-    onShowMusicItemOption: (AudioItemModel) -> Unit,
+    onEvent: (HomeUiEvent) -> Unit = {},
 ) {
     val categories = MediaCategory.entries.toTypedArray()
 
@@ -140,7 +139,7 @@ private fun HomeScreen(
                             )
                         },
                         onClick = {
-                            onSelectCategory.invoke(categories[index])
+                            onEvent(HomeUiEvent.OnSelectedCategoryChanged(categories[index]))
                         },
                     )
                 }
@@ -152,8 +151,12 @@ private fun HomeScreen(
                         modifier =
                         Modifier.fillMaxSize(),
                         mediaItems = mediaItems as ImmutableList<AudioItemModel>,
-                        onMusicItemClick = onMediaItemClick,
-                        onShowMusicItemOption = onShowMusicItemOption
+                        onMusicItemClick = {
+                            onEvent(HomeUiEvent.OnPlayMusic(it))
+                        },
+                        onShowMusicItemOption = {
+                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
+                        }
                     )
 
                 MediaCategory.ALBUM -> {
@@ -161,7 +164,10 @@ private fun HomeScreen(
                         modifier =
                         Modifier.fillMaxSize(),
                         mediaItems = mediaItems as ImmutableList<AlbumItemModel>,
-                        onItemClick = onMediaItemClick,
+                        onClick = onMediaItemClick,
+                        onLongPress = {
+                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
+                        }
                     )
                 }
 
@@ -170,7 +176,10 @@ private fun HomeScreen(
                         modifier =
                         Modifier.fillMaxSize(),
                         mediaItems = mediaItems as ImmutableList<ArtistItemModel>,
-                        onItemClick = onMediaItemClick,
+                        onClick = onMediaItemClick,
+                        onLongPress = {
+                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
+                        }
                     )
                 }
             }
@@ -182,7 +191,8 @@ private fun HomeScreen(
 private fun LazyAllAlbumContent(
     mediaItems: ImmutableList<AlbumItemModel>,
     modifier: Modifier = Modifier,
-    onItemClick: (AlbumItemModel) -> Unit = {},
+    onClick: (AlbumItemModel) -> Unit = {},
+    onLongPress: (AlbumItemModel) -> Unit = {},
 ) {
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
@@ -193,12 +203,15 @@ private fun LazyAllAlbumContent(
             key = { it.id },
         ) { media ->
             LargePreviewCard(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp).animateItem(),
                 artCoverUri = Uri.parse(media.artWorkUri),
                 title = media.name,
                 trackCount = media.trackCount,
                 onClick = {
-                    onItemClick.invoke(media)
+                    onClick.invoke(media)
+                },
+                onLongClick = {
+                    onLongPress.invoke(media)
                 },
             )
         }
@@ -212,7 +225,8 @@ private fun LazyAllAlbumContent(
 fun LazyAllArtistContent(
     mediaItems: ImmutableList<ArtistItemModel>,
     modifier: Modifier = Modifier,
-    onItemClick: (ArtistItemModel) -> Unit = {},
+    onClick: (ArtistItemModel) -> Unit = {},
+    onLongPress:(ArtistItemModel) -> Unit = {},
 ) {
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
@@ -223,7 +237,7 @@ fun LazyAllArtistContent(
             key = { it.id },
         ) { media ->
             LargePreviewCard(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp),
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp).animateItem(),
                 imageModifier =
                 Modifier
                     .clip(shape = CircleShape)
@@ -234,7 +248,10 @@ fun LazyAllArtistContent(
                 title = media.name,
                 trackCount = media.trackCount,
                 onClick = {
-                    onItemClick.invoke(media)
+                    onClick.invoke(media)
+                },
+                onLongClick = {
+                    onLongPress.invoke(media)
                 },
             )
         }
@@ -261,7 +278,7 @@ fun LazyAllAudioContent(
             AudioItemView(
                 modifier =
                 Modifier
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 4.dp).animateItem(),
                 isActive = false,
                 albumArtUri = item.artWorkUri,
                 title = item.name,

@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.data.model
+package com.andanana.melodify.core.mediastore.model
 
 import android.net.Uri
 

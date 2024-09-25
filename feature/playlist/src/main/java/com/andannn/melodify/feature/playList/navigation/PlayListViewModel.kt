@@ -10,13 +10,15 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 sealed interface PlayListEvent {
@@ -37,12 +39,14 @@ sealed interface PlayListEvent {
     data class OnDismissRequest(val item: SheetItem?) : PlayListEvent
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class PlayListViewModel
 @Inject
 constructor(
     savedStateHandle: SavedStateHandle,
-    private val playerStateRepository: PlayerStateRepository,
+    private val contentObserverRepository: MediaContentObserverRepository,
+    playerStateRepository: PlayerStateRepository,
     private val mediaControllerRepository: MediaControllerRepository,
     private val bottomSheetController: BottomSheetController,
 ) : ViewModel() {
@@ -52,46 +56,54 @@ constructor(
     val mediaListSource =
         savedStateHandle.get<MediaListSource>(SOURCE) ?: MediaListSource.ALBUM
 
-    private val _state = MutableStateFlow(PlayListUiState())
-    val state = _state.asStateFlow()
-
-    init {
-        viewModelScope.launch {
+    private val contentUri
+        get() = with(contentObserverRepository) {
             when (mediaListSource) {
-                MediaListSource.ALBUM -> {
-                    val albumItem =
-                        mediaControllerRepository.getAlbumByAlbumId(id.toLong())
-                            ?: error("Not found")
-                    val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
-                    _state.update {
-                        it.copy(
-                            headerInfoItem = albumItem,
-                            audioList = playableItems.toImmutableList(),
-                        )
-                    }
-                }
-
-                MediaListSource.ARTIST -> {
-                    val headerItem =
-                        mediaControllerRepository.getArtistByAlbumId(id.toLong())
-                            ?: error("Not found")
-
-                    val playableItems = mediaControllerRepository.getAudiosOfArtist(id.toLong())
-                    _state.update {
-                        it.copy(
-                            headerInfoItem = headerItem,
-                            audioList = playableItems.toImmutableList(),
-                        )
-                    }
-                }
+                MediaListSource.ALBUM -> getAlbumUri(id.toLong())
+                MediaListSource.ARTIST -> getArtistUri(id.toLong())
             }
         }
 
-        viewModelScope.launch {
-            playerStateRepository.playingMediaStateFlow.collect { playingMediaItem ->
-                _state.update {
-                    it.copy(playingMediaItem = playingMediaItem)
-                }
+    private val playListContentFlow =
+        contentObserverRepository.getContentChangedEventFlow(contentUri)
+            .mapLatest { _ ->
+                getPlayListContent()
+            }
+
+    private val playingItemFlow = playerStateRepository.playingMediaStateFlow
+
+    val state = combine(
+        playListContentFlow,
+        playingItemFlow,
+    ) { content, playingItem ->
+        PlayListUiState(
+            headerInfoItem = content.headerInfoItem,
+            audioList = content.audioList,
+            playingMediaItem = playingItem,
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PlayListUiState())
+
+    private suspend fun getPlayListContent(): PlayListContent {
+        return when (mediaListSource) {
+            MediaListSource.ALBUM -> {
+                val albumItem =
+                    mediaControllerRepository.getAlbumByAlbumId(id.toLong())
+                val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
+                PlayListContent(
+                    headerInfoItem = albumItem,
+                    audioList = playableItems.toImmutableList(),
+                )
+            }
+
+            MediaListSource.ARTIST -> {
+                val headerItem =
+                    mediaControllerRepository.getArtistByAlbumId(id.toLong())
+
+                val playableItems = mediaControllerRepository.getAudiosOfArtist(id.toLong())
+                PlayListContent(
+                    headerInfoItem = headerItem,
+                    audioList = playableItems.toImmutableList(),
+                )
             }
         }
     }
@@ -99,15 +111,15 @@ constructor(
     fun onEvent(event: PlayListEvent) {
         when (event) {
             is PlayListEvent.OnStartPlayAtIndex -> {
-                setPlayListAndStartIndex(_state.value.audioList, event.index)
+                setPlayListAndStartIndex(state.value.audioList, event.index)
             }
 
             is PlayListEvent.OnPlayAllButtonClick -> {
-                setPlayListAndStartIndex(_state.value.audioList, 0)
+                setPlayListAndStartIndex(state.value.audioList, 0)
             }
 
             is PlayListEvent.OnShuffleButtonClick -> {
-                setPlayListAndStartIndex(_state.value.audioList, 0, isShuffle = true)
+                setPlayListAndStartIndex(state.value.audioList, 0, isShuffle = true)
             }
 
             is PlayListEvent.OnOptionClick -> {
@@ -136,6 +148,11 @@ constructor(
         mediaControllerRepository.playMediaList(mediaItems, index)
     }
 }
+
+private data class PlayListContent(
+    val headerInfoItem: MediaItemModel? = null,
+    val audioList: ImmutableList<AudioItemModel> = emptyList<AudioItemModel>().toImmutableList(),
+)
 
 data class PlayListUiState(
     val headerInfoItem: MediaItemModel? = null,

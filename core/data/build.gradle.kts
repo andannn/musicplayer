@@ -14,7 +14,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:mediastore"))
     implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
     implementation(project(":core:player"))

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,14 +23,6 @@ class PlayerWrapperImpl
 constructor(
 ) : PlayerWrapper {
     private var _player: Player? = null
-        set(playerOrNull) {
-            if (playerOrNull != null) {
-                setUpPlayer(playerOrNull)
-            } else {
-                release()
-            }
-            field = playerOrNull
-        }
 
     private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
 
@@ -145,13 +138,17 @@ constructor(
             }
         }
 
-    private fun setUpPlayer(player: Player) {
+    override fun setUpPlayer(player: Player) {
+        Log.d(TAG, "setUpPlayer")
         player.prepare()
         player.addListener(playerListener)
         player.repeatMode = Player.REPEAT_MODE_ALL
+
+        _player = player
     }
 
-    private fun release() {
+    override fun release() {
+        Log.d(TAG, "release")
         _playerStateFlow.value = PlayerState.Idle
         _playerModeFlow.value = Player.REPEAT_MODE_ALL
         _isShuffleFlow.value = false
@@ -160,10 +157,6 @@ constructor(
 
         _player?.release()
         _player = null
-    }
-
-    override fun setPlayer(player: Player?) {
-        this._player = player
     }
 
     override val currentPositionMs: Long
@@ -179,7 +172,7 @@ constructor(
 
     override fun observePlayListQueue() = _playListFlow
 
-    override fun observePlayingMedia() = _playingMediaItemStateFlow
+    override fun observePlayingMedia() = _playingMediaItemStateFlow.onStart { emit(null) }
 
     override fun observeIsShuffle() = _isShuffleFlow
 

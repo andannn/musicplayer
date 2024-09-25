@@ -53,11 +53,7 @@ private val uniqueId get() = "media_item_unique_id" + counter++
 fun AudioItemModel.toMediaItem(generateUniqueId: Boolean = false): MediaItem {
     return buildMediaItem(
         title = name,
-        sourceUri =
-        Uri.withAppendedPath(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            id.toString(),
-        ),
+        sourceUri = uri,
         mediaId = PLAYABLE_MEDIA_ITEM_PREFIX + id,
         imageUri = Uri.parse(artWorkUri),
         trackNumber = cdTrackNumber,
@@ -69,3 +65,9 @@ fun AudioItemModel.toMediaItem(generateUniqueId: Boolean = false): MediaItem {
         uniqueId = if (generateUniqueId) uniqueId else null
     )
 }
+
+val AudioItemModel.uri: Uri
+    get() = Uri.withAppendedPath(
+        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+        id.toString()
+    )
