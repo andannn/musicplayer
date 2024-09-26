@@ -35,7 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -194,6 +196,7 @@ private fun LazyAllAlbumContent(
     onClick: (AlbumItemModel) -> Unit = {},
     onLongPress: (AlbumItemModel) -> Unit = {},
 ) {
+    val hapticFeedBack = LocalHapticFeedback.current
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Adaptive(180.dp),
@@ -211,6 +214,7 @@ private fun LazyAllAlbumContent(
                     onClick.invoke(media)
                 },
                 onLongClick = {
+                    hapticFeedBack.performHapticFeedback(HapticFeedbackType.LongPress)
                     onLongPress.invoke(media)
                 },
             )
@@ -228,6 +232,7 @@ fun LazyAllArtistContent(
     onClick: (ArtistItemModel) -> Unit = {},
     onLongPress:(ArtistItemModel) -> Unit = {},
 ) {
+    val hapticFeedBack = LocalHapticFeedback.current
     LazyVerticalStaggeredGrid(
         modifier = modifier.fillMaxSize(),
         columns = StaggeredGridCells.Fixed(2),
@@ -251,6 +256,7 @@ fun LazyAllArtistContent(
                     onClick.invoke(media)
                 },
                 onLongClick = {
+                    hapticFeedBack.performHapticFeedback(HapticFeedbackType.LongPress)
                     onLongPress.invoke(media)
                 },
             )
