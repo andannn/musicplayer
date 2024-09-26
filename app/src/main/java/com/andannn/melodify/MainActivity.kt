@@ -138,7 +138,9 @@ class MainActivity : ComponentActivity() {
                     }
 
                     MainUiState.Ready -> {
-                        MelodifyApp()
+                        if (permissionGranted) {
+                            MelodifyApp()
+                        }
                     }
 
                     MainUiState.Init -> {}

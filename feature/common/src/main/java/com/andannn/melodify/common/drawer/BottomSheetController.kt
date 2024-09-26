@@ -66,12 +66,9 @@ internal class BottomSheetControllerImpl(
     override fun CoroutineScope.onDismissRequest(item: SheetItem?) {
         if (item != null) {
             when (item) {
-                SheetItem.ADD_TO_FAVORITE -> TODO()
                 SheetItem.PLAY_NEXT -> onPlayNextClick(_bottomSheetModelFlow.value!!.source)
-                SheetItem.ADD_TO_PLAY_LIST -> TODO()
-                SheetItem.SHARE -> TODO()
-                SheetItem.INFORMATION -> TODO()
                 SheetItem.DELETE -> onDeleteMediaItem(_bottomSheetModelFlow.value!!.source)
+                SheetItem.ADD_TO_QUEUE -> onAddToQueue(_bottomSheetModelFlow.value!!.source)
             }
         }
 
@@ -98,8 +95,33 @@ internal class BottomSheetControllerImpl(
     }
 
     private fun CoroutineScope.onPlayNextClick(source: MediaItemModel) = launch {
+        val items = getAudios(source)
+        val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
+        if (havePlayingQueue) {
+            mediaControllerRepository.addMediaItems(
+                index = playerStateRepository.playingIndexInQueue + 1,
+                mediaItems = items
+            )
+        } else {
+            mediaControllerRepository.playMediaList(items, 0)
+        }
+    }
 
-        val items = when (source) {
+    private fun CoroutineScope.onAddToQueue(source: MediaItemModel) = launch {
+        val items = getAudios(source)
+        val playListQueue = playerStateRepository.playListQueue
+        if (playListQueue.isNotEmpty()) {
+            mediaControllerRepository.addMediaItems(
+                index = playListQueue.size,
+                mediaItems = items
+            )
+        } else {
+            mediaControllerRepository.playMediaList(items, 0)
+        }
+    }
+
+    private suspend fun getAudios(source: MediaItemModel): List<AudioItemModel> {
+        return when (source) {
             is AlbumItemModel -> {
                 mediaControllerRepository.getAudiosOfAlbum(source.id)
             }
@@ -111,15 +133,6 @@ internal class BottomSheetControllerImpl(
             is AudioItemModel -> {
                 listOf(source)
             }
-        }
-        val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
-        if (havePlayingQueue) {
-            mediaControllerRepository.addMediaItems(
-                index = playerStateRepository.playingIndexInQueue + 1,
-                mediaItems = items
-            )
-        } else {
-            mediaControllerRepository.playMediaList(items, 0)
         }
     }
 }

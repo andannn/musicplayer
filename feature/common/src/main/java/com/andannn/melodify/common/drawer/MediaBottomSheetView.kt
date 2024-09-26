@@ -31,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -93,7 +95,7 @@ private fun SheetHeader(
 ) {
     Row(
         modifier = modifier
-            .padding(vertical = 12.dp)
+            .padding(vertical = 12.dp, horizontal = 8.dp)
             .height(IntrinsicSize.Min)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -101,7 +103,6 @@ private fun SheetHeader(
         AsyncImage(
             modifier =
             Modifier
-                .padding(start = 16.dp)
                 .size(65.dp)
                 .clip(MaterialTheme.shapes.extraSmall),
             model = mediaItem.artWorkUri,
@@ -117,7 +118,9 @@ private fun SheetHeader(
         ) {
             Text(
                 text = mediaItem.name,
-                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleMedium,
             )
 
             Spacer(Modifier.weight(1f))
@@ -160,7 +163,10 @@ fun SheetItem(
     ) {
         SmpIcon(item.smpIcon)
         Spacer(modifier = Modifier.width(12.dp))
-        Text(text = item.text, style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = stringResource(id = item.text),
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
 
@@ -215,7 +221,7 @@ private fun MediaBottomDrawerDemo() {
 
 private val source = AudioItemModel(
     id = 0,
-    name = "Song 1",
+    name = "Song 1 LongLongLongLongLongLongLongLongLongLongLongLongLong",
     modifiedDate = 0,
     album = "Album 1",
     albumId = 0,

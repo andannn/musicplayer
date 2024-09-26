@@ -1,7 +1,7 @@
 package com.andannn.melodify.feature.home.util
 
 import com.andannn.melodify.feature.home.MediaCategory
-import com.andannn.melodify.feature.home.R
+import com.andannn.melodify.common.R
 
 object ResourceUtil {
     fun getCategoryResource(category: MediaCategory): Int {
