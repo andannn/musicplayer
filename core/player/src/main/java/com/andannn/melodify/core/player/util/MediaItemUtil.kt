@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.player
+package com.andannn.melodify.core.player.util
 
 import android.net.Uri
 import android.os.Bundle

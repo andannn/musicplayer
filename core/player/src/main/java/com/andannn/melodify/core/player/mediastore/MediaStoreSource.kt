@@ -1,4 +1,4 @@
-package com.andanana.melodify.core.mediastore
+package com.andannn.melodify.core.player.mediastore
 
 import android.app.Application
 import android.content.ContentResolver
@@ -7,18 +7,29 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import com.andanana.melodify.core.mediastore.model.AlbumData
-import com.andanana.melodify.core.mediastore.model.ArtistData
-import com.andanana.melodify.core.mediastore.model.AudioData
+import com.andannn.melodify.core.player.mediastore.model.AlbumData
+import com.andannn.melodify.core.player.mediastore.model.ArtistData
+import com.andannn.melodify.core.player.mediastore.model.AudioData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MediaStoreSourceImpl
-@Inject
-constructor(
+interface MediaStoreSource {
+    suspend fun getAllMusicData(): List<AudioData>
+
+    suspend fun getAllAlbumData(): List<AlbumData>
+
+    suspend fun getAllArtistData(): List<ArtistData>
+
+    suspend fun getArtistById(id: Long): ArtistData?
+
+    suspend fun getAlbumById(id: Long): AlbumData?
+
+    suspend fun getAudioInAlbum(id: Long): List<AudioData>
+
+    suspend fun getAudioOfArtist(id: Long): List<AudioData>
+}
+
+class MediaStoreSourceImpl(
     private val app: Application,
 ) : MediaStoreSource {
     override suspend fun getAllMusicData() =

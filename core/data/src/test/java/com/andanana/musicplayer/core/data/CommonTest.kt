@@ -1,6 +1,6 @@
 package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.LibraryRootCategory
+import com.andannn.melodify.core.player.library.LibraryRootCategory
 import org.junit.Assert.*
 import org.junit.Test
 

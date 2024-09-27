@@ -13,7 +13,6 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
-    implementation(project(":core:mediastore"))
 
     implementation(libs.kotlinx.coroutines.guava)
 

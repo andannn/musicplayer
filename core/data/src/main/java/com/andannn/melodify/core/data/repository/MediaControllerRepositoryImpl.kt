@@ -8,11 +8,11 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.data.util.toAppItem
 import com.andannn.melodify.core.data.util.toExoPlayerMode
 import com.andannn.melodify.core.data.util.toMediaItem
-import com.andannn.melodify.core.domain.model.ALBUM_ID
-import com.andannn.melodify.core.domain.model.ALBUM_PREFIX
-import com.andannn.melodify.core.domain.model.ALL_MUSIC_ID
-import com.andannn.melodify.core.domain.model.ARTIST_ID
-import com.andannn.melodify.core.domain.model.ARTIST_PREFIX
+import com.andannn.melodify.core.player.library.ALBUM_ID
+import com.andannn.melodify.core.player.library.ALBUM_PREFIX
+import com.andannn.melodify.core.player.library.ALL_MUSIC_ID
+import com.andannn.melodify.core.player.library.ARTIST_ID
+import com.andannn.melodify.core.player.library.ARTIST_PREFIX
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.player.MediaBrowserManager

@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.domain.model
+package com.andannn.melodify.core.player.library
 
 const val ROOT_ID = "[rootID]"
 

@@ -15,13 +15,13 @@ dependencyResolutionManagement {
 
 rootProject.name = "Melodify"
 include(":app")
-include(":feature:home")
-include(":feature:player")
-include(":feature:playlist")
 include(":core:designsystem")
-include(":core:mediastore")
 include(":core:data")
+include(":core:network")
 include(":core:player")
 include(":core:datastore")
 include(":core:domain")
 include(":feature:common")
+include(":feature:home")
+include(":feature:player")
+include(":feature:playlist")
