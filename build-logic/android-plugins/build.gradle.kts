@@ -38,5 +38,9 @@ gradlePlugin {
             id = "musicplayer.android.room"
             implementationClass = "AndroidRoomConventionPlugin"
         }
+        register("androidxSerialization") {
+            id = "musicplayer.android.serialization"
+            implementationClass = "AndroidSerializationPlugin"
+        }
     }
 }

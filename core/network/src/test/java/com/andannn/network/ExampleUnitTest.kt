@@ -1,17 +1,19 @@
 package com.andannn.network
 
+import com.andannn.melodify.core.network.LrclibServiceImpl
+import com.andannn.melodify.core.network.lrclibResourceClientBuilder
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
-import org.junit.Assert.*
-
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ExampleUnitTest {
+    private val service = LrclibServiceImpl(lrclibResourceClientBuilder())
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun addition_isCorrect() = runBlocking {
+//        val result = service.getLyric(
+//            trackName = "うっせぇわ",
+//            artistName ="Ado"
+//        )
+//        println(result)
     }
 }
