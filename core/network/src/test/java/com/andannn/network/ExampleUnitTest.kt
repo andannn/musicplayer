@@ -10,10 +10,10 @@ class ExampleUnitTest {
 
     @Test
     fun addition_isCorrect() = runBlocking {
-//        val result = service.getLyric(
-//            trackName = "うっせぇわ",
-//            artistName ="Ado"
-//        )
-//        println(result)
+        val result = service.getLyric(
+            trackName = "うっせぇわ",
+            artistName ="Ado"
+        )
+        println(result)
     }
 }

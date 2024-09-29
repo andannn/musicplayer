@@ -4,6 +4,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.andannn.melodify.core.database.entity.LyricEntity
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 
@@ -67,7 +68,7 @@ class DatabaseTest {
     fun get_lyric_by_media_store_id() = runBlocking {
         lyricDao.insertLyricOfMedia(mediaStoreId = 99, lyric = dummyLyricEntities[0])
 
-        val lyric = lyricDao.getLyricByMediaStoreId(99)
+        val lyric = lyricDao.getLyricByMediaStoreIdFlow(99).first()
         assertEquals(dummyLyricEntities[0], lyric)
     }
 
@@ -75,7 +76,7 @@ class DatabaseTest {
     fun get_lyric_by_media_store_id_not_exist() = runBlocking {
         lyricDao.insertLyricOfMedia(mediaStoreId = 99, lyric = dummyLyricEntities[0])
 
-        val lyric = lyricDao.getLyricByMediaStoreId(100)
+        val lyric = lyricDao.getLyricByMediaStoreIdFlow(100).first()
         assertEquals(null, lyric)
     }
 }

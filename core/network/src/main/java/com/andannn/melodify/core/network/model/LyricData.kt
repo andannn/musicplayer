@@ -1,7 +1,6 @@
 package com.andannn.melodify.core.network.model
 
 import kotlin.Boolean
-import kotlin.Double
 import kotlin.String
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -9,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LyricData(
     @SerialName(value = "id")
-    val id: Double,
+    val id: Long,
 
     @SerialName(value = "name")
     val name: String,

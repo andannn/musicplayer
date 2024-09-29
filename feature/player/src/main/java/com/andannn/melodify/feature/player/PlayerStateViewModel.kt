@@ -11,9 +11,16 @@ import com.andannn.melodify.core.domain.model.util.CoroutineTicker
 import com.andannn.melodify.core.domain.util.combine
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.core.domain.repository.LyricRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,10 +58,33 @@ class PlayerStateViewModel
 @Inject
 constructor(
     private val mediaControllerRepository: MediaControllerRepository,
+    private val lyricRepository: LyricRepository,
     private val playerStateRepository: PlayerStateRepository,
     private val bottomSheetController: BottomSheetController
 ) : ViewModel() {
     private val interactingMusicItem = playerStateRepository.playingMediaStateFlow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val lyricFlow = interactingMusicItem.filterNotNull().flatMapLatest {
+        lyricRepository.getLyricByMediaStoreIdFlow(it.id)
+    }
+
+    init {
+        viewModelScope.launch {
+            interactingMusicItem
+                .filterNotNull()
+                .distinctUntilChanged()
+                .onEach { audio ->
+                    lyricRepository.tryGetLyricOrIgnore(
+                        mediaStoreId = audio.id,
+                        trackName = audio.name,
+                        artistName = audio.artist,
+                        albumName = audio.album,
+                    )
+                }
+                .collect {}
+        }
+    }
 
     private val playModeFlow = playerStateRepository.observePlayMode()
 

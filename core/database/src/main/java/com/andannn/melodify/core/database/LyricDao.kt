@@ -9,6 +9,7 @@ import com.andannn.melodify.core.database.entity.LyricColumns
 import com.andannn.melodify.core.database.entity.LyricEntity
 import com.andannn.melodify.core.database.entity.LyricWithAudioCrossRef
 import com.andannn.melodify.core.database.entity.LyricWithAudioCrossRefColumns
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LyricDao {
@@ -39,5 +40,5 @@ interface LyricDao {
         where :mediaStoreId = ${LyricWithAudioCrossRefColumns.MEDIA_STORE_ID}
     """
     )
-    suspend fun getLyricByMediaStoreId(mediaStoreId: Long): LyricEntity?
+    fun getLyricByMediaStoreIdFlow(mediaStoreId: Long): Flow<LyricEntity?>
 }
