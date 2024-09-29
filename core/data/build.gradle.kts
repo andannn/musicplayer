@@ -17,6 +17,8 @@ dependencies {
     implementation(project(":core:datastore"))
     implementation(project(":core:domain"))
     implementation(project(":core:player"))
+    implementation(project(":core:network"))
+    implementation(project(":core:database"))
 
     implementation(libs.kotlinx.coroutines.guava)
 

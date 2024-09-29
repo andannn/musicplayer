@@ -1,4 +1,4 @@
-package com.andannn.melodify
+package com.andanana.melodify.util
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
