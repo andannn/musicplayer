@@ -42,8 +42,9 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.CircleBorderImage
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.designsystem.util.verticalGradientScrim
+import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.feature.player.PlayQueueView
+import com.andannn.melodify.feature.player.PlayerBottomSheetView
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import kotlinx.collections.immutable.toImmutableList
 
@@ -58,7 +59,7 @@ val MaxImagePaddingStart = 20.dp
 
 val MinFadeoutWithExpandAreaPaddingTop = 15.dp
 
-val BottomSheetDragAreaHeight = 90.dp
+val BottomSheetDragAreaHeight = 110.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -69,12 +70,14 @@ fun FlexiblePlayerLayout(
     playListQueue: List<AudioItemModel>,
     modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
+    lyricModel: LyricModel? = null,
     isShuffle: Boolean = false,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
     title: String = "",
     artist: String = "",
     progress: Float = 1f,
+    duration: Long = 0L,
     onEvent: (PlayerUiEvent) -> Unit = {},
     onShrinkButtonClick: () -> Unit = {},
 ) {
@@ -233,12 +236,17 @@ fun FlexiblePlayerLayout(
                 exit = fadeOut(),
                 visible = isLayoutFullyExpand,
             ) {
-                PlayQueueView(
+                PlayerBottomSheetView(
                     sheetMaxHeightDp = with(LocalDensity.current) { layoutState.sheetHeight.toDp() },
                     state = layoutState.sheetState,
                     activeMediaItem = activeMediaItem,
                     playListQueue = playListQueue.toImmutableList(),
+                    lyricModel = lyricModel,
+                    currentPositionMs = (progress * duration).toLong(),
                     onEvent = onEvent,
+                    onRequestExpandSheet = {
+                        layoutState.expandBottomSheet()
+                    }
                 )
             }
 
@@ -282,13 +290,13 @@ private fun FlexiblePlayerLayoutExpandPreview() {
         FlexiblePlayerLayout(
             layoutState = layoutState,
             coverUri = "",
+            activeMediaItem = AudioItemModel.DEFAULT,
+            playListQueue = emptyList(),
             modifier = Modifier.height(870.dp),
             isPlaying = true,
             isFavorite = true,
             title = "Song name",
             artist = "Artist name",
-            playListQueue = emptyList(),
-            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }
@@ -308,11 +316,11 @@ private fun FlexiblePlayerLayoutShrinkPreview() {
         FlexiblePlayerLayout(
             layoutState = layoutState,
             coverUri = "",
+            activeMediaItem = AudioItemModel.DEFAULT,
+            playListQueue = emptyList(),
             modifier = Modifier.height(70.dp),
             title = "Song name",
             artist = "Artist name",
-            playListQueue = emptyList(),
-            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }

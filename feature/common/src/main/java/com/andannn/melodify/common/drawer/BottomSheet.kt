@@ -1,35 +1,24 @@
 package com.andannn.melodify.common.drawer
 
+import com.andannn.melodify.common.R
 import com.andannn.melodify.core.designsystem.icons.SmpIcon
 import com.andannn.melodify.core.designsystem.icons.SimpleMusicIcons
 
 enum class SheetItem(
     val smpIcon: SmpIcon,
-    val text: String,
+    val text: Int,
 ) {
-    ADD_TO_FAVORITE(
-        smpIcon = SimpleMusicIcons.AddFavorite,
-        text = "Save to Favorite",
-    ),
     PLAY_NEXT(
         smpIcon = SimpleMusicIcons.PlayNext,
-        text = "Play next",
-    ),
-    ADD_TO_PLAY_LIST(
-        smpIcon = SimpleMusicIcons.AddPlayList,
-        text = "Save to PlayList",
-    ),
-    SHARE(
-        smpIcon = SimpleMusicIcons.Share,
-        text = "Share",
-    ),
-    INFORMATION(
-        smpIcon = SimpleMusicIcons.Information,
-        text = "Information",
+        text = R.string.play_next,
     ),
     DELETE(
         smpIcon = SimpleMusicIcons.Delete,
-        text = "Delete",
+        text = R.string.delete,
+    ),
+    ADD_TO_QUEUE(
+        smpIcon = SimpleMusicIcons.Delete,
+        text = R.string.add_to_queue,
     ),
 }
 
@@ -38,6 +27,7 @@ sealed class BottomSheet(
 ) {
     data object MusicBottomSheet : BottomSheet(
         listOf(
+            SheetItem.ADD_TO_QUEUE,
             SheetItem.PLAY_NEXT,
             SheetItem.DELETE,
         ),
@@ -45,6 +35,7 @@ sealed class BottomSheet(
 
     data object AlbumBottomSheet : BottomSheet(
         listOf(
+            SheetItem.ADD_TO_QUEUE,
             SheetItem.PLAY_NEXT,
             SheetItem.DELETE,
         ),
@@ -52,14 +43,16 @@ sealed class BottomSheet(
 
     data object ArtistBottomSheet : BottomSheet(
         listOf(
+            SheetItem.ADD_TO_QUEUE,
             SheetItem.PLAY_NEXT,
+            SheetItem.DELETE,
         ),
     )
 
     data object PlayListBottomSheet : BottomSheet(
         listOf(
+            SheetItem.ADD_TO_QUEUE,
             SheetItem.PLAY_NEXT,
-            SheetItem.INFORMATION,
             SheetItem.DELETE,
         ),
     )

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="home">Startseite</string>
-    <string name="audio_page_title">Lieder</string>
-    <string name="album_page_title">Album</string>
-    <string name="artist_page_title">Künstler</string>
-</resources>

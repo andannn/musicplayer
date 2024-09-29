@@ -7,11 +7,11 @@ import androidx.media3.common.MediaMetadata
 import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.LibraryRootCategory
+import com.andannn.melodify.core.player.library.LibraryRootCategory
 import com.andannn.melodify.core.domain.model.MediaItemModel
-import com.andannn.melodify.core.domain.model.PLAYABLE_MEDIA_ITEM_PREFIX
-import com.andannn.melodify.core.player.UNIQUE_ID_KEY
-import com.andannn.melodify.core.player.buildMediaItem
+import com.andannn.melodify.core.player.library.PLAYABLE_MEDIA_ITEM_PREFIX
+import com.andannn.melodify.core.player.util.UNIQUE_ID_KEY
+import com.andannn.melodify.core.player.util.buildMediaItem
 
 
 fun MediaItem.toAppItem(): MediaItemModel = when {

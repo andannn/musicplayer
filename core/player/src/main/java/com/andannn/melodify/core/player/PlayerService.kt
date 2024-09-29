@@ -7,7 +7,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
+import androidx.media3.session.MediaLibraryService.LibraryParams
+import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
+import com.andannn.melodify.core.player.library.MediaLibrarySource
+import com.andannn.melodify.core.player.library.MediaLibrarySourceImpl
+import com.andannn.melodify.core.player.mediastore.MediaStoreSourceImpl
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -24,14 +29,13 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
     @Inject
     lateinit var playerWrapper: PlayerWrapper
 
-    @Inject
-    lateinit var mediaLibrarySource: MediaLibrarySource
-
     private lateinit var mediaLibrarySession: MediaLibrarySession
 
-    private val librarySessionCallback = CustomMediaLibrarySessionCallback()
+    private lateinit var librarySessionCallback: CustomMediaLibrarySessionCallback
 
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + Job()
+    private val job = Job()
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
 
     companion object {
         private const val immutableFlag = PendingIntent.FLAG_IMMUTABLE
@@ -39,6 +43,13 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
+
+        val mediaStoreSource = MediaStoreSourceImpl(this.application)
+        val mediaLibrarySource = MediaLibrarySourceImpl(mediaStoreSource)
+        librarySessionCallback = CustomMediaLibrarySessionCallback(
+            mediaLibrarySource,
+            this,
+        )
 
         val player = ExoPlayer.Builder(application)
             .setAudioAttributes(AudioAttributes.DEFAULT, true)
@@ -57,67 +68,11 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
 
         playerWrapper.release()
         mediaLibrarySession.release()
+
+        job.cancel()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaLibrarySession
-
-    inner class CustomMediaLibrarySessionCallback : MediaLibrarySession.Callback {
-        override fun onGetLibraryRoot(
-            session: MediaLibrarySession,
-            browser: MediaSession.ControllerInfo,
-            params: LibraryParams?,
-        ): ListenableFuture<LibraryResult<MediaItem>> =
-            future {
-                LibraryResult.ofItem(
-                    mediaLibrarySource.getLibraryRoot(),
-                    params,
-                )
-            }
-
-        override fun onGetChildren(
-            session: MediaLibrarySession,
-            browser: MediaSession.ControllerInfo,
-            parentId: String,
-            page: Int,
-            pageSize: Int,
-            params: LibraryParams?,
-        ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> =
-            future {
-                LibraryResult.ofItemList(
-                    mediaLibrarySource.getChildren(parentId),
-                    params,
-                )
-            }
-
-        override fun onGetItem(
-            session: MediaLibrarySession,
-            browser: MediaSession.ControllerInfo,
-            mediaId: String,
-        ): ListenableFuture<LibraryResult<MediaItem>> =
-            future {
-                mediaLibrarySource.getMediaItem(mediaId)?.let {
-                    LibraryResult.ofItem(it, null)
-                } ?: LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED)
-            }
-
-        override fun onAddMediaItems(
-            mediaSession: MediaSession,
-            controller: MediaSession.ControllerInfo,
-            mediaItems: MutableList<MediaItem>,
-        ): ListenableFuture<List<MediaItem>> {
-            val updatedMediaItems =
-                mediaItems.map { mediaItem ->
-                    mediaItem.buildUpon()
-                        .setUri(mediaItem.requestMetadata.mediaUri)
-                        .build()
-                }
-            return Futures.immediateFuture(updatedMediaItems)
-        }
-    }
-
-    private fun initializeSessionAndPlayer() {
-
-    }
 
     private fun getSingleTopActivity(): PendingIntent {
         return PendingIntent.getActivity(
@@ -126,5 +81,62 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             Intent(this, Class.forName("com.andannn.melodify.MainActivity")),
             immutableFlag or PendingIntent.FLAG_UPDATE_CURRENT,
         )
+    }
+}
+
+private class CustomMediaLibrarySessionCallback(
+    private val mediaLibrarySource: MediaLibrarySource,
+    private val coroutineScope: CoroutineScope,
+) : MediaLibrarySession.Callback, CoroutineScope by coroutineScope {
+    override fun onGetLibraryRoot(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        params: LibraryParams?,
+    ): ListenableFuture<LibraryResult<MediaItem>> =
+        future {
+            LibraryResult.ofItem(
+                mediaLibrarySource.getLibraryRoot(),
+                params,
+            )
+        }
+
+    override fun onGetChildren(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        parentId: String,
+        page: Int,
+        pageSize: Int,
+        params: LibraryParams?,
+    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> =
+        future {
+            LibraryResult.ofItemList(
+                mediaLibrarySource.getChildren(parentId),
+                params,
+            )
+        }
+
+    override fun onGetItem(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        mediaId: String,
+    ): ListenableFuture<LibraryResult<MediaItem>> =
+        future {
+            mediaLibrarySource.getMediaItem(mediaId)?.let {
+                LibraryResult.ofItem(it, null)
+            } ?: LibraryResult.ofError(LibraryResult.RESULT_ERROR_NOT_SUPPORTED)
+        }
+
+    override fun onAddMediaItems(
+        mediaSession: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        mediaItems: MutableList<MediaItem>,
+    ): ListenableFuture<List<MediaItem>> {
+        val updatedMediaItems =
+            mediaItems.map { mediaItem ->
+                mediaItem.buildUpon()
+                    .setUri(mediaItem.requestMetadata.mediaUri)
+                    .build()
+            }
+        return Futures.immediateFuture(updatedMediaItems)
     }
 }

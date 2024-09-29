@@ -1,6 +1,7 @@
 plugins {
     id("musicplayer.android.library")
     id("musicplayer.android.hilt")
+    id("musicplayer.android.testing")
     id("musicplayer.android.library.compose")
 }
 

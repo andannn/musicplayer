@@ -1,15 +1,18 @@
 package com.andannn.melodify.core.domain.model
 
-sealed interface PlayerState {
-    data object Idle : PlayerState
+sealed class PlayerState(
+    open val currentPositionMs: Long
+) {
+    data object Idle : PlayerState(0)
 
-    data object Buffering : PlayerState
+    data class Buffering(override val currentPositionMs: Long) : PlayerState(currentPositionMs)
 
-    data class Playing(val currentPositionMs: Long) : PlayerState
+    data class Playing(override val currentPositionMs: Long) : PlayerState(currentPositionMs)
 
-    data class Paused(val currentPositionMs: Long) : PlayerState
+    data class Paused(override val currentPositionMs: Long) : PlayerState(currentPositionMs)
 
-    data object PlayBackEnd : PlayerState
+    data class PlayBackEnd(override val currentPositionMs: Long) : PlayerState(currentPositionMs)
 
-    data class Error(val throwable: Throwable) : PlayerState
+    data class Error(override val currentPositionMs: Long, val throwable: Throwable) :
+        PlayerState(currentPositionMs)
 }

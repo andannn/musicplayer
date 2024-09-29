@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Accueil</string>
+    <string name="audio_page_title">Chansons</string>
+    <string name="album_page_title">Album</string>
+    <string name="artist_page_title">Artiste</string>
+    <string name="add_to_queue">Ajouter à la file d\'attente</string>
+    <string name="delete">Supprimer</string>
+    <string name="play_next">Jouer la suite</string>
+    <string name="play_queue">Suite</string>
+    <string name="lyrics">LYRICS</string>
+</resources>

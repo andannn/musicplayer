@@ -1,4 +1,4 @@
-import com.andannn.melodify.configureKotlinAndroid
+import com.andanana.melodify.util.configureKotlinAndroid
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

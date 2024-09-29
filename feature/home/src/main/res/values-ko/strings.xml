@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="home">홈</string>
-    <string name="audio_page_title">노래</string>
-    <string name="album_page_title">앨범</string>
-    <string name="artist_page_title">아티스트</string>
-</resources>
