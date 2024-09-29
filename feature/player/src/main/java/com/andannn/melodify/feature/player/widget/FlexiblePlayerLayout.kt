@@ -58,7 +58,7 @@ val MaxImagePaddingStart = 20.dp
 
 val MinFadeoutWithExpandAreaPaddingTop = 15.dp
 
-val BottomSheetDragAreaHeight = 90.dp
+val BottomSheetDragAreaHeight = 110.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

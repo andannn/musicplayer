@@ -1,17 +1,14 @@
 package com.andannn.melodify.feature.player
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,10 +18,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -35,9 +34,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +44,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.AudioItemView
-import com.andannn.melodify.feature.player.widget.BottomSheetDragAreaHeight
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.feature.player.widget.BottomSheetState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -54,9 +52,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
+import timber.log.Timber
 import kotlin.math.roundToInt
 
 private const val TAG = "PlayQueueView"
+
+private enum class SheetTab {
+    NEXT_SONG,
+    LYRICS,
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -91,12 +95,12 @@ fun PlayQueueView(
         }
     }
 
-    Box(
+    Surface(
         modifier =
         modifier
+            .graphicsLayer { alpha = expandFactor }
             .fillMaxWidth()
             .height(sheetMaxHeightDp)
-            .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
             .offset {
                 IntOffset(
                     0,
@@ -105,84 +109,121 @@ fun PlayQueueView(
                         .roundToInt(),
                 )
             },
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
     ) {
+        
+        var selectedTab by remember {
+            mutableStateOf(SheetTab.NEXT_SONG)
+        }
         Column(
-            modifier =
-            Modifier
-                .fillMaxHeight()
-                .graphicsLayer { alpha = expandFactor }
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.fillMaxHeight()
         ) {
-            Box(
-                modifier = Modifier.height(BottomSheetDragAreaHeight),
-            )
-
-            HorizontalDivider(color = MaterialTheme.colorScheme.primary)
-
-            Box(
-                modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+            Spacer(modifier = Modifier.height(20.dp))
+            ScrollableTabRow(
+                modifier = Modifier
+                    .anchoredDraggable(state, orientation = Orientation.Vertical)
+                    .fillMaxWidth(),
+                selectedTabIndex = SheetTab.entries.indexOf(selectedTab),
+                containerColor = Color.Transparent
             ) {
-                val playQueueState = rememberPlayQueueState(
-                    onSwapFinished = { from, to ->
-                        Log.d(TAG, "PlayQueueView: drag stopped from $from to $to")
-                        onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
-                    },
-                    onDeleteFinished = {
-                        Log.d(TAG, "onDeleteFinished $it")
-                        onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
-                    }
-                )
-
-                LaunchedEffect(playListQueue) {
-                    playQueueState.onApplyNewList(playListQueue)
-                }
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxHeight(),
-                    state = playQueueState.lazyListState
-                ) {
-                    items(
-                        items = playQueueState.audioItemList,
-                        key = { it.hashCode() },
-                    ) { item ->
-                        ReorderableItem(
-                            state = playQueueState.reorderableLazyListState,
-                            key = item.hashCode()
-                        ) { _ ->
-                            QueueItem(
-                                item = item,
-                                isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
-                                onClick = {
-                                    onEvent(PlayerUiEvent.OnItemClickInQueue(item))
-                                },
-                                onSwapFinish = {
-                                    playQueueState.onStopDrag()
-                                },
-                                onDismissFinish = {
-                                    playQueueState.onDismissItem(item)
-                                }
+                SheetTab.entries.toTypedArray().forEach {
+                    Tab(
+                        selected = it == selectedTab,
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
+                        unselectedContentColor = MaterialTheme.colorScheme.onSurface,
+                        text = @Composable {
+                            Text(
+                                text = it.toString(),
                             )
+                        },
+                        onClick = {
+                            selectedTab = it
                         }
-                    }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(3.dp))
+
+            when (selectedTab) {
+                SheetTab.NEXT_SONG -> {
+                    PlayQueue(
+                        modifier = Modifier.weight(1f),
+                        onSwapFinished = { from, to ->
+                            Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
+                            onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
+                        },
+                        onDeleteFinished = {
+                            Timber.tag(TAG).d("onDeleteFinished $it")
+                            onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
+                        },
+                        onItemClick = {
+                            onEvent(PlayerUiEvent.OnItemClickInQueue(it))
+                        },
+                        activeMediaItem = activeMediaItem,
+                        playListQueue = playListQueue,
+                    )
+                }
+                SheetTab.LYRICS -> {
+
                 }
             }
         }
+    }
+}
 
-        Box(
-            modifier =
-            Modifier
-                .align(Alignment.TopCenter)
-                .height(BottomSheetDragAreaHeight)
-                .anchoredDraggable(state, orientation = Orientation.Vertical)
-                .fillMaxWidth(),
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = "UP NEXT",
-            )
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PlayQueue(
+    onItemClick: (AudioItemModel) -> Unit,
+    onSwapFinished: (from: Int, to: Int) -> Unit,
+    onDeleteFinished: (Int) -> Unit,
+    playListQueue: ImmutableList<AudioItemModel>,
+    activeMediaItem: AudioItemModel,
+    modifier: Modifier = Modifier
+) {
+    val playQueueState = rememberPlayQueueState(
+        onSwapFinished = { from, to ->
+            Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
+            onSwapFinished(from, to)
+        },
+        onDeleteFinished = {
+            Timber.tag(TAG).d("onDeleteFinished $it")
+            onDeleteFinished(it)
+        }
+    )
+
+    LaunchedEffect(playListQueue) {
+        playQueueState.onApplyNewList(playListQueue)
+    }
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxWidth(),
+        state = playQueueState.lazyListState
+    ) {
+        items(
+            items = playQueueState.audioItemList,
+            key = { it.hashCode() },
+        ) { item ->
+            ReorderableItem(
+                state = playQueueState.reorderableLazyListState,
+                key = item.hashCode()
+            ) { _ ->
+                QueueItem(
+                    item = item,
+                    isActive = item.extraUniqueId == activeMediaItem.extraUniqueId,
+                    onClick = {
+                        onItemClick(item)
+                    },
+                    onSwapFinish = {
+                        playQueueState.onStopDrag()
+                    },
+                    onDismissFinish = {
+                        playQueueState.onDismissItem(item)
+                    }
+                )
+            }
         }
     }
 }
@@ -237,44 +278,46 @@ private fun ReorderableCollectionItemScope.QueueItem(
 @Preview
 @Composable
 private fun BottomPlayQueueSheetPreview() {
-    val density = LocalDensity.current
-    val anchors =
-        with(LocalDensity.current) {
-            DraggableAnchors {
-                BottomSheetState.Shrink at 120.dp.toPx()
-                BottomSheetState.Expand at 0f
+    MelodifyTheme {
+        val density = LocalDensity.current
+        val anchors =
+            with(LocalDensity.current) {
+                DraggableAnchors {
+                    BottomSheetState.Shrink at 120.dp.toPx()
+                    BottomSheetState.Expand at 0f
+                }
             }
-        }
 
-    val state =
-        remember {
-            AnchoredDraggableState(
-                initialValue = BottomSheetState.Expand,
-                anchors = anchors,
-                positionalThreshold = { with(density) { 26.dp.toPx() } },
-                velocityThreshold = { with(density) { 20.dp.toPx() } },
-                snapAnimationSpec = spring(),
-                decayAnimationSpec = exponentialDecay(),
-            )
-        }
+        val state =
+            remember {
+                AnchoredDraggableState(
+                    initialValue = BottomSheetState.Expand,
+                    anchors = anchors,
+                    positionalThreshold = { with(density) { 26.dp.toPx() } },
+                    velocityThreshold = { with(density) { 20.dp.toPx() } },
+                    snapAnimationSpec = spring(),
+                    decayAnimationSpec = exponentialDecay(),
+                )
+            }
 
-    PlayQueueView(
-        sheetMaxHeightDp = 360.dp,
-        state = state,
-        playListQueue = listOf(
-            AudioItemModel(
-                id = 0,
-                name = "Song 1",
-                modifiedDate = 0,
-                album = "Album 1",
-                albumId = 0,
-                artist = "Artist 1",
-                artistId = 0,
-                cdTrackNumber = 1,
-                discNumberIndex = 0,
-                artWorkUri = "",
-            )
-        ).toImmutableList(),
-        activeMediaItem = AudioItemModel.DEFAULT,
-    )
+        PlayQueueView(
+            sheetMaxHeightDp = 360.dp,
+            state = state,
+            playListQueue = listOf(
+                AudioItemModel(
+                    id = 0,
+                    name = "Song 1",
+                    modifiedDate = 0,
+                    album = "Album 1",
+                    albumId = 0,
+                    artist = "Artist 1",
+                    artistId = 0,
+                    cdTrackNumber = 1,
+                    discNumberIndex = 0,
+                    artWorkUri = "",
+                )
+            ).toImmutableList(),
+            activeMediaItem = AudioItemModel.DEFAULT,
+        )
+    }
 }
