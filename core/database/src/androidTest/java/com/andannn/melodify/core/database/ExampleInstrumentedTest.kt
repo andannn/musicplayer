@@ -2,10 +2,8 @@ package com.andannn.melodify.core.database
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.andannn.melodify.core.database.entity.LyricEntity
-import com.andannn.melodify.core.database.entity.LyricWithAudioCrossRef
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 
@@ -50,17 +48,6 @@ class DatabaseTest {
         )
     )
 
-    private val dummyCrossRef = listOf(
-        LyricWithAudioCrossRef(
-            mediaStoreId = 99,
-            lyricId = 1
-        ),
-        LyricWithAudioCrossRef(
-            mediaStoreId = 88,
-            lyricId = 2
-        )
-    )
-
     @Before
     fun setUpDatabase() {
         dataBase = Room.inMemoryDatabaseBuilder(
@@ -78,10 +65,17 @@ class DatabaseTest {
 
     @Test
     fun get_lyric_by_media_store_id() = runBlocking {
-        lyricDao.insertLyricEntities(dummyLyricEntities)
-        lyricDao.insertLyricWithAudioCrossRef(dummyCrossRef)
+        lyricDao.insertLyricOfMedia(mediaStoreId = 99, lyric = dummyLyricEntities[0])
 
         val lyric = lyricDao.getLyricByMediaStoreId(99)
         assertEquals(dummyLyricEntities[0], lyric)
+    }
+
+    @Test
+    fun get_lyric_by_media_store_id_not_exist() = runBlocking {
+        lyricDao.insertLyricOfMedia(mediaStoreId = 99, lyric = dummyLyricEntities[0])
+
+        val lyric = lyricDao.getLyricByMediaStoreId(100)
+        assertEquals(null, lyric)
     }
 }
