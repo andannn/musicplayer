@@ -7,22 +7,21 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.core.domain.model.util.CoroutineTicker
-import com.andannn.melodify.core.domain.util.combine
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
+import com.andannn.melodify.core.domain.util.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 sealed interface PlayerUiEvent {
@@ -53,6 +52,8 @@ sealed interface PlayerUiEvent {
     data class OnItemClickInQueue(val item: AudioItemModel) : PlayerUiEvent
 }
 
+private const val TAG = "PlayerStateViewModel"
+
 @HiltViewModel
 class PlayerStateViewModel
 @Inject
@@ -63,11 +64,51 @@ constructor(
     private val bottomSheetController: BottomSheetController
 ) : ViewModel() {
     private val interactingMusicItem = playerStateRepository.playingMediaStateFlow
+    private val playerStateFlow = playerStateRepository
+        .observePlayerState()
+        .distinctUntilChanged()
+        .onEach {
+            Timber.tag(TAG).d("play state changed $it")
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val lyricFlow = interactingMusicItem.filterNotNull().flatMapLatest {
-        lyricRepository.getLyricByMediaStoreIdFlow(it.id)
-    }
+    private val lyricFlow = interactingMusicItem
+        .filterNotNull()
+        .flatMapLatest {
+            lyricRepository.getLyricByMediaStoreIdFlow(it.id)
+        }
+
+    private val playModeFlow = playerStateRepository.observePlayMode()
+
+    private val isShuffleFlow = playerStateRepository.observeIsShuffle()
+
+    private val playListQueueFlow = playerStateRepository.playListQueueStateFlow
+
+    val playerUiStateFlow =
+        combine(
+            interactingMusicItem,
+            playerStateFlow,
+            playModeFlow,
+            isShuffleFlow,
+            playListQueueFlow,
+            lyricFlow,
+        ) { interactingMusicItem, state, playMode, isShuffle, playListQueue, lyric ->
+            if (interactingMusicItem == null) {
+                PlayerUiState.Inactive
+            } else {
+                PlayerUiState.Active(
+                    state = state,
+                    lyric = lyric,
+                    mediaItem = interactingMusicItem,
+                    duration = mediaControllerRepository.duration ?: 0L,
+                    playMode = playMode,
+                    isShuffle = isShuffle,
+                    isFavorite = false,
+                    playListQueue = playListQueue,
+                )
+            }
+        }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PlayerUiState.Inactive)
 
     init {
         viewModelScope.launch {
@@ -83,73 +124,6 @@ constructor(
                     )
                 }
                 .collect {}
-        }
-    }
-
-    private val playModeFlow = playerStateRepository.observePlayMode()
-
-    private val isShuffleFlow = playerStateRepository.observeIsShuffle()
-
-    private val playListQueueFlow = playerStateRepository.playListQueueStateFlow
-
-//        private val isCurrentMusicFavorite = flowOf(false)
-
-    private val updateProgressEventFlow = MutableSharedFlow<Unit>()
-
-    val playerUiStateFlow =
-        combine(
-            interactingMusicItem,
-            playerStateRepository.observePlayerState(),
-            playModeFlow,
-            isShuffleFlow,
-            playListQueueFlow,
-            updateProgressEventFlow,
-        ) { interactingMusicItem, state, playMode, isShuffle, playListQueue, _ ->
-            if (interactingMusicItem == null) {
-                PlayerUiState.Inactive
-            } else {
-                val duration = mediaControllerRepository.duration ?: 0L
-                PlayerUiState.Active(
-                    mediaItem = interactingMusicItem,
-                    duration = duration,
-                    progress = playerStateRepository.currentPositionMs.toFloat().div(duration),
-                    playMode = playMode,
-                    isShuffle = isShuffle,
-                    isFavorite = false,
-                    playListQueue = playListQueue,
-                    state =
-                    when (state) {
-                        is PlayerState.Playing -> {
-                            PlayState.PLAYING
-                        }
-
-                        else -> PlayState.PAUSED
-                    },
-                )
-            }
-        }
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PlayerUiState.Inactive)
-
-    private var coroutineTicker: CoroutineTicker =
-        CoroutineTicker(delayMs = 1000 / 30L) {
-            viewModelScope.launch {
-                updateProgressEventFlow.emit(Unit)
-            }
-        }
-
-    init {
-        viewModelScope.launch {
-            playerStateRepository.observePlayerState().collect { state ->
-                when (state) {
-                    is PlayerState.Playing -> {
-                        coroutineTicker.startTicker()
-                    }
-
-                    else -> {
-                        coroutineTicker.stopTicker()
-                    }
-                }
-            }
         }
     }
 
@@ -207,9 +181,10 @@ constructor(
         val state = playerUiStateFlow.value
         if (state is PlayerUiState.Active) {
             playerUiStateFlow.value.let {
-                when (state.state) {
-                    PlayState.PAUSED -> mediaControllerRepository.play()
-                    PlayState.PLAYING -> mediaControllerRepository.pause()
+                if (state.isPlaying) {
+                    mediaControllerRepository.pause()
+                } else {
+                    mediaControllerRepository.play()
                 }
             }
         }
@@ -232,18 +207,19 @@ sealed class PlayerUiState {
     data object Inactive : PlayerUiState()
 
     data class Active(
-        val state: PlayState = PlayState.PAUSED,
+        val state: PlayerState = PlayerState.Idle,
+        val lyric: LyricModel? = null,
         val isShuffle: Boolean = false,
         val duration: Long = 0L,
-        val progress: Float = 0f,
         val isFavorite: Boolean = false,
         val playMode: PlayMode = PlayMode.REPEAT_ALL,
         val mediaItem: AudioItemModel,
         val playListQueue: List<AudioItemModel>,
-    ) : PlayerUiState()
-}
+    ) : PlayerUiState() {
+        val progress: Float
+            get() = state.currentPositionMs.toFloat().div(duration)
 
-enum class PlayState {
-    PAUSED,
-    PLAYING,
+        val isPlaying: Boolean
+            get() = state is PlayerState.Playing
+    }
 }

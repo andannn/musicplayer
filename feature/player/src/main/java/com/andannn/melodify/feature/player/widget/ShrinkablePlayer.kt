@@ -26,7 +26,6 @@ import com.andannn.melodify.core.designsystem.theme.DynamicThemePrimaryColorsFro
 import com.andannn.melodify.core.designsystem.theme.MinContrastOfPrimaryVsSurface
 import com.andannn.melodify.core.designsystem.theme.rememberDominantColorState
 import com.andannn.melodify.core.designsystem.util.contrastAgainst
-import com.andannn.melodify.feature.player.PlayState
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.PlayerUiState
 
@@ -81,7 +80,7 @@ fun ShrinkablePlayBox(
             // When the selected image url changes, call updateColorsFromImageUrl() or reset()
             LaunchedEffect(url, layoutState.isPlayerExpanding) {
                 if (layoutState.isPlayerExpanding) {
-                    dominantColorState.updateColorsFromImageUrl(url.toString())
+                    dominantColorState.updateColorsFromImageUrl(url)
                 } else {
                     dominantColorState.reset()
                 }
@@ -108,7 +107,7 @@ fun ShrinkablePlayBox(
                 coverUri = state.mediaItem.artWorkUri,
                 playMode = state.playMode,
                 isShuffle = state.isShuffle,
-                isPlaying = state.state == PlayState.PLAYING,
+                isPlaying = state.isPlaying,
                 isFavorite = state.isFavorite,
                 playListQueue = state.playListQueue,
                 activeMediaItem = state.mediaItem,
