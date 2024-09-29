@@ -32,3 +32,4 @@
 
 -keep class com.andannn.melodify.core.datastore.UserPreferences { *; }
 -keep class com.andannn.melodify.core.datastore.PlayMode { *; }
+-dontwarn org.slf4j.impl.StaticLoggerBinder
