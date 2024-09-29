@@ -7,4 +7,6 @@
     <string name="add_to_queue">Добавить в очередь</string>
     <string name="delete">Удалить</string>
     <string name="play_next">Следующий трек</string>
+    <string name="play_queue">Следующая</string>
+    <string name="lyrics">LYRICS</string>
 </resources>

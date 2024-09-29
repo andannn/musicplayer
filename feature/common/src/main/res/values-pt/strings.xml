@@ -7,4 +7,6 @@
     <string name="add_to_queue">Adicionar à fila</string>
     <string name="delete">Excluir</string>
     <string name="play_next">Tocar a seguir</string>
+    <string name="play_queue">Próxima</string>
+    <string name="lyrics">LYRICS</string>
 </resources>

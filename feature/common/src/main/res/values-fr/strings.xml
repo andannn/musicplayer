@@ -7,4 +7,6 @@
     <string name="add_to_queue">Ajouter à la file d\'attente</string>
     <string name="delete">Supprimer</string>
     <string name="play_next">Jouer la suite</string>
+    <string name="play_queue">Suite</string>
+    <string name="lyrics">LYRICS</string>
 </resources>

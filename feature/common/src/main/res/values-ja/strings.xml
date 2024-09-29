@@ -7,4 +7,6 @@
     <string name="add_to_queue">キューに追加</string>
     <string name="delete">削除</string>
     <string name="play_next">次に再生</string>
+    <string name="play_queue">再生リスト</string>
+    <string name="lyrics">歌詞</string>
 </resources>

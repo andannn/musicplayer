@@ -77,6 +77,7 @@ fun FlexiblePlayerLayout(
     title: String = "",
     artist: String = "",
     progress: Float = 1f,
+    duration: Long = 0L,
     onEvent: (PlayerUiEvent) -> Unit = {},
     onShrinkButtonClick: () -> Unit = {},
 ) {
@@ -241,6 +242,7 @@ fun FlexiblePlayerLayout(
                     activeMediaItem = activeMediaItem,
                     playListQueue = playListQueue.toImmutableList(),
                     lyricModel = lyricModel,
+                    currentPositionMs = (progress * duration).toLong(),
                     onEvent = onEvent,
                     onRequestExpandSheet = {
                         layoutState.expandBottomSheet()
@@ -288,13 +290,13 @@ private fun FlexiblePlayerLayoutExpandPreview() {
         FlexiblePlayerLayout(
             layoutState = layoutState,
             coverUri = "",
+            activeMediaItem = AudioItemModel.DEFAULT,
+            playListQueue = emptyList(),
             modifier = Modifier.height(870.dp),
             isPlaying = true,
             isFavorite = true,
             title = "Song name",
             artist = "Artist name",
-            playListQueue = emptyList(),
-            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }
@@ -314,11 +316,11 @@ private fun FlexiblePlayerLayoutShrinkPreview() {
         FlexiblePlayerLayout(
             layoutState = layoutState,
             coverUri = "",
+            activeMediaItem = AudioItemModel.DEFAULT,
+            playListQueue = emptyList(),
             modifier = Modifier.height(70.dp),
             title = "Song name",
             artist = "Artist name",
-            playListQueue = emptyList(),
-            activeMediaItem = AudioItemModel.DEFAULT
         )
     }
 }

@@ -7,4 +7,6 @@
      <string name="add_to_queue">Añadir a la cola</string>
      <string name="delete">Eliminar</string>
      <string name="play_next">Reproducir siguiente</string>
+     <string name="play_queue">Próxima</string>
+     <string name="lyrics">LYRICS</string>
 </resources>

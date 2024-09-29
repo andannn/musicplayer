@@ -33,18 +33,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -54,6 +54,7 @@ import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.feature.player.lyrics.LyricsView
 import com.andannn.melodify.feature.player.queue.PlayQueue
+import com.andannn.melodify.feature.player.util.getLabel
 import com.andannn.melodify.feature.player.widget.BottomSheetState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -64,11 +65,6 @@ import kotlin.math.roundToInt
 
 private const val TAG = "PlayQueueView"
 
-private enum class SheetTab {
-    NEXT_SONG,
-    LYRICS,
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PlayerBottomSheetView(
@@ -77,6 +73,7 @@ fun PlayerBottomSheetView(
     playListQueue: ImmutableList<AudioItemModel>,
     activeMediaItem: AudioItemModel,
     modifier: Modifier = Modifier,
+    currentPositionMs: Long = 0L,
     lyricModel: LyricModel? = null,
     scope: CoroutineScope = rememberCoroutineScope(),
     onEvent: (PlayerUiEvent) -> Unit = {},
@@ -98,18 +95,10 @@ fun PlayerBottomSheetView(
         }
     }
 
-    var selectedTab by remember {
-        mutableStateOf(SheetTab.NEXT_SONG)
-    }
+    val sheetState  = rememberPlayerBottomSheetState()
 
-    val sheetItems by remember {
-        derivedStateOf {
-            val items = SheetTab.entries.toTypedArray().toMutableList()
-            if (lyricModel == null) {
-                items.remove(SheetTab.LYRICS)
-            }
-            items.toImmutableList()
-        }
+    LaunchedEffect(lyricModel) {
+        sheetState.onHasLyricsChange(lyricModel != null)
     }
 
     BackHandler(enabled = isExpand) {
@@ -144,28 +133,28 @@ fun PlayerBottomSheetView(
                     modifier = Modifier
                         .anchoredDraggable(state, orientation = Orientation.Vertical)
                         .fillMaxWidth(),
-                    selectedTabIndex = SheetTab.entries.indexOf(selectedTab),
+                    selectedTabIndex = sheetState.selectedIndex,
                     containerColor = Color.Transparent
                 ) {
-                    sheetItems.forEach {
+                    sheetState.sheetItems.forEach {
                         Tab(
-                            selected = it == selectedTab,
+                            selected = it == sheetState.selectedTab,
                             selectedContentColor = MaterialTheme.colorScheme.primary,
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                             text = @Composable {
                                 Text(
-                                    text = it.toString(),
+                                    text = stringResource(it.getLabel()),
                                 )
                             },
                             onClick = {
-                                selectedTab = it
+                                sheetState.onClickTab(it)
                             }
                         )
                     }
                 }
                 Spacer(modifier = Modifier.height(3.dp))
 
-                when (selectedTab) {
+                when (sheetState.selectedTab) {
                     SheetTab.NEXT_SONG -> {
                         PlayQueue(
                             modifier = Modifier.weight(1f),
@@ -186,10 +175,13 @@ fun PlayerBottomSheetView(
                     }
 
                     SheetTab.LYRICS -> {
-                        LyricsView(
-                            modifier = Modifier,
-                            lyricModel = lyricModel!!
-                        )
+                        lyricModel?.let {
+                            LyricsView(
+                                modifier = Modifier,
+                                currentPositionMs = currentPositionMs,
+                                lyricModel = it
+                            )
+                        }
                     }
                 }
             }
@@ -205,9 +197,9 @@ fun PlayerBottomSheetView(
             visible = expandFactor in 0f..0.05f
         ) {
             SelectBar(
-                items = sheetItems,
+                items = sheetState.sheetItems.toImmutableList(),
                 onItemClick = {
-                    selectedTab = it
+                    sheetState.onClickTab(it)
                     onRequestExpandSheet()
                 }
             )
@@ -240,14 +232,13 @@ private fun SelectBar(
                         .clickable {
                             onItemClick.invoke(it)
                         },
-                    text = it.toString(),
+                    text = stringResource(it.getLabel()),
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
     }
 }
-
 
 
 @ExperimentalFoundationApi
