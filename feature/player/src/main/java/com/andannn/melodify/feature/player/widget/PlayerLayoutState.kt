@@ -99,4 +99,16 @@ class PlayerLayoutState(
             playerExpandState.animateTo(PlayerState.Expand)
         }
     }
+
+    fun shrinkBottomSheet() {
+        animaScope.launch {
+            sheetState.animateTo(BottomSheetState.Shrink)
+        }
+    }
+
+    fun expandBottomSheet() {
+        animaScope.launch {
+            sheetState.animateTo(BottomSheetState.Expand)
+        }
+    }
 }

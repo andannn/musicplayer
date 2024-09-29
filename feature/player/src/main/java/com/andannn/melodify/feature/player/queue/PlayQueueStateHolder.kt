@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player
+package com.andannn.melodify.feature.player.queue
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
