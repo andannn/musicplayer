@@ -1,6 +1,5 @@
 package com.andannn.melodify.feature.player.lyrics
 
-import android.util.Log
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
@@ -40,6 +39,8 @@ import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
 
+private const val TAG = "SyncedLyricsView"
+
 @Composable
 fun SyncedLyricsView(
     syncedLyric: String,
@@ -74,7 +75,7 @@ fun SyncedLyricsView(
         val info = state.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull {
             it.index == state.currentPlayingIndex
         }
-        Timber.tag("JQN")
+        Timber.tag(TAG)
             .d("SyncedLyricsView: scroll to ${state.currentPlayingIndex} with info ${info.toString()}")
         if (info != null) {
             state.lazyListState.animateScrollToItem(
