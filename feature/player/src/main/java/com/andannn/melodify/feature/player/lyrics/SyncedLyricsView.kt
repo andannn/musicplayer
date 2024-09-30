@@ -1,48 +1,113 @@
 package com.andannn.melodify.feature.player.lyrics
 
+import android.util.Log
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import timber.log.Timber
+import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SyncedLyricsView(
     syncedLyric: String,
     modifier: Modifier = Modifier,
+    onRequestSeek: (timeMs: Long) -> Unit = {},
     currentPositionMs: Long = 0L,
 ) {
-    val state = rememberSyncedLyricsState(syncedLyric)
+    val state = rememberSyncedLyricsState(
+        syncedLyric,
+        onRequestSeek = onRequestSeek
+    )
+
+    val activeIndex by remember {
+        derivedStateOf {
+            when (val lyricsState = state.lyricsState) {
+                LyricsState.AutoScrolling -> -1
+                is LyricsState.Seeking -> lyricsState.currentSeekIndex
+                is LyricsState.WaitingSeekingResult -> -1
+            }
+        }
+    }
 
     LaunchedEffect(currentPositionMs) {
         state.onPositionChanged(currentPositionMs)
     }
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 4.dp)
-    ) {
-        itemsIndexed(
-            items = state.syncedLyricsLines,
-            key = { _, item -> item.timeMs }
-        ) { index, item ->
-            LyricLine(
-                isPlaying = state.currentPlayingIndex == index,
-                lyricsLine = item
+    LaunchedEffect(state.lazyListState, state.currentPlayingIndex, state.lyricsState) {
+        if (state.lyricsState !is LyricsState.AutoScrolling) {
+            return@LaunchedEffect
+        }
+
+        val info = state.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull {
+            it.index == state.currentPlayingIndex
+        }
+        Timber.tag("JQN")
+            .d("SyncedLyricsView: scroll to ${state.currentPlayingIndex} with info ${info.toString()}")
+        if (info != null) {
+            state.lazyListState.animateScrollToItem(
+                state.currentPlayingIndex,
+                scrollOffset = info.size.div(2f).roundToInt()
             )
+        } else {
+            state.lazyListState.animateScrollToItem(state.currentPlayingIndex)
+        }
+    }
+
+    BoxWithConstraints(
+        modifier = modifier.fillMaxSize()
+    ) {
+        val maxHeight = maxHeight
+        LazyColumn(
+            state = state.lazyListState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 3.dp, vertical = maxHeight / 2)
+        ) {
+            itemsIndexed(
+                items = state.syncedLyricsLines,
+                key = { _, item -> item.startTimeMs }
+            ) { index, item ->
+                LyricLine(
+                    lyricsLine = item,
+                    isPlaying = state.currentPlayingIndex == index,
+                    isActive = activeIndex == index,
+                    onSeekTimeClick = {
+                        state.onSeekTimeClick(item.startTimeMs)
+                    }
+                )
+            }
         }
     }
 }
@@ -50,8 +115,10 @@ fun SyncedLyricsView(
 @Composable
 private fun LyricLine(
     isPlaying: Boolean,
+    isActive: Boolean,
     lyricsLine: SyncedLyricsLine,
     modifier: Modifier = Modifier,
+    onSeekTimeClick: () -> Unit = {}
 ) {
     val transition = updateTransition(targetState = isPlaying, label = "playingState")
 
@@ -59,13 +126,56 @@ private fun LyricLine(
         if (playing) 1f else 0.4f
     }
 
-    Text(
+    val activeTransition = updateTransition(targetState = isActive, label = "playingState")
+    val backgroundColor by activeTransition.animateColor(label = "color") { active ->
+        if (active) {
+            MaterialTheme.colorScheme.surfaceVariant
+        } else {
+            Color.Transparent
+        }
+    }
+
+    Box(
         modifier = modifier
-            .padding(vertical = 5.dp)
-            .alpha(alpha),
-        text = lyricsLine.lyrics,
-        style = MaterialTheme.typography.headlineSmall
-    )
+            .background(backgroundColor)
+            .fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(vertical = 12.dp, horizontal = 16.dp)
+                .alpha(alpha),
+            text = lyricsLine.lyrics,
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        if (isActive) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(horizontal = 8.dp)
+                    .background(
+                        MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    modifier = Modifier,
+                    text = lyricsLine.startTimeMs.milliseconds.toComponents { minutes, seconds, _ ->
+                        "%02d:%02d".format(minutes, seconds)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                IconButton(onClick = onSeekTimeClick) {
+                    Icon(Icons.Default.PlayArrow, contentDescription = null)
+                }
+            }
+        }
+    }
 }
 
 @Preview
@@ -131,7 +241,7 @@ private fun SyncLyricsViewPreview() {
                         "[03:04.29] アタシも大概だけど\n" +
                         "[03:06.29] どうだっていいぜ問題はナシ\n" +
                         "[03:08.50] ",
-                currentPositionMs = 1222L,
+                currentPositionMs = 1239,
             )
         }
     }
@@ -141,12 +251,13 @@ private fun SyncLyricsViewPreview() {
 @Preview
 @Composable
 private fun PlayingLinePreview() {
-    MelodifyTheme {
+    MelodifyTheme(darkTheme = true) {
         Surface {
             LyricLine(
                 isPlaying = true,
+                isActive = true,
                 lyricsLine = SyncedLyricsLine(
-                    timeMs = 1L,
+                    startTimeMs = 12349L,
                     lyrics = "どうだっていいぜ問題はナシ"
                 )
             )

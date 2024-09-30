@@ -23,6 +23,7 @@ internal fun LyricsView(
     lyricState: LyricState,
     modifier: Modifier = Modifier,
     currentPositionMs: Long = 0L,
+    onRequestSeek: (timeMs: Long) -> Unit = {}
 ) {
     when (lyricState) {
         is LyricState.Loaded -> {
@@ -40,7 +41,8 @@ internal fun LyricsView(
                     SyncedLyricsView(
                         modifier = modifier,
                         syncedLyric = lyricModel.syncedLyrics,
-                        currentPositionMs = currentPositionMs
+                        currentPositionMs = currentPositionMs,
+                        onRequestSeek = onRequestSeek
                     )
                 } else if (lyricModel.plainLyrics.isNotBlank()) {
                     PlainLyricsView(
@@ -56,7 +58,6 @@ internal fun LyricsView(
             }
         }
     }
-
 }
 
 @Composable

@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -111,7 +112,7 @@ fun PlayerBottomSheetView(
                 )
             }
             .background(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = expandFactor),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = expandFactor),
                 shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
             ),
     ) {
@@ -141,9 +142,10 @@ fun PlayerBottomSheetView(
                     .weight(1f)
                     .graphicsLayer { alpha = expandFactor }
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
                         shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
                     )
+                    .clipToBounds()
             ) {
                 when (sheetState.selectedTab) {
                     SheetTab.NEXT_SONG -> {
@@ -169,7 +171,10 @@ fun PlayerBottomSheetView(
                         LyricsView(
                             modifier = Modifier,
                             currentPositionMs = currentPositionMs,
-                            lyricState = lyricState
+                            lyricState = lyricState,
+                            onRequestSeek = {
+                                onEvent(PlayerUiEvent.OnSeekLyrics(it))
+                            }
                         )
                     }
                 }
@@ -267,6 +272,7 @@ private fun BottomPlayQueueSheetPreview() {
                     decayAnimationSpec = exponentialDecay(),
                 )
             }
+
 
         PlayerBottomSheetView(
             sheetMaxHeightDp = 360.dp,

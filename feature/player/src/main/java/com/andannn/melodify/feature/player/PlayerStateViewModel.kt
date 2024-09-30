@@ -53,6 +53,8 @@ sealed interface PlayerUiEvent {
     data class OnDeleteMediaItem(val index: Int) : PlayerUiEvent
 
     data class OnItemClickInQueue(val item: AudioItemModel) : PlayerUiEvent
+
+    data class OnSeekLyrics(val timeMs: Long) : PlayerUiEvent
 }
 
 private const val TAG = "PlayerStateViewModel"
@@ -178,6 +180,10 @@ constructor(
 
             is PlayerUiEvent.OnDeleteMediaItem -> {
                 mediaControllerRepository.removeMediaItem(event.index)
+            }
+
+            is PlayerUiEvent.OnSeekLyrics -> {
+                seekToTime(event.timeMs)
             }
         }
     }
