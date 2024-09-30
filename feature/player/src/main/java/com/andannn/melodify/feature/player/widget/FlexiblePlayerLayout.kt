@@ -44,6 +44,7 @@ import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.designsystem.util.verticalGradientScrim
 import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.feature.player.LyricState
 import com.andannn.melodify.feature.player.PlayerBottomSheetView
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import kotlinx.collections.immutable.toImmutableList
@@ -70,7 +71,7 @@ fun FlexiblePlayerLayout(
     playListQueue: List<AudioItemModel>,
     modifier: Modifier = Modifier,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
-    lyricModel: LyricModel? = null,
+    lyricState: LyricState = LyricState.Loading,
     isShuffle: Boolean = false,
     isPlaying: Boolean = false,
     isFavorite: Boolean = false,
@@ -241,7 +242,7 @@ fun FlexiblePlayerLayout(
                     state = layoutState.sheetState,
                     activeMediaItem = activeMediaItem,
                     playListQueue = playListQueue.toImmutableList(),
-                    lyricModel = lyricModel,
+                    lyricState = lyricState,
                     currentPositionMs = (progress * duration).toLong(),
                     onEvent = onEvent,
                     onRequestExpandSheet = {

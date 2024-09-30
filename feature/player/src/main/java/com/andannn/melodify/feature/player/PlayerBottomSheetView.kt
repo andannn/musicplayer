@@ -1,36 +1,33 @@
 package com.andannn.melodify.feature.player
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,9 +35,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -50,7 +45,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
-import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.feature.player.lyrics.LyricsView
 import com.andannn.melodify.feature.player.queue.PlayQueue
@@ -74,7 +68,7 @@ fun PlayerBottomSheetView(
     activeMediaItem: AudioItemModel,
     modifier: Modifier = Modifier,
     currentPositionMs: Long = 0L,
-    lyricModel: LyricModel? = null,
+    lyricState: LyricState = LyricState.Loading,
     scope: CoroutineScope = rememberCoroutineScope(),
     onEvent: (PlayerUiEvent) -> Unit = {},
     onRequestExpandSheet: () -> Unit = {}
@@ -95,11 +89,7 @@ fun PlayerBottomSheetView(
         }
     }
 
-    val sheetState  = rememberPlayerBottomSheetState()
-
-    LaunchedEffect(lyricModel) {
-        sheetState.onHasLyricsChange(lyricModel != null)
-    }
+    val sheetState = rememberPlayerBottomSheetState()
 
     BackHandler(enabled = isExpand) {
         scope.launch {
@@ -107,57 +97,58 @@ fun PlayerBottomSheetView(
         }
     }
 
-    Box {
-        Surface(
-            modifier =
-            modifier
-                .graphicsLayer { alpha = expandFactor }
-                .fillMaxWidth()
-                .height(sheetMaxHeightDp)
-                .offset {
-                    IntOffset(
-                        0,
-                        state
-                            .requireOffset()
-                            .roundToInt(),
-                    )
-                },
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+    Box(
+        modifier =
+        modifier
+            .fillMaxWidth()
+            .height(sheetMaxHeightDp)
+            .offset {
+                IntOffset(
+                    0,
+                    state
+                        .requireOffset()
+                        .roundToInt(),
+                )
+            }
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = expandFactor),
+                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+            ),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxHeight()
         ) {
-            Column(
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                Spacer(modifier = Modifier.height(20.dp))
-                ScrollableTabRow(
-                    modifier = Modifier
-                        .anchoredDraggable(state, orientation = Orientation.Vertical)
-                        .fillMaxWidth(),
-                    selectedTabIndex = sheetState.selectedIndex,
-                    containerColor = Color.Transparent
-                ) {
-                    sheetState.sheetItems.forEach {
-                        Tab(
-                            selected = it == sheetState.selectedTab,
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurface,
-                            text = @Composable {
-                                Text(
-                                    text = stringResource(it.getLabel()),
-                                )
-                            },
-                            onClick = {
-                                sheetState.onClickTab(it)
-                            }
-                        )
-                    }
+            Spacer(modifier = Modifier.height(20.dp))
+            TabBar(
+                modifier = Modifier
+                    .anchoredDraggable(state, orientation = Orientation.Vertical),
+                isExpand = isExpand,
+                items = sheetState.sheetItems.toImmutableList(),
+                selectedTabIndex = sheetState.selectedIndex,
+                onItemPressed = {
+                    sheetState.onSelectItem(it)
+                },
+                onItemClick = {
+                    sheetState.onSelectItem(it)
+                    onRequestExpandSheet()
                 }
-                Spacer(modifier = Modifier.height(3.dp))
+            )
+            Spacer(modifier = Modifier.height(3.dp))
 
+            Box(
+                modifier =
+                Modifier
+                    .weight(1f)
+                    .graphicsLayer { alpha = expandFactor }
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                    )
+            ) {
                 when (sheetState.selectedTab) {
                     SheetTab.NEXT_SONG -> {
                         PlayQueue(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier,
                             onSwapFinished = { from, to ->
                                 Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
                                 onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
@@ -175,71 +166,81 @@ fun PlayerBottomSheetView(
                     }
 
                     SheetTab.LYRICS -> {
-                        lyricModel?.let {
-                            LyricsView(
-                                modifier = Modifier,
-                                currentPositionMs = currentPositionMs,
-                                lyricModel = it
-                            )
-                        }
+                        LyricsView(
+                            modifier = Modifier,
+                            currentPositionMs = currentPositionMs,
+                            lyricState = lyricState
+                        )
                     }
                 }
             }
         }
+    }
+}
 
+private val emptyIndicator = @Composable { _: List<TabPosition> -> }
+private val defaultDivider: @Composable () -> Unit = @Composable { HorizontalDivider() }
+private val emptyDivider: @Composable () -> Unit = @Composable { }
 
-        AnimatedVisibility(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.navigationBars),
-            enter = fadeIn(),
-            exit = fadeOut(),
-            visible = expandFactor in 0f..0.05f
-        ) {
-            SelectBar(
-                items = sheetState.sheetItems.toImmutableList(),
-                onItemClick = {
-                    sheetState.onClickTab(it)
-                    onRequestExpandSheet()
+@Composable
+private fun TabBar(
+    isExpand: Boolean,
+    items: ImmutableList<SheetTab>,
+    selectedTabIndex: Int,
+    onItemPressed: (SheetTab) -> Unit,
+    modifier: Modifier = Modifier,
+    onItemClick: (SheetTab) -> Unit
+) {
+    val defaultIndicator =
+        @Composable { tabPositions: List<TabPosition> ->
+            if (selectedTabIndex < tabPositions.size) {
+                TabRowDefaults.SecondaryIndicator(
+                    Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex])
+                )
+            }
+        }
+
+    TabRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        selectedTabIndex = selectedTabIndex,
+        containerColor = Color.Transparent,
+        indicator = if (isExpand) defaultIndicator else emptyIndicator,
+        divider = if (isExpand) defaultDivider else emptyDivider,
+    ) {
+        items.forEachIndexed { index, item ->
+            val source = remember { MutableInteractionSource() }
+            LaunchedEffect(source, isExpand) {
+                if (isExpand) return@LaunchedEffect
+
+                source.interactions.collect {
+                    when (it) {
+                        is PressInteraction.Press -> onItemPressed(item)
+                        else -> Unit
+                    }
+                }
+            }
+
+            Tab(
+                selected = index == selectedTabIndex,
+                selectedContentColor =
+                if (isExpand) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = @Composable {
+                    Text(
+                        text = stringResource(item.getLabel()),
+                    )
+                },
+                interactionSource = source,
+                onClick = {
+                    onItemClick(item)
                 }
             )
         }
     }
 }
-
-@Composable
-private fun SelectBar(
-    items: ImmutableList<SheetTab>,
-    modifier: Modifier = Modifier,
-    onItemClick: (SheetTab) -> Unit
-) {
-    Box(
-        modifier = modifier
-            .height(80.dp)
-            .fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            items.forEach {
-                Text(
-                    modifier = Modifier
-                        .alpha(0.6f)
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-// TODO: implement this to handle click but not intercept drag gesture.
-                        .clickable {
-                            onItemClick.invoke(it)
-                        },
-                    text = stringResource(it.getLabel()),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-    }
-}
-
 
 @ExperimentalFoundationApi
 @Preview
@@ -286,18 +287,5 @@ private fun BottomPlayQueueSheetPreview() {
             ).toImmutableList(),
             activeMediaItem = AudioItemModel.DEFAULT,
         )
-    }
-}
-
-@Preview
-@Composable
-private fun SelectionBarPreview() {
-    MelodifyTheme {
-        Surface {
-            SelectBar(
-                items = SheetTab.entries.toTypedArray().toImmutableList(),
-                onItemClick = {}
-            )
-        }
     }
 }
