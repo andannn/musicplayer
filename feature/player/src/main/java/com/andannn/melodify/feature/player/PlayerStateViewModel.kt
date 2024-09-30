@@ -14,11 +14,14 @@ import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -50,6 +53,8 @@ sealed interface PlayerUiEvent {
     data class OnDeleteMediaItem(val index: Int) : PlayerUiEvent
 
     data class OnItemClickInQueue(val item: AudioItemModel) : PlayerUiEvent
+
+    data class OnSeekLyrics(val timeMs: Long) : PlayerUiEvent
 }
 
 private const val TAG = "PlayerStateViewModel"
@@ -72,10 +77,12 @@ constructor(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val lyricFlow = interactingMusicItem
+    private val lyricFlow: Flow<LyricState> = interactingMusicItem
         .filterNotNull()
         .flatMapLatest {
             lyricRepository.getLyricByMediaStoreIdFlow(it.id)
+                .map<LyricModel?, LyricState> { lyricOrNull -> LyricState.Loaded(lyricOrNull) }
+                .onStart { emit(LyricState.Loading) }
         }
 
     private val playModeFlow = playerStateRepository.observePlayMode()
@@ -174,6 +181,10 @@ constructor(
             is PlayerUiEvent.OnDeleteMediaItem -> {
                 mediaControllerRepository.removeMediaItem(event.index)
             }
+
+            is PlayerUiEvent.OnSeekLyrics -> {
+                seekToTime(event.timeMs)
+            }
         }
     }
 
@@ -203,12 +214,18 @@ constructor(
     }
 }
 
+sealed class LyricState {
+    data object Loading : LyricState()
+
+    data class Loaded(val lyric: LyricModel?) : LyricState()
+}
+
 sealed class PlayerUiState {
     data object Inactive : PlayerUiState()
 
     data class Active(
         val state: PlayerState = PlayerState.Idle,
-        val lyric: LyricModel? = null,
+        val lyric: LyricState = LyricState.Loading,
         val isShuffle: Boolean = false,
         val duration: Long = 0L,
         val isFavorite: Boolean = false,

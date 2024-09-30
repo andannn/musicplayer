@@ -115,7 +115,7 @@ fun ShrinkablePlayBox(
                 artist = state.mediaItem.artist,
                 progress = state.progress,
                 duration = state.duration,
-                lyricModel = state.lyric,
+                lyricState = state.lyric,
                 onShrinkButtonClick = layoutState::shrinkPlayerLayout,
                 onEvent = onEvent,
             )

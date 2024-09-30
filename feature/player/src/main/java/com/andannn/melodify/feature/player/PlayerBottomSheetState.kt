@@ -17,29 +17,14 @@ fun rememberPlayerBottomSheetState() = remember {
 }
 
 class PlayerBottomSheetState {
-    var sheetItems by mutableStateOf(listOf(SheetTab.NEXT_SONG))
+    var sheetItems by mutableStateOf(SheetTab.entries.toTypedArray())
 
     var selectedTab by mutableStateOf(SheetTab.NEXT_SONG)
 
     val selectedIndex: Int
-        get() =
-            if (sheetItems.contains(selectedTab))
-                sheetItems.indexOf(selectedTab)
-            else
-                0
+        get() = sheetItems.indexOf(selectedTab)
 
-    fun onHasLyricsChange(hasLyrics: Boolean) {
-        if (!hasLyrics) {
-            if (selectedTab == SheetTab.LYRICS) {
-                selectedTab = SheetTab.NEXT_SONG
-            }
-            sheetItems = listOf(SheetTab.NEXT_SONG)
-        } else {
-            sheetItems = SheetTab.entries
-        }
-    }
-
-    fun onClickTab(item: SheetTab) {
+    fun onSelectItem(item: SheetTab) {
         selectedTab = item
     }
 }
