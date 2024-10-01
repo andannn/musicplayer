@@ -78,31 +78,31 @@ fun ShrinkablePlayBox(
 
         DynamicThemePrimaryColorsFromImage(dominantColorState) {
             // When the selected image url changes, call updateColorsFromImageUrl() or reset()
-            LaunchedEffect(url, layoutState.isPlayerExpanding) {
-                if (layoutState.isPlayerExpanding) {
-                    dominantColorState.updateColorsFromImageUrl(url)
-                } else {
-                    dominantColorState.reset()
-                }
+            LaunchedEffect(url) {
+                dominantColorState.updateColorsFromImageUrl(url)
+            }
+
+            LaunchedEffect(layoutState.isPlayerExpanding) {
+                dominantColorState.setDynamicThemeEnable(layoutState.isPlayerExpanding)
             }
 
             FlexiblePlayerLayout(
                 modifier =
-                    Modifier
-                        .height(with(LocalDensity.current) { layoutState.playerExpandState.offset.toDp() })
-                        .align(Alignment.BottomCenter)
-                        .anchoredDraggable(
-                            layoutState.playerExpandState,
-                            enabled = isPlayerDraggable,
-                            orientation = Orientation.Vertical,
-                            reverseDirection = true,
-                        )
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            enabled = layoutState.playerState == PlayerState.Shrink,
-                            onClick = layoutState::expandPlayerLayout,
-                        ),
+                Modifier
+                    .height(with(LocalDensity.current) { layoutState.playerExpandState.offset.toDp() })
+                    .align(Alignment.BottomCenter)
+                    .anchoredDraggable(
+                        layoutState.playerExpandState,
+                        enabled = isPlayerDraggable,
+                        orientation = Orientation.Vertical,
+                        reverseDirection = true,
+                    )
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        enabled = layoutState.playerState == PlayerState.Shrink,
+                        onClick = layoutState::expandPlayerLayout,
+                    ),
                 layoutState = layoutState,
                 coverUri = state.mediaItem.artWorkUri,
                 playMode = state.playMode,

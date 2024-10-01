@@ -112,8 +112,10 @@ class DominantColorState(
 ) {
     var color by mutableStateOf(defaultColor)
         private set
-    var onColor by mutableStateOf(defaultOnColor)
-        private set
+
+    private var dynamicThemeEnable: Boolean = false
+
+    private var colorFromImage: Color = defaultColor
 
     private val cache =
         when {
@@ -123,8 +125,13 @@ class DominantColorState(
 
     suspend fun updateColorsFromImageUrl(url: String) {
         val result = calculateDominantColor(url)
-        color = result?.color ?: defaultColor
-        onColor = result?.onColor ?: defaultOnColor
+        colorFromImage = result?.color ?: defaultColor
+
+        color = if (dynamicThemeEnable) {
+            colorFromImage
+        } else {
+            defaultColor
+        }
     }
 
     private suspend fun calculateDominantColor(url: String): DominantColors? {
@@ -151,12 +158,14 @@ class DominantColorState(
             ?.also { result -> cache?.put(url, result) }
     }
 
-    /**
-     * Reset the color values to [defaultColor].
-     */
-    fun reset() {
-        color = defaultColor
-        onColor = defaultColor
+    fun setDynamicThemeEnable(enable: Boolean) {
+        dynamicThemeEnable = enable
+
+        color = if (dynamicThemeEnable) {
+            colorFromImage
+        } else {
+            defaultColor
+        }
     }
 }
 
