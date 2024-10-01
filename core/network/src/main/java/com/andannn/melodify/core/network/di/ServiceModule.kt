@@ -1,5 +1,6 @@
 package com.andannn.melodify.core.network.di
 
+import android.app.Application
 import com.andannn.melodify.core.network.LrclibService
 import com.andannn.melodify.core.network.LrclibServiceImpl
 import com.andannn.melodify.core.network.lrclibResourceClientBuilder
@@ -15,9 +16,11 @@ object ServiceModule {
     @Provides
     @Singleton
     fun providesHttpClient(
+        application: Application
     ): LrclibService {
         return LrclibServiceImpl(
-            lrclibResourceClientBuilder()
+            application,
+            lrclibResourceClientBuilder(),
         )
     }
 }
