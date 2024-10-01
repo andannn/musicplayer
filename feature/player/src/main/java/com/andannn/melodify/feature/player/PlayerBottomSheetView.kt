@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -122,6 +124,7 @@ fun PlayerBottomSheetView(
             Spacer(modifier = Modifier.height(20.dp))
             TabBar(
                 modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .anchoredDraggable(state, orientation = Orientation.Vertical),
                 isExpand = isExpand,
                 items = sheetState.sheetItems.toImmutableList(),
@@ -136,16 +139,14 @@ fun PlayerBottomSheetView(
             )
             Spacer(modifier = Modifier.height(3.dp))
 
-            Box(
+            Surface(
                 modifier =
                 Modifier
                     .weight(1f)
                     .graphicsLayer { alpha = expandFactor }
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-                    )
-                    .clipToBounds()
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
             ) {
                 when (sheetState.selectedTab) {
                     SheetTab.NEXT_SONG -> {
@@ -207,8 +208,7 @@ private fun TabBar(
 
     TabRow(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .fillMaxWidth(),
         selectedTabIndex = selectedTabIndex,
         containerColor = Color.Transparent,
         indicator = if (isExpand) defaultIndicator else emptyIndicator,

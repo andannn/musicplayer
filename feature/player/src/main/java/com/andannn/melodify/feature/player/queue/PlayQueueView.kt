@@ -116,7 +116,7 @@ private fun ReorderableCollectionItemScope.QueueItem(
                 onDragStopped = onSwapFinish
             ),
             isActive = isActive,
-            defaultColor = MaterialTheme.colorScheme.surfaceVariant,
+            defaultColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             albumArtUri = item.artWorkUri,
             title = item.name,
             showTrackNum = false,

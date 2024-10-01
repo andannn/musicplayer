@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
@@ -94,7 +92,7 @@ fun SyncedLyricsView(
         LazyColumn(
             state = state.lazyListState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 3.dp, vertical = maxHeight / 2)
+            contentPadding = PaddingValues(vertical = maxHeight / 2)
         ) {
             itemsIndexed(
                 items = state.syncedLyricsLines,
@@ -130,10 +128,22 @@ private fun LyricLine(
     val activeTransition = updateTransition(targetState = isActive, label = "playingState")
     val backgroundColor by activeTransition.animateColor(label = "color") { active ->
         if (active) {
-            MaterialTheme.colorScheme.surfaceVariant
+            MaterialTheme.colorScheme.primaryContainer
         } else {
-            Color.Transparent
+            MaterialTheme.colorScheme.surfaceContainerHighest
         }
+    }
+
+    val fontColor by activeTransition.animateColor(label = "fontColor") { active ->
+        if (active) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        }
+    }
+
+    val seekButtonAlpha by activeTransition.animateFloat(label = "seekButtonAlpha") { active ->
+        if (active) 1f else 0f
     }
 
     Box(
@@ -146,32 +156,37 @@ private fun LyricLine(
                 .padding(vertical = 12.dp, horizontal = 16.dp)
                 .alpha(alpha),
             text = lyricsLine.lyrics,
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            color = fontColor
         )
 
-        if (isActive) {
-            Row(
+        if (seekButtonAlpha != 0f) {
+            Surface(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(horizontal = 8.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceContainerHighest,
-                        shape = RoundedCornerShape(12.dp)
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                    .alpha(seekButtonAlpha)
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(12.dp),
+                onClick = onSeekTimeClick
             ) {
-                Spacer(modifier = Modifier.width(4.dp))
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(modifier = Modifier.width(4.dp))
 
-                Text(
-                    modifier = Modifier,
-                    text = lyricsLine.startTimeMs.milliseconds.toComponents { minutes, seconds, _ ->
-                        "%02d:%02d".format(minutes, seconds)
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                    Text(
+                        modifier = Modifier,
+                        text = lyricsLine.startTimeMs.milliseconds.toComponents { minutes, seconds, _ ->
+                            "%02d:%02d".format(minutes, seconds)
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-                IconButton(onClick = onSeekTimeClick) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null)
                 }
             }
