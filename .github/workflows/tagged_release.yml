@@ -44,6 +44,10 @@ jobs:
           encodedString: ${{ secrets.KEYSTORE }}
 
       - run: ./gradlew assembleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
