@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -68,8 +69,9 @@ fun AudioItemView(
                                 shape = MaterialTheme.shapes.extraSmall,
                             )
                             .align(Alignment.Center)
-                            .padding(horizontal = 10.dp),
+                            .width(30.dp),
                         text = trackNum.toString(),
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 } else {
@@ -136,6 +138,7 @@ private fun MusicCardPreviewActive() {
         AudioItemView(
             albumArtUri = "",
             title = "Title",
+            trackNum = 9,
             artist = "artist",
             isActive = true,
             showTrackNum = true,

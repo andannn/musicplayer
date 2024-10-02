@@ -65,18 +65,22 @@ fun DynamicThemePrimaryColorsFromImage(
     dominantColorState: DominantColorState = rememberDominantColorState(),
     content: @Composable () -> Unit,
 ) {
+    val defaultScheme = MaterialTheme.colorScheme
+    var scheme: ColorScheme by remember { mutableStateOf(defaultScheme) }
     val seedColor by
     animateColorAsState(
         dominantColorState.color,
         spring(stiffness = Spring.StiffnessLow),
+        finishedListener = {
+            scheme = ColorSchemeUtil.fromSeed(it, isDark = true)
+        },
         label = "domain color",
     )
-    val defaultScheme = MaterialTheme.colorScheme
-    var scheme: ColorScheme by remember { mutableStateOf(defaultScheme) }
 
     var debounceCounter by remember {
         mutableIntStateOf(0)
     }
+
     LaunchedEffect(seedColor) {
         debounceCounter += 1
         if (debounceCounter % 5 == 0) {

@@ -89,6 +89,7 @@ constructor(
                 val albumItem =
                     mediaControllerRepository.getAlbumByAlbumId(id.toLong())
                 val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
+                    .sortedBy { it.cdTrackNumber }
                 PlayListContent(
                     headerInfoItem = albumItem,
                     audioList = playableItems.toImmutableList(),
