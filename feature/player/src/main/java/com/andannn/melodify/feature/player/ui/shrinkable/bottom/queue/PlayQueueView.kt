@@ -16,7 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.andannn.melodify.core.designsystem.component.AudioItemView
+import com.andannn.melodify.core.designsystem.component.ListTileItemView
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableCollectionItemScope
@@ -110,7 +110,7 @@ private fun ReorderableCollectionItemScope.QueueItem(
             Spacer(modifier = Modifier)
         }
     ) {
-        AudioItemView(
+        ListTileItemView(
             modifier = modifier,
             swapIconModifier = Modifier.draggableHandle(
                 onDragStopped = onSwapFinish
@@ -120,7 +120,7 @@ private fun ReorderableCollectionItemScope.QueueItem(
             albumArtUri = item.artWorkUri,
             title = item.name,
             showTrackNum = false,
-            artist = item.artist,
+            subTitle = item.artist,
             trackNum = item.cdTrackNumber,
             onMusicItemClick = onClick,
         )

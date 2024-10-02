@@ -6,8 +6,8 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.data.repository.MediaControllerRepositoryImpl
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.data.repository.PlayerStateRepositoryImpl
-import com.andannn.melodify.core.domain.repository.SmpPreferenceRepository
-import com.andannn.melodify.core.data.repository.SmpPreferenceRepositoryImpl
+import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
+import com.andannn.melodify.core.data.repository.UserPreferenceRepositoryImpl
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import dagger.Binds
@@ -23,7 +23,7 @@ interface DataModule {
     fun bindsPlayerStateRepository(musicRepository: PlayerStateRepositoryImpl): PlayerStateRepository
 
     @Binds
-    fun bindsSmpPreferenceRepository(musicRepository: SmpPreferenceRepositoryImpl): SmpPreferenceRepository
+    fun bindsSmpPreferenceRepository(musicRepository: UserPreferenceRepositoryImpl): UserPreferenceRepository
 
     @Binds
     fun bindsMediaContentsRepository(mediaContentsRepository: MediaControllerRepositoryImpl): MediaControllerRepository

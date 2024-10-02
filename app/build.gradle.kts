@@ -99,8 +99,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
 
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material3)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

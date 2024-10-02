@@ -18,8 +18,6 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":core:domain"))
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.kotlin.lite)
 }

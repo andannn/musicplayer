@@ -33,7 +33,7 @@ import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 fun LargePreviewCard(
     artCoverUri: Uri,
     title: String,
-    trackCount: Int,
+    subTitle: String,
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     placeholder: Painter? = null,
@@ -71,8 +71,10 @@ fun LargePreviewCard(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Text(
-                    text = "$trackCount Tracks",
+                    text = subTitle,
                     style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
 
@@ -94,7 +96,7 @@ private fun AlbumCardPreview() {
                 placeholder = rememberVectorPainter(Icons.Rounded.Person),
                 artCoverUri = Uri.parse(""),
                 title = "TitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitltleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitleTitle",
-                trackCount = 3,
+                subTitle = "Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title Sub title "
             )
         }
     }

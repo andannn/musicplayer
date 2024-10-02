@@ -9,7 +9,7 @@ import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.common.drawer.SheetItem
-import com.andannn.melodify.core.domain.LyricModel
+import com.andannn.melodify.core.domain.model.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
 import dagger.hilt.android.lifecycle.HiltViewModel

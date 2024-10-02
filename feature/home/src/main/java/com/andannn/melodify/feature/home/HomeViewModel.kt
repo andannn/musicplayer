@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.andannn.melodify.common.drawer.BottomSheetController
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.domain.model.MediaPreviewMode
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
+import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -15,10 +17,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "HomeViewModel"
@@ -26,7 +29,8 @@ private const val TAG = "HomeViewModel"
 sealed interface HomeUiEvent {
     data class OnSelectedCategoryChanged(val category: MediaCategory) : HomeUiEvent
     data class OnPlayMusic(val mediaItem: AudioItemModel) : HomeUiEvent
-    data class OnShowMusicItemOption(val audioItemModel: MediaItemModel) : HomeUiEvent
+    data class OnShowItemOption(val audioItemModel: MediaItemModel) : HomeUiEvent
+    data object OnTogglePreviewMode : HomeUiEvent
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,6 +41,7 @@ constructor(
     private val mediaControllerRepository: MediaControllerRepository,
     private val bottomSheetController: BottomSheetController,
     private val mediaContentObserverRepository: MediaContentObserverRepository,
+    private val userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
     private val _selectedCategoryFlow = MutableStateFlow(MediaCategory.ALBUM)
 
@@ -44,11 +49,16 @@ constructor(
         createMediaItemsFlow(it)
     }
 
-    val state = _contentWithCategoryFlow
-        .map {
+    private val _previewModeFlow = userPreferenceRepository.previewMode
+
+    val state = combine(
+        _contentWithCategoryFlow,
+        _previewModeFlow,
+    ) { contentWithCategory, previewMode ->
             HomeUiState(
-                currentCategory = it.category,
-                mediaItems = it.mediaItems.toImmutableList()
+                currentCategory = contentWithCategory.category,
+                mediaItems = contentWithCategory.mediaItems.toImmutableList(),
+                previewMode = previewMode
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), HomeUiState())
@@ -57,7 +67,14 @@ constructor(
         when (event) {
             is HomeUiEvent.OnSelectedCategoryChanged -> onSelectedCategoryChanged(event.category)
             is HomeUiEvent.OnPlayMusic -> playMusic(event.mediaItem)
-            is HomeUiEvent.OnShowMusicItemOption -> onShowMusicItemOption(event.audioItemModel)
+            is HomeUiEvent.OnShowItemOption -> onShowMusicItemOption(event.audioItemModel)
+            is HomeUiEvent.OnTogglePreviewMode -> onTogglePreviewMode()
+        }
+    }
+
+    private fun onTogglePreviewMode() {
+        viewModelScope.launch {
+            userPreferenceRepository.setPreviewMode(state.value.previewMode.next())
         }
     }
 
@@ -114,5 +131,6 @@ private data class CategoryWithContents(
 
 data class HomeUiState(
     val currentCategory: MediaCategory = MediaCategory.ALBUM,
-    val mediaItems: ImmutableList<MediaItemModel> = emptyList<MediaItemModel>().toImmutableList()
+    val mediaItems: ImmutableList<MediaItemModel> = emptyList<MediaItemModel>().toImmutableList(),
+    val previewMode: MediaPreviewMode = MediaPreviewMode.GRID_PREVIEW
 )
