@@ -200,6 +200,7 @@ internal fun FlexiblePlayerLayout(
                         },
                     isPlaying = isPlaying,
                     playMode = playMode,
+                    enable = layoutState.isFullExpanded,
                     isShuffle = isShuffle,
                     progress = progress,
                     title = title,

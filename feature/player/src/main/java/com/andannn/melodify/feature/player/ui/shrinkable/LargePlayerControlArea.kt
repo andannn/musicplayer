@@ -40,6 +40,7 @@ internal fun LargePlayerControlArea(
     artist: String,
     modifier: Modifier = Modifier,
     progress: Float = 0.5f,
+    enable: Boolean = true,
     isPlaying: Boolean = false,
     playMode: PlayMode = PlayMode.REPEAT_ALL,
     onEvent: (PlayerUiEvent) -> Unit = {},
@@ -67,6 +68,7 @@ internal fun LargePlayerControlArea(
         Slider(
             modifier = Modifier.padding(horizontal = 4.dp),
             value = progress,
+            enabled = enable,
             onValueChange = {
                 onEvent(PlayerUiEvent.OnProgressChange(it))
             },
@@ -82,6 +84,7 @@ internal fun LargePlayerControlArea(
                     .weight(1f)
                     .aspectRatio(1f),
                 imageVector = if (isShuffle) Icons.Rounded.ShuffleOn else Icons.Rounded.Shuffle,
+                enabled = enable,
                 onClick = {
                     onEvent(PlayerUiEvent.OnShuffleButtonClick)
                 },
@@ -92,6 +95,7 @@ internal fun LargePlayerControlArea(
                     .weight(1f)
                     .aspectRatio(1f),
                 scale = 2f,
+                enabled = enable,
                 imageVector = Icons.Rounded.SkipPrevious,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPreviousButtonClick)
@@ -103,6 +107,7 @@ internal fun LargePlayerControlArea(
                 Modifier
                     .weight(1f)
                     .aspectRatio(1f),
+                enabled = enable,
                 imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPlayButtonClick)
@@ -115,6 +120,7 @@ internal fun LargePlayerControlArea(
                     .aspectRatio(1f)
                     .padding(10.dp),
                 scale = 2f,
+                enabled = enable,
                 imageVector = Icons.Rounded.SkipNext,
                 onClick = {
                     onEvent(PlayerUiEvent.OnNextButtonClick)
@@ -123,6 +129,7 @@ internal fun LargePlayerControlArea(
             SmpSubIconButton(
                 modifier = Modifier.weight(1f),
                 imageVector = playMode.getIcon(),
+                enabled = enable,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPlayModeButtonClick)
                 },
@@ -137,7 +144,7 @@ private fun LargeControlAreaPreview() {
     MelodifyTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(
-                modifier = Modifier.width(300.dp).height(100.dp),
+                modifier = Modifier.width(530.dp).height(200.dp),
                 title = "title",
                 artist = "artist",
             )
