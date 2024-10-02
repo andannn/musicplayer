@@ -1,5 +1,6 @@
 plugins {
     id("musicplayer.android.library")
+    id("musicplayer.android.testing")
     id("musicplayer.android.library.compose")
 }
 
@@ -20,4 +21,6 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.palette)
+
+    implementation(libs.material.color.utilities.android)
 }

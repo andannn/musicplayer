@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.widget
+package com.andannn.melodify.feature.player.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -18,9 +18,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
 import com.andannn.melodify.core.designsystem.theme.DynamicThemePrimaryColorsFromImage
 import com.andannn.melodify.core.designsystem.theme.MinContrastOfPrimaryVsSurface
@@ -28,81 +28,78 @@ import com.andannn.melodify.core.designsystem.theme.rememberDominantColorState
 import com.andannn.melodify.core.designsystem.util.contrastAgainst
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.PlayerUiState
+import com.andannn.melodify.feature.player.ui.shrinkable.FlexiblePlayerLayout
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShrinkablePlayBox(
+internal fun PlayerView(
     state: PlayerUiState.Active,
     modifier: Modifier = Modifier,
     onEvent: (PlayerUiEvent) -> Unit,
 ) {
     val navigationBarHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
     val statusBarHeight = WindowInsets.statusBars.getTop(LocalDensity.current)
-    val animaScope = rememberCoroutineScope()
     val density = LocalDensity.current
 
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
     ) {
-        val surfaceColor = MaterialTheme.colorScheme.surface
-        val dominantColorState =
-            rememberDominantColorState { color ->
-                // We want a color which has sufficient contrast against the surface color
-                color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
-            }
-
-        val url = state.mediaItem.artWorkUri
-
-        val layoutState: PlayerLayoutState =
-            remember(density, maxHeight, navigationBarHeight, statusBarHeight) {
-                PlayerLayoutState(
-                    animaScope = animaScope,
-                    screenHeight = constraints.maxHeight,
-                    navigationBarHeight = navigationBarHeight,
-                    statusBarHeight = statusBarHeight,
-                    density = density,
-                )
-            }
+        val layoutState: PlayerViewState = rememberPlayerViewState(
+            screenSize = Size(
+                width = constraints.maxWidth.toFloat(),
+                height = constraints.maxHeight.toFloat()
+            ),
+            navigationBarHeightPx = navigationBarHeight,
+            statusBarHeightPx = statusBarHeight,
+            density = density
+        )
 
         val isPlayerDraggable by
-            remember {
-                derivedStateOf {
-                    !layoutState.isSheetExpanding
-                }
+        remember {
+            derivedStateOf {
+                !layoutState.isBottomSheetExpanding
             }
+        }
 
         BackHandler(
             enabled = layoutState.playerState == PlayerState.Expand,
             layoutState::shrinkPlayerLayout,
         )
 
+        val surfaceColor = MaterialTheme.colorScheme.surface
+        val dominantColorState =
+            rememberDominantColorState { color ->
+                // We want a color which has sufficient contrast against the surface color
+                color.contrastAgainst(surfaceColor) >= MinContrastOfPrimaryVsSurface
+            }
         DynamicThemePrimaryColorsFromImage(dominantColorState) {
+            val url = state.mediaItem.artWorkUri
             // When the selected image url changes, call updateColorsFromImageUrl() or reset()
-            LaunchedEffect(url, layoutState.isPlayerExpanding) {
-                if (layoutState.isPlayerExpanding) {
-                    dominantColorState.updateColorsFromImageUrl(url)
-                } else {
-                    dominantColorState.reset()
-                }
+            LaunchedEffect(url) {
+                dominantColorState.updateColorsFromImageUrl(url)
+            }
+
+            LaunchedEffect(layoutState.isPlayerExpanding) {
+                dominantColorState.setDynamicThemeEnable(layoutState.isPlayerExpanding)
             }
 
             FlexiblePlayerLayout(
                 modifier =
-                    Modifier
-                        .height(with(LocalDensity.current) { layoutState.playerExpandState.offset.toDp() })
-                        .align(Alignment.BottomCenter)
-                        .anchoredDraggable(
-                            layoutState.playerExpandState,
-                            enabled = isPlayerDraggable,
-                            orientation = Orientation.Vertical,
-                            reverseDirection = true,
-                        )
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() },
-                            enabled = layoutState.playerState == PlayerState.Shrink,
-                            onClick = layoutState::expandPlayerLayout,
-                        ),
+                Modifier
+                    .height(with(LocalDensity.current) { layoutState.playerExpandState.offset.toDp() })
+                    .align(Alignment.BottomCenter)
+                    .anchoredDraggable(
+                        layoutState.playerExpandState,
+                        enabled = isPlayerDraggable,
+                        orientation = Orientation.Vertical,
+                        reverseDirection = true,
+                    )
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        enabled = layoutState.playerState == PlayerState.Shrink,
+                        onClick = layoutState::expandPlayerLayout,
+                    ),
                 layoutState = layoutState,
                 coverUri = state.mediaItem.artWorkUri,
                 playMode = state.playMode,

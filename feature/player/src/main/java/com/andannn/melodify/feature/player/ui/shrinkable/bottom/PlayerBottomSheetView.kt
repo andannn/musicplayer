@@ -1,10 +1,9 @@
-package com.andannn.melodify.feature.player
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -12,10 +11,10 @@ import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -23,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
@@ -36,21 +36,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.feature.player.lyrics.LyricsView
-import com.andannn.melodify.feature.player.queue.PlayQueue
+import com.andannn.melodify.feature.player.ui.BottomSheetState
+import com.andannn.melodify.feature.player.LyricState
+import com.andannn.melodify.feature.player.PlayerUiEvent
+import com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics.LyricsView
+import com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue.PlayQueue
 import com.andannn.melodify.feature.player.util.getLabel
-import com.andannn.melodify.feature.player.widget.BottomSheetState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -62,8 +62,7 @@ private const val TAG = "PlayQueueView"
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PlayerBottomSheetView(
-    sheetMaxHeightDp: Dp,
+internal fun PlayerBottomSheetView(
     state: AnchoredDraggableState<BottomSheetState>,
     playListQueue: ImmutableList<AudioItemModel>,
     activeMediaItem: AudioItemModel,
@@ -98,11 +97,10 @@ fun PlayerBottomSheetView(
         }
     }
 
-    Box(
+    Surface(
         modifier =
         modifier
-            .fillMaxWidth()
-            .height(sheetMaxHeightDp)
+            .fillMaxSize()
             .offset {
                 IntOffset(
                     0,
@@ -110,11 +108,9 @@ fun PlayerBottomSheetView(
                         .requireOffset()
                         .roundToInt(),
                 )
-            }
-            .background(
-                color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = expandFactor),
-                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-            ),
+            },
+        color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = expandFactor),
+        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxHeight()
@@ -122,6 +118,7 @@ fun PlayerBottomSheetView(
             Spacer(modifier = Modifier.height(20.dp))
             TabBar(
                 modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .anchoredDraggable(state, orientation = Orientation.Vertical),
                 isExpand = isExpand,
                 items = sheetState.sheetItems.toImmutableList(),
@@ -136,21 +133,18 @@ fun PlayerBottomSheetView(
             )
             Spacer(modifier = Modifier.height(3.dp))
 
-            Box(
+            Surface(
                 modifier =
                 Modifier
                     .weight(1f)
                     .graphicsLayer { alpha = expandFactor }
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-                    )
-                    .clipToBounds()
+                    .padding(horizontal = 8.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
             ) {
                 when (sheetState.selectedTab) {
                     SheetTab.NEXT_SONG -> {
                         PlayQueue(
-                            modifier = Modifier,
                             onSwapFinished = { from, to ->
                                 Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
                                 onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
@@ -207,8 +201,7 @@ private fun TabBar(
 
     TabRow(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .fillMaxWidth(),
         selectedTabIndex = selectedTabIndex,
         containerColor = Color.Transparent,
         indicator = if (isExpand) defaultIndicator else emptyIndicator,
@@ -275,7 +268,6 @@ private fun BottomPlayQueueSheetPreview() {
 
 
         PlayerBottomSheetView(
-            sheetMaxHeightDp = 360.dp,
             state = state,
             playListQueue = listOf(
                 AudioItemModel(

@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.widget
+package com.andannn.melodify.feature.player.ui.shrinkable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,16 +26,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.core.designsystem.R
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.feature.player.PlayerUiEvent
+import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
 
 @Composable
-fun MiniPlayerLayout(
+internal fun MiniPlayerLayout(
     title: String,
     artist: String,
     isPlaying: Boolean,
@@ -56,9 +55,9 @@ fun MiniPlayerLayout(
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+            Modifier
+                .fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
@@ -76,9 +75,9 @@ fun MiniPlayerLayout(
         }
         IconButton(
             modifier =
-                Modifier
-                    .size(30.dp)
-                    .scale(1.2f),
+            Modifier
+                .size(30.dp)
+                .scale(1.2f),
             enabled = enabled,
             onClick = {
                 onEvent(PlayerUiEvent.OnPlayButtonClick)
@@ -93,17 +92,17 @@ fun MiniPlayerLayout(
         Spacer(modifier = Modifier.width(10.dp))
         IconButton(
             modifier =
-                Modifier
-                    .size(30.dp)
-                    .padding(5.dp)
-                    .rotate(180f),
+            Modifier
+                .size(30.dp)
+                .scale(1.2f)
+                .rotate(180f),
             enabled = enabled,
             onClick = {
                 onEvent(PlayerUiEvent.OnNextButtonClick)
             },
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.music_music_player_player_previous_icon),
+                Icons.Rounded.SkipPrevious,
                 contentDescription = "",
             )
         }
@@ -135,10 +134,12 @@ fun MiniPlayerLayout(
 @Preview
 @Composable
 private fun MiniPlayerLayoutPreview() {
-    MelodifyTheme{
+    MelodifyTheme {
         Surface {
             MiniPlayerLayout(
-                modifier = Modifier.fillMaxWidth().height(PlayerShrinkHeight),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(ShrinkPlayerHeight),
                 title = "BBBBB",
                 artist = "AAAAA",
                 isPlaying = true,

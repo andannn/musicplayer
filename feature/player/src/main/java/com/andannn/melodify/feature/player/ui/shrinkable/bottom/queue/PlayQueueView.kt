@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.queue
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer
@@ -116,7 +116,7 @@ private fun ReorderableCollectionItemScope.QueueItem(
                 onDragStopped = onSwapFinish
             ),
             isActive = isActive,
-            defaultColor = MaterialTheme.colorScheme.surfaceVariant,
+            defaultColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             albumArtUri = item.artWorkUri,
             title = item.name,
             showTrackNum = false,

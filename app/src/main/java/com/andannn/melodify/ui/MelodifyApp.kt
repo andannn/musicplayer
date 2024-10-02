@@ -17,14 +17,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.andannn.melodify.MainActivityViewModel
 import com.andannn.melodify.common.drawer.BottomSheetModel
-import com.andannn.melodify.feature.player.PlayerSheet
 import com.andannn.melodify.feature.player.PlayerStateViewModel
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.PlayerUiState
-import com.andannn.melodify.feature.player.widget.PlayerShrinkHeight
+import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
 import com.andannn.melodify.navigation.SmpNavHost
 import com.andannn.melodify.common.drawer.MediaBottomSheetView
 import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.feature.player.PlayerAreaView
 
 @Composable
 fun MelodifyApp(
@@ -41,7 +41,7 @@ fun MelodifyApp(
         )
 
         if (state is PlayerUiState.Active) {
-            PlayerSheet(
+            PlayerAreaView(
                 state = state as PlayerUiState.Active,
                 onEvent = playerStateViewModel::onEvent,
             )
@@ -86,7 +86,7 @@ fun SmpNavHostContainer(
         Spacer(
             modifier = Modifier
                 .navigationBarsPadding()
-                .height(PlayerShrinkHeight)
+                .height(ShrinkPlayerHeight)
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.lyrics
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics
 
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.lazy.LazyListState

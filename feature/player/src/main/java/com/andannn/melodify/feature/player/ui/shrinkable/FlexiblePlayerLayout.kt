@@ -1,16 +1,16 @@
-package com.andannn.melodify.feature.player.widget
+package com.andannn.melodify.feature.player.ui.shrinkable
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +25,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -32,28 +34,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.CircleBorderImage
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.designsystem.util.verticalGradientScrim
-import com.andannn.melodify.core.domain.LyricModel
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.feature.player.LyricState
-import com.andannn.melodify.feature.player.PlayerBottomSheetView
+import com.andannn.melodify.feature.player.ui.shrinkable.bottom.PlayerBottomSheetView
 import com.andannn.melodify.feature.player.PlayerUiEvent
+import com.andannn.melodify.feature.player.ui.MinImageSize
+import com.andannn.melodify.feature.player.ui.PlayerViewState
 import kotlinx.collections.immutable.toImmutableList
 
-val MinImageSize = 60.dp
-// MaxImageSize is calculated.
-
 val MinImagePaddingTop = 5.dp
-val MaxImagePaddingTop = 130.dp
 
 val MinImagePaddingStart = 5.dp
 val MaxImagePaddingStart = 20.dp
@@ -64,8 +63,8 @@ val BottomSheetDragAreaHeight = 110.dp
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FlexiblePlayerLayout(
-    layoutState: PlayerLayoutState,
+internal fun FlexiblePlayerLayout(
+    layoutState: PlayerViewState,
     coverUri: String,
     activeMediaItem: AudioItemModel,
     playListQueue: List<AudioItemModel>,
@@ -90,7 +89,7 @@ fun FlexiblePlayerLayout(
 
     Surface(
         modifier =
-            modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
         shadowElevation = 10.dp,
     ) {
         val primaryColor = MaterialTheme.colorScheme.primary
@@ -105,55 +104,34 @@ fun FlexiblePlayerLayout(
                 Modifier
             }
 
-        BoxWithConstraints(
+        Box(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
-                    .then(backGroundModifier),
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
+                .then(backGroundModifier),
         ) {
-            val playerExpandFactor = layoutState.playerExpandFactor
-            val isLayoutFullyExpand = playerExpandFactor == 1f
-
-            val sheetShrinkFactor = layoutState.sheetShrinkFactor
-            val isSheetExpanding = layoutState.isSheetExpanding
-
-            val factor =
-                remember(isSheetExpanding, playerExpandFactor, sheetShrinkFactor) {
-                    if (isSheetExpanding) sheetShrinkFactor else playerExpandFactor
+            val fadeInAreaAlpha by remember {
+                derivedStateOf {
+                    (1f - (1f - layoutState.imageTransactionFactor).times(3f)).coerceIn(0f, 1f)
                 }
-
-            // states to control ui.
-            val maxImageWidth = maxWidth - MaxImagePaddingStart * 2
-            val imageWidthDp = lerp(start = MinImageSize, stop = maxImageWidth, factor)
-            val imagePaddingTopDp =
-                lerp(
-                    start = MinImagePaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
-                    stop = MaxImagePaddingTop,
-                    factor,
-                )
-            val imagePaddingStartDp =
-                lerp(start = MinImagePaddingStart, stop = MaxImagePaddingStart, factor)
-            val fadingAreaPaddingTop =
-                lerp(
-                    start = MinFadeoutWithExpandAreaPaddingTop + if (isSheetExpanding) statusBarHeight else 0.dp,
-                    stop = statusBarHeight,
-                    factor,
-                )
-            val fadeInAreaAlpha = (1f - (1f - factor).times(3f)).coerceIn(0f, 1f)
-            val fadeoutAreaAlpha = 1 - (factor * 4).coerceIn(0f, 1f)
-
+            }
+            val fadeoutAreaAlpha by remember {
+                derivedStateOf {
+                    1 - (layoutState.imageTransactionFactor * 4).coerceIn(0f, 1f)
+                }
+            }
             MiniPlayerLayout(
                 modifier =
-                    Modifier
-                        .graphicsLayer {
-                            alpha = fadeoutAreaAlpha
-                        }
-                        .fillMaxWidth()
-                        .padding(
-                            top = fadingAreaPaddingTop,
-                            start = MinImagePaddingStart * 2 + MinImageSize,
-                        ),
+                Modifier
+                    .graphicsLayer {
+                        alpha = fadeoutAreaAlpha
+                    }
+                    .fillMaxWidth()
+                    .padding(
+                        top = layoutState.miniPlayerPaddingTopDp,
+                        start = MinImagePaddingStart * 2 + MinImageSize,
+                    ),
                 enabled = fadeoutAreaAlpha == 1f,
                 title = title,
                 artist = artist,
@@ -164,12 +142,12 @@ fun FlexiblePlayerLayout(
 
             IconButton(
                 modifier =
-                    Modifier
-                        .padding(top = statusBarHeight, start = 4.dp)
-                        .rotate(-90f)
-                        .graphicsLayer {
-                            alpha = fadeInAreaAlpha
-                        },
+                Modifier
+                    .padding(top = statusBarHeight, start = 4.dp)
+                    .rotate(-90f)
+                    .graphicsLayer {
+                        alpha = fadeInAreaAlpha
+                    },
                 enabled = fadeInAreaAlpha == 1f,
                 onClick = onShrinkButtonClick,
             ) {
@@ -180,12 +158,12 @@ fun FlexiblePlayerLayout(
             }
             IconButton(
                 modifier =
-                    Modifier
-                        .padding(top = statusBarHeight, end = 4.dp)
-                        .align(Alignment.TopEnd)
-                        .graphicsLayer {
-                            alpha = fadeInAreaAlpha
-                        },
+                Modifier
+                    .padding(top = statusBarHeight, end = 4.dp)
+                    .align(Alignment.TopEnd)
+                    .graphicsLayer {
+                        alpha = fadeInAreaAlpha
+                    },
                 enabled = fadeInAreaAlpha == 1f,
                 onClick = {
                     onEvent(PlayerUiEvent.OnOptionIconClick(activeMediaItem))
@@ -196,27 +174,30 @@ fun FlexiblePlayerLayout(
 
             CircleBorderImage(
                 modifier =
-                    Modifier
-                        .padding(top = imagePaddingTopDp)
-                        .padding(start = imagePaddingStartDp)
-                        .width(imageWidthDp)
-                        .aspectRatio(1f),
+                Modifier
+                    .padding(
+                        top = layoutState.imagePaddingTopDp,
+                        start = layoutState.imagePaddingStartDp
+                    )
+                    .width(layoutState.imageSizeDp)
+                    .aspectRatio(1f),
                 model = coverUriState.value,
             )
 
-            Column {
+            Column(
+                modifier =
+                Modifier.fillMaxSize()
+            ) {
+                Spacer(modifier = Modifier.height(layoutState.imagePaddingTopDp + layoutState.imageSizeDp))
+
                 LargePlayerControlArea(
                     modifier =
-                        Modifier
-                            .padding(top = imagePaddingTopDp)
-                            .padding(top = imageWidthDp)
-                            .weight(1f)
-                            .graphicsLayer {
-                                alpha = fadeInAreaAlpha
-                            }
-                            .fillMaxWidth()
-                            .height(IntrinsicSize.Max),
-                    enabled = fadeInAreaAlpha >= 0.7f,
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .graphicsLayer {
+                            alpha = fadeInAreaAlpha
+                        },
                     isPlaying = isPlaying,
                     playMode = playMode,
                     isShuffle = isShuffle,
@@ -225,21 +206,19 @@ fun FlexiblePlayerLayout(
                     artist = artist,
                     onEvent = onEvent,
                 )
-                if (isLayoutFullyExpand) {
-                    Spacer(modifier = Modifier.height(BottomSheetDragAreaHeight))
-                }
+                Spacer(modifier = Modifier.height(BottomSheetDragAreaHeight))
             }
 
             AnimatedVisibility(
                 modifier =
-                    Modifier.align(Alignment.BottomCenter),
+                Modifier.align(Alignment.BottomCenter),
                 enter = fadeIn(),
                 exit = fadeOut(),
-                visible = isLayoutFullyExpand,
+                visible = layoutState.isFullExpanded,
             ) {
                 PlayerBottomSheetView(
-                    sheetMaxHeightDp = with(LocalDensity.current) { layoutState.sheetHeight.toDp() },
-                    state = layoutState.sheetState,
+                    modifier = Modifier.height(with(LocalDensity.current) { layoutState.bottomSheetHeight.toDp() }),
+                    state = layoutState.bottomSheetState,
                     activeMediaItem = activeMediaItem,
                     playListQueue = playListQueue.toImmutableList(),
                     lyricState = lyricState,
@@ -254,22 +233,22 @@ fun FlexiblePlayerLayout(
             if (!layoutState.isPlayerExpanding) {
                 Spacer(
                     modifier =
-                        Modifier
-                            .fillMaxWidth(fraction = progress)
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = with(LocalDensity.current) { layoutState.navigationBarHeight.toDp() })
-                            .height(3.dp)
-                            .background(
-                                brush =
-                                    Brush.horizontalGradient(
-                                        colors =
-                                            listOf(
-                                                MaterialTheme.colorScheme.tertiaryContainer,
-                                                MaterialTheme.colorScheme.inversePrimary,
-                                                MaterialTheme.colorScheme.primary,
-                                            ),
-                                    ),
+                    Modifier
+                        .fillMaxWidth(fraction = progress)
+                        .align(Alignment.BottomStart)
+                        .padding(bottom = with(LocalDensity.current) { layoutState.navigationBarHeightPx.toDp() })
+                        .height(3.dp)
+                        .background(
+                            brush =
+                            Brush.horizontalGradient(
+                                colors =
+                                listOf(
+                                    MaterialTheme.colorScheme.tertiaryContainer,
+                                    MaterialTheme.colorScheme.inversePrimary,
+                                    MaterialTheme.colorScheme.primary,
+                                ),
                             ),
+                        ),
                 )
             }
         }
@@ -281,12 +260,12 @@ fun FlexiblePlayerLayout(
 private fun FlexiblePlayerLayoutExpandPreview() {
     MelodifyTheme {
         val layoutState =
-            PlayerLayoutState(
-                screenHeight = 2300,
-                navigationBarHeight = 78,
+            PlayerViewState(
+                screenSize = Size(width = 1080f, height = 2300f),
+                navigationBarHeightPx = 78,
                 density = LocalDensity.current,
                 animaScope = rememberCoroutineScope(),
-                statusBarHeight = 83,
+                statusBarHeightPx = 83.0f,
             )
         FlexiblePlayerLayout(
             layoutState = layoutState,
@@ -307,12 +286,12 @@ private fun FlexiblePlayerLayoutExpandPreview() {
 private fun FlexiblePlayerLayoutShrinkPreview() {
     MelodifyTheme(darkTheme = false) {
         val layoutState =
-            PlayerLayoutState(
-                screenHeight = 2300,
-                navigationBarHeight = 78,
+            PlayerViewState(
+                screenSize = Size(width = 1080f, height = 2300f),
+                navigationBarHeightPx = 78,
                 density = LocalDensity.current,
                 animaScope = rememberCoroutineScope(),
-                statusBarHeight = 83,
+                statusBarHeightPx = 83.0f,
             )
         FlexiblePlayerLayout(
             layoutState = layoutState,

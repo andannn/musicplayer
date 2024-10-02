@@ -1,12 +1,13 @@
-package com.andannn.melodify.feature.player.widget
+package com.andannn.melodify.feature.player.ui.shrinkable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
@@ -34,10 +35,9 @@ import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.util.getIcon
 
 @Composable
-fun LargePlayerControlArea(
+internal fun LargePlayerControlArea(
     title: String,
     artist: String,
-    enabled: Boolean,
     modifier: Modifier = Modifier,
     progress: Float = 0.5f,
     isPlaying: Boolean = false,
@@ -47,30 +47,30 @@ fun LargePlayerControlArea(
 ) {
     val titleState by rememberUpdatedState(newValue = title)
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
-            text = titleState,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Text(
-            modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
-            text = artist,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Spacer(modifier = Modifier.height(60.dp))
+        Column {
+            Text(
+                modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
+                text = titleState,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
+                text = artist,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         Slider(
+            modifier = Modifier.padding(horizontal = 4.dp),
             value = progress,
-            enabled = enabled,
             onValueChange = {
                 onEvent(PlayerUiEvent.OnProgressChange(it))
             },
         )
-        Spacer(modifier = Modifier.height(15.dp))
         Row(
             modifier = Modifier.padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -78,10 +78,9 @@ fun LargePlayerControlArea(
         ) {
             SmpSubIconButton(
                 modifier =
-                    Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                enabled = enabled,
+                Modifier
+                    .weight(1f)
+                    .aspectRatio(1f),
                 imageVector = if (isShuffle) Icons.Rounded.ShuffleOn else Icons.Rounded.Shuffle,
                 onClick = {
                     onEvent(PlayerUiEvent.OnShuffleButtonClick)
@@ -89,11 +88,10 @@ fun LargePlayerControlArea(
             )
             SmpSubIconButton(
                 modifier =
-                    Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
+                Modifier
+                    .weight(1f)
+                    .aspectRatio(1f),
                 scale = 2f,
-                enabled = enabled,
                 imageVector = Icons.Rounded.SkipPrevious,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPreviousButtonClick)
@@ -102,10 +100,9 @@ fun LargePlayerControlArea(
 
             SmpMainIconButton(
                 modifier =
-                    Modifier
-                        .weight(1f)
-                        .aspectRatio(1f),
-                enabled = enabled,
+                Modifier
+                    .weight(1f)
+                    .aspectRatio(1f),
                 imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPlayButtonClick)
@@ -113,13 +110,12 @@ fun LargePlayerControlArea(
             )
             SmpSubIconButton(
                 modifier =
-                    Modifier
-                        .weight(1f)
-                        .aspectRatio(1f)
-                        .padding(10.dp),
+                Modifier
+                    .weight(1f)
+                    .aspectRatio(1f)
+                    .padding(10.dp),
                 scale = 2f,
                 imageVector = Icons.Rounded.SkipNext,
-                enabled = enabled,
                 onClick = {
                     onEvent(PlayerUiEvent.OnNextButtonClick)
                 },
@@ -127,7 +123,6 @@ fun LargePlayerControlArea(
             SmpSubIconButton(
                 modifier = Modifier.weight(1f),
                 imageVector = playMode.getIcon(),
-                enabled = enabled,
                 onClick = {
                     onEvent(PlayerUiEvent.OnPlayModeButtonClick)
                 },
@@ -142,10 +137,9 @@ private fun LargeControlAreaPreview() {
     MelodifyTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(
-                modifier = Modifier,
+                modifier = Modifier.width(300.dp).height(100.dp),
                 title = "title",
                 artist = "artist",
-                enabled = true,
             )
         }
     }
