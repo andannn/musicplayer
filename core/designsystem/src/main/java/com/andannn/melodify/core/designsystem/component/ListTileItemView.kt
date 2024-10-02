@@ -30,14 +30,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @Composable
-fun AudioItemView(
+fun ListTileItemView(
     modifier: Modifier = Modifier,
     swapIconModifier: Modifier? = null,
     albumArtUri: String = "",
     isActive: Boolean = false,
     defaultColor: Color = MaterialTheme.colorScheme.surface,
     title: String = "",
-    artist: String = "",
+    subTitle: String = "",
     trackNum: Int = 0,
     showTrackNum: Boolean = false,
     onMusicItemClick: () -> Unit = {},
@@ -97,7 +97,7 @@ fun AudioItemView(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = artist,
+                    text = subTitle,
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -122,10 +122,10 @@ fun AudioItemView(
 @Composable
 private fun MusicCardPreview1() {
     MaterialTheme {
-        AudioItemView(
+        ListTileItemView(
             albumArtUri = "",
             title = "Title",
-            artist = "artist",
+            subTitle = "artist",
             showTrackNum = true,
         )
     }
@@ -135,11 +135,11 @@ private fun MusicCardPreview1() {
 @Composable
 private fun MusicCardPreviewActive() {
     MaterialTheme {
-        AudioItemView(
+        ListTileItemView(
             albumArtUri = "",
             title = "Title",
             trackNum = 9,
-            artist = "artist",
+            subTitle = "artist",
             isActive = true,
             showTrackNum = true,
         )
@@ -149,11 +149,11 @@ private fun MusicCardPreviewActive() {
 @Composable
 private fun MusicCardSwap() {
     MaterialTheme {
-        AudioItemView(
+        ListTileItemView(
             albumArtUri = "",
             swapIconModifier = Modifier,
             title = "Title",
-            artist = "artist",
+            subTitle = "artist",
             showTrackNum = true,
         )
     }

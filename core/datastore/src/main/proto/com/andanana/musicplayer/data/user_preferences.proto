@@ -2,6 +2,7 @@
 syntax = "proto3";
 
 import "com/andanana/musicplayer/data/play_mode.proto";
+import "com/andanana/musicplayer/data/media_preview_mode.proto";
 
 option java_package = "com.andannn.melodify.core.datastore";
 option java_multiple_files = true;
@@ -9,4 +10,5 @@ option java_multiple_files = true;
 message UserPreferences {
     PlayModeProto play_mode = 1;
     bool is_shuffle = 2;
+    MediaPreviewMode media_preview_mode = 3;
 }

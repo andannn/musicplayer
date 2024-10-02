@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
-import com.andannn.melodify.core.designsystem.component.AudioItemView
+import com.andannn.melodify.core.designsystem.component.ListTileItemView
 import com.andannn.melodify.core.designsystem.component.PlayListHeader
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.AlbumItemModel
@@ -125,13 +125,13 @@ fun CommonPlayListContent(
                 items = audioList,
                 key = { item -> item.id },
             ) { item: AudioItemModel ->
-                AudioItemView(
+                ListTileItemView(
                     modifier = Modifier.padding(vertical = 4.dp).animateItem(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = item.artWorkUri,
                     title = item.name,
                     showTrackNum = false,
-                    artist = item.artist,
+                    subTitle = item.artist,
                     trackNum = item.cdTrackNumber,
                     onMusicItemClick = {
                         onEvent(
@@ -259,13 +259,13 @@ private fun AlbumPlayListContent(
                 items = audioList,
                 key = { it.id },
             ) { item ->
-                AudioItemView(
+                ListTileItemView(
                     modifier = Modifier.padding(vertical = 4.dp).animateItem(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = header.artWorkUri,
                     title = item.name,
                     showTrackNum = true,
-                    artist = item.artist,
+                    subTitle = item.artist,
                     trackNum = item.cdTrackNumber,
                     onMusicItemClick = {
                         onEvent(

@@ -1,8 +1,6 @@
 package com.andannn.melodify.feature.home
 
 import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,13 +11,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.automirrored.rounded.List
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -30,11 +27,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarDefaults.enterAlwaysScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -48,9 +46,10 @@ import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
 import com.andannn.melodify.core.designsystem.component.LargePreviewCard
-import com.andannn.melodify.core.designsystem.component.AudioItemView
+import com.andannn.melodify.core.designsystem.component.ListTileItemView
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.MediaListSource
+import com.andannn.melodify.core.domain.model.MediaPreviewMode
 import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -87,7 +86,6 @@ fun HomeRoute(
     )
 }
 
-@Suppress("UNCHECKED_CAST")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
@@ -96,11 +94,13 @@ private fun HomeScreen(
     onMediaItemClick: (MediaItemModel) -> Unit = {},
     onEvent: (HomeUiEvent) -> Unit = {},
 ) {
+    val uiState by rememberUpdatedState(state)
     val categories = MediaCategory.entries.toTypedArray()
-
-    val selectedIndex = categories.indexOf(state.currentCategory)
-
-    val mediaItems = state.mediaItems
+    val selectedIndex by remember {
+        derivedStateOf {
+            categories.indexOf(uiState.currentCategory)
+        }
+    }
 
     val scrollBehavior = enterAlwaysScrollBehavior()
     Scaffold(
@@ -147,40 +147,62 @@ private fun HomeScreen(
                 }
             }
 
-            when (state.currentCategory) {
-                MediaCategory.ALL_MUSIC ->
-                    LazyAllAudioContent(
-                        modifier =
-                        Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as ImmutableList<AudioItemModel>,
-                        onMusicItemClick = {
-                            onEvent(HomeUiEvent.OnPlayMusic(it))
-                        },
-                        onShowMusicItemOption = {
-                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
-                        }
-                    )
+            val mediaItems by remember {
+                derivedStateOf {
+                    uiState.mediaItems
+                }
+            }
 
-                MediaCategory.ALBUM -> {
-                    LazyAllAlbumContent(
+            val previewMode by remember {
+                derivedStateOf { uiState.previewMode }
+            }
+
+            IconButton(
+                modifier = Modifier
+                    .align(alignment = Alignment.End)
+                    .padding(end = 10.dp),
+                onClick = {
+                    onEvent(HomeUiEvent.OnTogglePreviewMode)
+                }
+            ) {
+                when (previewMode) {
+                    MediaPreviewMode.GRID_PREVIEW -> {
+                        Icon(
+                            Icons.Rounded.Apps,
+                            contentDescription = ""
+                        )
+                    }
+
+                    MediaPreviewMode.LIST_PREVIEW -> {
+                        Icon(
+                            Icons.AutoMirrored.Rounded.List,
+                            contentDescription = ""
+                        )
+                    }
+                }
+            }
+
+            when (previewMode) {
+                MediaPreviewMode.GRID_PREVIEW -> {
+                    LazyGridContent(
                         modifier =
                         Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as ImmutableList<AlbumItemModel>,
+                        mediaItems = mediaItems,
                         onClick = onMediaItemClick,
                         onLongPress = {
-                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
+                            onEvent(HomeUiEvent.OnShowItemOption(it))
                         }
                     )
                 }
 
-                MediaCategory.ARTIST -> {
-                    LazyAllArtistContent(
+                MediaPreviewMode.LIST_PREVIEW -> {
+                    LazyListContent(
                         modifier =
                         Modifier.fillMaxSize(),
-                        mediaItems = mediaItems as ImmutableList<ArtistItemModel>,
-                        onClick = onMediaItemClick,
-                        onLongPress = {
-                            onEvent(HomeUiEvent.OnShowMusicItemOption(it))
+                        mediaItems = mediaItems,
+                        onMusicItemClick = onMediaItemClick,
+                        onShowMusicItemOption = {
+                            onEvent(HomeUiEvent.OnShowItemOption(it))
                         }
                     )
                 }
@@ -190,11 +212,11 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun LazyAllAlbumContent(
-    mediaItems: ImmutableList<AlbumItemModel>,
+private fun <T : MediaItemModel> LazyGridContent(
+    mediaItems: ImmutableList<T>,
     modifier: Modifier = Modifier,
-    onClick: (AlbumItemModel) -> Unit = {},
-    onLongPress: (AlbumItemModel) -> Unit = {},
+    onClick: (T) -> Unit = {},
+    onLongPress: (T) -> Unit = {},
 ) {
     val hapticFeedBack = LocalHapticFeedback.current
     LazyVerticalGrid(
@@ -204,18 +226,20 @@ private fun LazyAllAlbumContent(
         items(
             items = mediaItems,
             key = { it.id },
-        ) { media ->
+        ) { item ->
             LargePreviewCard(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp).animateItem(),
-                artCoverUri = Uri.parse(media.artWorkUri),
-                title = media.name,
-                trackCount = media.trackCount,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp, vertical = 3.dp)
+                    .animateItem(),
+                artCoverUri = Uri.parse(item.artWorkUri),
+                title = item.name,
+                subTitle = item.subTitle,
                 onClick = {
-                    onClick.invoke(media)
+                    onClick.invoke(item)
                 },
                 onLongClick = {
                     hapticFeedBack.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongPress.invoke(media)
+                    onLongPress.invoke(item)
                 },
             )
         }
@@ -226,52 +250,11 @@ private fun LazyAllAlbumContent(
 }
 
 @Composable
-fun LazyAllArtistContent(
-    mediaItems: ImmutableList<ArtistItemModel>,
+private fun <T : MediaItemModel> LazyListContent(
+    mediaItems: ImmutableList<T>,
     modifier: Modifier = Modifier,
-    onClick: (ArtistItemModel) -> Unit = {},
-    onLongPress:(ArtistItemModel) -> Unit = {},
-) {
-    val hapticFeedBack = LocalHapticFeedback.current
-    LazyVerticalStaggeredGrid(
-        modifier = modifier.fillMaxSize(),
-        columns = StaggeredGridCells.Fixed(2),
-    ) {
-        items(
-            items = mediaItems,
-            key = { it.id },
-        ) { media ->
-            LargePreviewCard(
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 3.dp).animateItem(),
-                imageModifier =
-                Modifier
-                    .clip(shape = CircleShape)
-                    .alpha(0.4f)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)),
-                placeholder = rememberVectorPainter(Icons.Rounded.Person),
-                artCoverUri = Uri.parse(media.artWorkUri),
-                title = media.name,
-                trackCount = media.trackCount,
-                onClick = {
-                    onClick.invoke(media)
-                },
-                onLongClick = {
-                    hapticFeedBack.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onLongPress.invoke(media)
-                },
-            )
-        }
-
-        item { ExtraPaddingBottom() }
-    }
-}
-
-@Composable
-fun LazyAllAudioContent(
-    mediaItems: ImmutableList<AudioItemModel>,
-    modifier: Modifier = Modifier,
-    onMusicItemClick: (AudioItemModel) -> Unit = {},
-    onShowMusicItemOption: (AudioItemModel) -> Unit = {},
+    onMusicItemClick: (T) -> Unit = {},
+    onShowMusicItemOption: (T) -> Unit = {},
 ) {
     LazyColumn(
         modifier = modifier,
@@ -281,16 +264,15 @@ fun LazyAllAudioContent(
             items = mediaItems,
             key = { it.id },
         ) { item ->
-            AudioItemView(
+            ListTileItemView(
                 modifier =
                 Modifier
-                    .padding(vertical = 4.dp).animateItem(),
+                    .padding(vertical = 4.dp)
+                    .animateItem(),
                 isActive = false,
                 albumArtUri = item.artWorkUri,
                 title = item.name,
-                showTrackNum = false,
-                artist = item.artist,
-                trackNum = item.cdTrackNumber,
+                subTitle = item.subTitle,
                 onMusicItemClick = {
                     onMusicItemClick.invoke(item)
                 },
@@ -304,19 +286,32 @@ fun LazyAllAudioContent(
     }
 }
 
+@get:Composable
+private val MediaItemModel.subTitle: String
+    get() = when (this) {
+        is AudioItemModel -> artist
+        is AlbumItemModel -> trackCount.toString() + "tracks"
+        is ArtistItemModel -> trackCount.toString() + "tracks"
+        else -> ""
+    }
+
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    MelodifyTheme {
-        LazyAllAlbumContent(
-            mediaItems = (1..4).map {
-                AlbumItemModel(
-                    id = it.toLong(),
-                    name = "Album $it",
-                    artWorkUri = "",
-                    trackCount = 10
-                )
-            }.toImmutableList()
+    MelodifyTheme(darkTheme = true) {
+        HomeScreen(
+            state = HomeUiState(
+                mediaItems = (1..4).map {
+                    AlbumItemModel(
+                        id = it.toLong(),
+                        name = "Album $it",
+                        artWorkUri = "",
+                        trackCount = 10
+                    )
+                }.toImmutableList(),
+                currentCategory = MediaCategory.ALBUM,
+                previewMode = MediaPreviewMode.GRID_PREVIEW,
+            ),
         )
     }
 }

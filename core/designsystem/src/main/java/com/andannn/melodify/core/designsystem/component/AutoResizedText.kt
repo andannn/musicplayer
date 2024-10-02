@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.isUnspecified
 fun AutoResizedText(
     text: String,
     modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
     color: Color = style.color
 ) {
@@ -33,6 +34,7 @@ fun AutoResizedText(
                 drawContent()
             }
         },
+        maxLines = maxLines,
         softWrap = false,
         style = resizedTextStyle,
         onTextLayout = { result ->

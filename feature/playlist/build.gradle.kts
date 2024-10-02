@@ -21,8 +21,7 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.guava)
 
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material3)
 
     // Navigation
     implementation(libs.androidx.hilt.navigation.compose)

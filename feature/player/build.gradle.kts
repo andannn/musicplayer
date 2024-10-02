@@ -20,8 +20,8 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
 
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material.iconsExtended)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.iconsExtended)
 
     // Navigation
     implementation(libs.androidx.hilt.navigation.compose)

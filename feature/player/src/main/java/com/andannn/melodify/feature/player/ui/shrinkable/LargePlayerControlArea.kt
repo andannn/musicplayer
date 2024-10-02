@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.andannn.melodify.core.designsystem.component.AutoResizedText
 import com.andannn.melodify.core.designsystem.component.SmpMainIconButton
 import com.andannn.melodify.core.designsystem.component.SmpSubIconButton
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
@@ -52,16 +53,16 @@ internal fun LargePlayerControlArea(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Column {
-            Text(
+            AutoResizedText(
                 modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
                 text = titleState,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.headlineMedium,
             )
-            Text(
+            AutoResizedText(
                 modifier = Modifier.padding(horizontal = MaxImagePaddingStart),
                 text = artist,
+                maxLines = 2,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -144,7 +145,7 @@ private fun LargeControlAreaPreview() {
     MelodifyTheme(darkTheme = false) {
         Surface {
             LargePlayerControlArea(
-                modifier = Modifier.width(530.dp).height(200.dp),
+                modifier = Modifier.width(530.dp).height(250.dp),
                 title = "title",
                 artist = "artist",
             )
