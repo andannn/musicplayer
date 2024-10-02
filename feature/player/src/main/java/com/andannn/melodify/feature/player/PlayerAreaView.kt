@@ -1,15 +1,18 @@
 package com.andannn.melodify.feature.player
 
 import androidx.compose.runtime.Composable
-import com.andannn.melodify.feature.player.widget.ShrinkablePlayBox
+import androidx.compose.ui.Modifier
+import com.andannn.melodify.feature.player.ui.PlayerView
 
 @Composable
-fun PlayerSheet(
+fun PlayerAreaView(
     state: PlayerUiState.Active,
+    modifier: Modifier = Modifier,
     onEvent: (PlayerUiEvent) -> Unit,
 ) {
-    ShrinkablePlayBox(
+    PlayerView(
         state = state,
         onEvent = onEvent,
+        modifier = modifier
     )
 }

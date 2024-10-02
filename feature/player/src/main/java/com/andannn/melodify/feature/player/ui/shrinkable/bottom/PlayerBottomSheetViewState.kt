@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -12,11 +12,11 @@ enum class SheetTab {
 }
 
 @Composable
-fun rememberPlayerBottomSheetState() = remember {
+internal fun rememberPlayerBottomSheetState() = remember {
     PlayerBottomSheetState()
 }
 
-class PlayerBottomSheetState {
+internal class PlayerBottomSheetState {
     var sheetItems by mutableStateOf(SheetTab.entries.toTypedArray())
 
     var selectedTab by mutableStateOf(SheetTab.NEXT_SONG)

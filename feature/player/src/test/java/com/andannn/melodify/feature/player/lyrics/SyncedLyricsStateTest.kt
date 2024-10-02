@@ -1,4 +1,5 @@
 package com.andannn.melodify.feature.player.lyrics
+import com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics.parseSyncedLyrics
 import org.junit.Test
 
 class ParseSyncLyricsTest {

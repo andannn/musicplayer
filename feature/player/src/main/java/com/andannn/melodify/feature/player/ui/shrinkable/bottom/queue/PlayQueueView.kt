@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.queue
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Spacer

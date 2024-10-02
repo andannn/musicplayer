@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.lyrics
+package com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme

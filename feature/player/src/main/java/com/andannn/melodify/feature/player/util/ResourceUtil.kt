@@ -6,7 +6,7 @@ import androidx.compose.material.icons.rounded.RepeatOn
 import androidx.compose.material.icons.rounded.RepeatOneOn
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.common.R
-import com.andannn.melodify.feature.player.SheetTab
+import com.andannn.melodify.feature.player.ui.shrinkable.bottom.SheetTab
 
 fun PlayMode.getIcon() =
     when (this) {
