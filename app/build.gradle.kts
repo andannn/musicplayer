@@ -20,6 +20,15 @@ android {
         signingConfig = signingConfigs.getByName("debug")
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore/keystore.jks")
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+        }
+    }
+
     lint {
         baseline = file("lint-baseline.xml")
     }
@@ -36,8 +45,37 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+
+            signingConfig = signingConfigs.getByName("release")
         }
     }
+}
+
+tasks.register("moveKeyStoreRelease") {
+    if (project.gradle.startParameter.taskNames.any { it.contains("Release") }) {
+        val tmpFilePath = System.getProperty("user.home") + "/work/_temp/keystore/"
+        val allFilesFromDir = File(tmpFilePath).listFiles()
+        if (allFilesFromDir != null) {
+            val keystoreFile = allFilesFromDir.firstOrNull()
+
+            if (keystoreFile == null || keystoreFile.name != "keystore.jks") {
+                throw GradleException("File not found: $tmpFilePath Aborting build.")
+            }
+
+            copy {
+                from(keystoreFile.absolutePath)
+                into("$projectDir/keystore")
+            }
+        } else {
+            throw GradleException("File not found: $tmpFilePath Aborting build.")
+        }
+    } else {
+        println("Debug mode. skip moving keystore file.")
+    }
+}
+
+tasks.named("preBuild") {
+    dependsOn("moveKeyStoreRelease")
 }
 
 dependencies {
