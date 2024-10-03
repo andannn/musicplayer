@@ -29,7 +29,7 @@ interface BottomSheetStateProvider {
 }
 
 interface BottomSheetController : BottomSheetStateProvider, DeleteMediaItemEventProvider {
-    fun onRequestShowSheet(mediaItem: MediaItemModel)
+    fun onRequestShowSheet(mediaItem: MediaItemModel, sheet: BottomSheet? = null)
 
     fun CoroutineScope.onDismissRequest(item: SheetItem?)
 }
@@ -47,15 +47,16 @@ internal class BottomSheetControllerImpl(
     private val _bottomSheetModelFlow = MutableStateFlow<BottomSheetModel?>(null)
     private val _deleteMediaItemEventFlow = MutableSharedFlow<List<String>>(1)
 
-    override fun onRequestShowSheet(mediaItem: MediaItemModel) {
+    override fun onRequestShowSheet(mediaItem: MediaItemModel, sheet: BottomSheet?) {
         _bottomSheetModelFlow.value =
             BottomSheetModel(
                 source = mediaItem,
-                bottomSheet = buildDrawer(mediaItem),
+                bottomSheet = sheet ?: buildDrawer(mediaItem),
             )
     }
 
     private fun buildDrawer(mediaItem: MediaItemModel): BottomSheet {
+
         return when (mediaItem) {
             is AlbumItemModel -> BottomSheet.AlbumBottomSheet
             is ArtistItemModel -> BottomSheet.ArtistBottomSheet
@@ -69,6 +70,7 @@ internal class BottomSheetControllerImpl(
                 SheetItem.PLAY_NEXT -> onPlayNextClick(_bottomSheetModelFlow.value!!.source)
                 SheetItem.DELETE -> onDeleteMediaItem(_bottomSheetModelFlow.value!!.source)
                 SheetItem.ADD_TO_QUEUE -> onAddToQueue(_bottomSheetModelFlow.value!!.source)
+                SheetItem.SLEEP_TIMER -> TODO()
             }
         }
 

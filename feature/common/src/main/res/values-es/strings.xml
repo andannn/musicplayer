@@ -11,4 +11,5 @@
      <string name="lyrics">LYRICS</string>
      <string name="play">Reproducir</string>
      <string name="shuffle">Aleatorio</string>
+     <string name="track_count">%s canciones</string>
 </resources>

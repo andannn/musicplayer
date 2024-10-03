@@ -11,4 +11,5 @@
     <string name="lyrics">歌詞</string>
     <string name="play">再生</string>
     <string name="shuffle">シャッフル</string>
+    <string name="track_count">%s 曲</string>
 </resources>

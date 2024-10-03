@@ -11,4 +11,5 @@
     <string name="lyrics">가사</string>
     <string name="play">재생</string>
     <string name="shuffle">셔플</string>
+    <string name="track_count">%s 곡</string>
 </resources>

@@ -2,6 +2,7 @@ package com.andannn.melodify.feature.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andannn.melodify.common.drawer.BottomSheet
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
@@ -150,7 +151,10 @@ constructor(
             }
 
             is PlayerUiEvent.OnOptionIconClick -> {
-                bottomSheetController.onRequestShowSheet(event.mediaItem)
+                bottomSheetController.onRequestShowSheet(
+                    event.mediaItem,
+                    BottomSheet.PlayerBottomSheet
+                )
             }
 
             is PlayerUiEvent.OnProgressChange -> {

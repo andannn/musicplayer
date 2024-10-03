@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.PlayCircle
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.ui.graphics.vector.ImageVector
 
 object SimpleMusicIcons {
@@ -28,6 +29,7 @@ object SimpleMusicIcons {
     val PlayNext = SmpIcon.ImageVectorIcon(Icons.Rounded.PlayCircle)
     val Information = SmpIcon.ImageVectorIcon(Icons.Rounded.Info)
     val Delete = SmpIcon.ImageVectorIcon(Icons.Rounded.Delete)
+    val Timer = SmpIcon.ImageVectorIcon(Icons.Rounded.Timer)
 }
 
 sealed class SmpIcon {

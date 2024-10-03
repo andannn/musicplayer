@@ -20,6 +20,10 @@ enum class SheetItem(
         smpIcon = SimpleMusicIcons.Delete,
         text = R.string.add_to_queue,
     ),
+    SLEEP_TIMER(
+        smpIcon = SimpleMusicIcons.Timer,
+        text = R.string.add_to_queue,
+    ),
 }
 
 sealed class BottomSheet(
@@ -54,6 +58,14 @@ sealed class BottomSheet(
             SheetItem.ADD_TO_QUEUE,
             SheetItem.PLAY_NEXT,
             SheetItem.DELETE,
+        ),
+    )
+
+    data object PlayerBottomSheet : BottomSheet(
+        listOf(
+            SheetItem.ADD_TO_QUEUE,
+            SheetItem.PLAY_NEXT,
+            SheetItem.SLEEP_TIMER,
         ),
     )
 }

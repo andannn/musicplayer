@@ -11,4 +11,5 @@
     <string name="lyrics">LYRICS</string>
     <string name="play">Jouer</string>
     <string name="shuffle">Mélanger</string>
+    <string name="track_count">%s pistes</string>
 </resources>
