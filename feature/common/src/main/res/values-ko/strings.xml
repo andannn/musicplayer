@@ -9,4 +9,6 @@
     <string name="play_next">다음 재생</string>
     <string name="play_queue">재생 목록</string>
     <string name="lyrics">가사</string>
+    <string name="play">재생</string>
+    <string name="shuffle">셔플</string>
 </resources>

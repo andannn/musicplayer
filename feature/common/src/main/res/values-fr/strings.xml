@@ -9,4 +9,6 @@
     <string name="play_next">Jouer la suite</string>
     <string name="play_queue">Suite</string>
     <string name="lyrics">LYRICS</string>
+    <string name="play">Jouer</string>
+    <string name="shuffle">Mélanger</string>
 </resources>

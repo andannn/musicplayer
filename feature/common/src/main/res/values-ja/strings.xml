@@ -9,4 +9,6 @@
     <string name="play_next">次に再生</string>
     <string name="play_queue">再生リスト</string>
     <string name="lyrics">歌詞</string>
+    <string name="play">再生</string>
+    <string name="shuffle">シャッフル</string>
 </resources>

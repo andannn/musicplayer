@@ -9,4 +9,6 @@
     <string name="play_next">Nächste abspielen</string>
     <string name="play_queue">Nächste</string>
     <string name="lyrics">LYRICS</string>
+    <string name="play">Abspielen</string>
+    <string name="shuffle">Mischen</string>
 </resources>

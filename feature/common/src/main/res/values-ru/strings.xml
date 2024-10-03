@@ -9,4 +9,6 @@
     <string name="play_next">Следующий трек</string>
     <string name="play_queue">Следующая</string>
     <string name="lyrics">LYRICS</string>
+    <string name="play">Воспроизвести</string>
+    <string name="shuffle">Перемешать</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.designsystem.component
+package com.andannn.melodify.feature.playList.navigation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,10 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.andannn.melodify.common.R
+import com.andannn.melodify.core.designsystem.component.SmpTextButton
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
 
 @Composable
@@ -42,7 +45,7 @@ fun PlayListHeader(
     Column(modifier = modifier) {
         Surface(
             modifier =
-                Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium,
         ) {
             Row(
@@ -64,11 +67,12 @@ fun PlayListHeader(
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(
                     modifier =
-                        Modifier.weight(1f),
+                    Modifier.weight(1f),
                 ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        maxLines = 4,
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
@@ -91,7 +95,7 @@ fun PlayListHeader(
             SmpTextButton(
                 modifier = Modifier.weight(1f),
                 imageVector = Icons.Rounded.PlayArrow,
-                text = "Play",
+                text = stringResource(id = R.string.play),
                 onClick = onPlayAllButtonClick,
             )
             Spacer(modifier = Modifier.width(10.dp))
@@ -103,7 +107,7 @@ fun PlayListHeader(
 
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = "Shuffle",
+                    text = stringResource(id = R.string.shuffle),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                 )
