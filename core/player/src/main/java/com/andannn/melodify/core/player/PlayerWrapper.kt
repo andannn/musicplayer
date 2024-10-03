@@ -31,7 +31,9 @@ interface PlayerWrapper {
 
     fun observePlayerState(): StateFlow<PlayerState>
 
-    fun observePlayListQueue(): StateFlow<List<MediaItem>>
+    val playList: List<MediaItem>
+
+    fun observePlayListQueue(): Flow<List<MediaItem>>
 
     fun observePlayingMedia(): Flow<MediaItem?>
 
@@ -55,7 +57,7 @@ constructor(
     private val _playingMediaItemStateFlow = MutableSharedFlow<MediaItem?>(1)
     private val _playingIndexInQueueFlow = MutableStateFlow<Int?>(null)
 
-    private val _playListFlow = MutableStateFlow<List<MediaItem>>(emptyList())
+    private val _playListFlow = MutableSharedFlow<List<MediaItem>>(1)
 
     private val playerProgressUpdater: CoroutineTicker = CoroutineTicker(delayMs = 1000 / 30L) {
         _playerStateFlow.getAndUpdate { old ->
@@ -168,7 +170,7 @@ constructor(
                 MutableList(timeline.windowCount) { index ->
                     timeline.getWindow(index, Timeline.Window()).mediaItem
                 }.also { mediaItems ->
-                    _playListFlow.value = mediaItems.toList()
+                    _playListFlow.tryEmit(mediaItems.toList())
                 }
             }
 
@@ -199,7 +201,6 @@ constructor(
         _playerModeFlow.value = Player.REPEAT_MODE_ALL
         _isShuffleFlow.value = false
         _playingIndexInQueueFlow.value = null
-        _playListFlow.value = emptyList()
         playerProgressUpdater.stopTicker()
 
         _player?.release()
@@ -216,8 +217,16 @@ constructor(
         get() = _playingIndexInQueueFlow.value!!
 
     override fun observePlayerState(): StateFlow<PlayerState> = _playerStateFlow
+    override val playList: List<MediaItem>
+        get()  {
+            val timeline = _player?.currentTimeline ?: return emptyList()
+            return MutableList(timeline.windowCount) { index ->
+                timeline.getWindow(index, Timeline.Window()).mediaItem
+            }
+        }
 
     override fun observePlayListQueue() = _playListFlow
+        .onStart { playList }
 
     override fun observePlayingMedia() = _playingMediaItemStateFlow.onStart { emit(null) }
 
