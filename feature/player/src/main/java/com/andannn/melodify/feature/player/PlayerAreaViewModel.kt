@@ -148,9 +148,11 @@ constructor(
             }
 
             is PlayerUiEvent.OnOptionIconClick -> {
-                globalUiController.showBottomSheet(
-                    SheetModel.PlayerOptionSheet(event.mediaItem)
-                )
+                viewModelScope.launch {
+                    globalUiController.showBottomSheet(
+                        SheetModel.PlayerOptionSheet(event.mediaItem)
+                    )
+                }
             }
 
             is PlayerUiEvent.OnProgressChange -> {

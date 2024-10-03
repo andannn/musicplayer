@@ -45,8 +45,8 @@ constructor(
     }
 
     fun onRequestDismissSheet(event: UiEvent) {
-        with(controller) {
-            viewModelScope.onDismissRequest(event)
+        viewModelScope.launch {
+            controller.onEvent(event)
         }
     }
 

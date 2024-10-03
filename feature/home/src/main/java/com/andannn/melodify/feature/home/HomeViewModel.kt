@@ -94,9 +94,11 @@ constructor(
     }
 
     private fun onShowMusicItemOption(mediaItemModel: MediaItemModel) {
-        globalUiController.showBottomSheet(
-            SheetModel.MediaOptionSheet.fromMediaModel(mediaItemModel)
-        )
+        viewModelScope.launch {
+            globalUiController.showBottomSheet(
+                SheetModel.MediaOptionSheet.fromMediaModel(mediaItemModel)
+            )
+        }
     }
 
     private fun createMediaItemsFlow(category: MediaCategory): Flow<CategoryWithContents> {

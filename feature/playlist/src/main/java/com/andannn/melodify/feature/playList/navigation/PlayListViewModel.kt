@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface PlayListEvent {
@@ -122,16 +123,20 @@ constructor(
             }
 
             is PlayListEvent.OnOptionClick -> {
-                globalUiController.showBottomSheet(
-                    SheetModel.MediaOptionSheet.fromMediaModel(event.mediaItem)
-                )
+                viewModelScope.launch {
+                    globalUiController.showBottomSheet(
+                        SheetModel.MediaOptionSheet.fromMediaModel(event.mediaItem)
+                    )
+                }
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
-                state.value.headerInfoItem?.let {
-                    globalUiController.showBottomSheet(
-                        SheetModel.MediaOptionSheet.fromMediaModel(it)
-                    )
+                viewModelScope.launch {
+                    state.value.headerInfoItem?.let {
+                        globalUiController.showBottomSheet(
+                            SheetModel.MediaOptionSheet.fromMediaModel(it)
+                        )
+                    }
                 }
             }
         }

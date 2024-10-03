@@ -22,7 +22,6 @@ import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
 import com.andannn.melodify.navigation.SmpNavHost
 import com.andannn.melodify.feature.common.drawer.MediaOptionBottomSheet
 import com.andannn.melodify.feature.common.drawer.SheetModel
-import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.common.drawer.SleepTimerOptionBottomSheet
 import com.andannn.melodify.feature.player.PlayerAreaView
 
@@ -34,7 +33,7 @@ fun MelodifyApp(
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
         val state by playerStateViewModel.playerUiStateFlow.collectAsState()
-        val bottomSheetModel by mainViewModel.bottomSheetModel.collectAsState()
+        val bottomSheetModel by mainViewModel.bottomSheetModel.collectAsState(null)
 
         SmpNavHostContainer(
             modifier = Modifier.fillMaxSize(),
@@ -68,7 +67,7 @@ private fun BottomSheetContainer(
                 MediaOptionBottomSheet(
                     optionSheet = bottomSheet,
                     onDismissRequest = {
-                        onDismissState.value(UiEvent.OnOptionClick(bottomSheet, it))
+                        onDismissState.value(UiEvent.OnMediaOptionClick(bottomSheet, it))
                     },
                 )
             }
@@ -76,7 +75,7 @@ private fun BottomSheetContainer(
             SheetModel.TimerSheet -> {
                 SleepTimerOptionBottomSheet(
                     onDismissRequest = {
-                        onDismissState.value(UiEvent.OnClickTimerOption(it))
+                        onDismissState.value(UiEvent.OnTimerOptionClick(it))
                     },
                 )
             }

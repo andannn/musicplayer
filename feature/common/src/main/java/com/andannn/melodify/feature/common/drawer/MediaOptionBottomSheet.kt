@@ -74,10 +74,7 @@ fun MediaOptionBottomSheet(
                     SheetItem(
                         item = item,
                         onClick = {
-                            scope.launch {
-                                sheetState.hide()
-                                onDismissRequest.invoke(item)
-                            }
+                            onDismissRequest.invoke(item)
                         },
                     )
                 }

@@ -48,10 +48,8 @@ fun SleepTimerOptionBottomSheet(
     ) {
         SleepTimerOptionSheetContent(
             onDismissRequest = {
-                scope.launch {
-                    sheetState.hide()
-                    onDismissRequest.invoke(it)
-                }
+                onDismissRequest.invoke(it)
+
             }
         )
     }

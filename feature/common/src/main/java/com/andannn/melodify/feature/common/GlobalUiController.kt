@@ -1,6 +1,5 @@
 package com.andannn.melodify.feature.common
 
-import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.core.data.util.uri
 import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
@@ -9,22 +8,22 @@ import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
+import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.common.drawer.SleepTimerOption
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asSharedFlow
+import timber.log.Timber
+
+private const val TAG = "GlobalUiController"
 
 sealed interface UiEvent {
-    data class OnOptionClick(
+    data class OnMediaOptionClick(
         val sheet: SheetModel.MediaOptionSheet,
         val clickedItem: SheetOptionItem?,
     ) : UiEvent
 
-    data class OnClickTimerOption(
+    data class OnTimerOptionClick(
         val option: SleepTimerOption?,
     ) : UiEvent
 }
@@ -34,57 +33,67 @@ interface DeleteMediaItemEventProvider {
 }
 
 interface BottomSheetStateProvider {
-    val bottomSheetModel: StateFlow<SheetModel?>
+    val bottomSheetModel: SharedFlow<SheetModel?>
 }
 
 interface GlobalUiController : BottomSheetStateProvider, DeleteMediaItemEventProvider {
-    fun showBottomSheet(sheet: SheetModel)
+    suspend fun showBottomSheet(sheet: SheetModel)
 
     /**
      * Handle the dismiss request from the bottom sheet.
      */
-    fun CoroutineScope.onDismissRequest(event: UiEvent)
+    suspend fun onEvent(event: UiEvent)
 }
 
 internal class GlobalUiControllerImpl(
     private val mediaControllerRepository: MediaControllerRepository,
     private val playerStateRepository: PlayerStateRepository,
 ) : GlobalUiController {
-    override val bottomSheetModel: StateFlow<SheetModel?>
-        get() = _bottomSheetModelFlow.asStateFlow()
+    override val bottomSheetModel: SharedFlow<SheetModel?>
+        get() = _bottomSheetModelFlow.asSharedFlow()
 
     override val deleteMediaItemEventFlow: SharedFlow<List<String>>
         get() = _deleteMediaItemEventFlow
 
-    private val _bottomSheetModelFlow = MutableStateFlow<SheetModel?>(null)
+    private val _bottomSheetModelFlow = MutableSharedFlow<SheetModel?>(1)
     private val _deleteMediaItemEventFlow = MutableSharedFlow<List<String>>(1)
 
-    override fun showBottomSheet(sheet: SheetModel) {
-        _bottomSheetModelFlow.value = sheet
+    override suspend fun showBottomSheet(sheet: SheetModel) {
+        _bottomSheetModelFlow.emit(sheet)
     }
 
-    override fun CoroutineScope.onDismissRequest(event: UiEvent) {
+    override suspend fun onEvent(event: UiEvent) {
+        Timber.tag(TAG).d("onEvent: $event")
+        _bottomSheetModelFlow.emit(null)
         when (event) {
-            is UiEvent.OnClickTimerOption -> {
-
-            }
-            is UiEvent.OnOptionClick -> {
-                    event.clickedItem?.let {
-                        when (it) {
-                            SheetOptionItem.PLAY_NEXT -> onPlayNextClick(event.sheet.source)
-                            SheetOptionItem.DELETE -> onDeleteMediaItem(event.sheet.source)
-                            SheetOptionItem.ADD_TO_QUEUE -> onAddToQueue(event.sheet.source)
-                            SheetOptionItem.SLEEP_TIMER -> TODO()
-                        }
+            is UiEvent.OnTimerOptionClick -> {
+                when (val option = event.option) {
+                    SleepTimerOption.FIVE_MINUTES,
+                    SleepTimerOption.FIFTEEN_MINUTES ,
+                    SleepTimerOption.THIRTY_MINUTES,
+                    SleepTimerOption.SIXTY_MINUTES -> {
+                        option.timeMinutes
                     }
+                    else -> {
 
+                    }
+                }
+            }
+
+            is UiEvent.OnMediaOptionClick -> {
+                event.clickedItem?.let {
+                    when (it) {
+                        SheetOptionItem.PLAY_NEXT -> onPlayNextClick(event.sheet.source)
+                        SheetOptionItem.DELETE -> onDeleteMediaItem(event.sheet.source)
+                        SheetOptionItem.ADD_TO_QUEUE -> onAddToQueue(event.sheet.source)
+                        SheetOptionItem.SLEEP_TIMER -> showBottomSheet(SheetModel.TimerSheet)
+                    }
+                }
             }
         }
-
-        _bottomSheetModelFlow.value = null
     }
 
-    private fun CoroutineScope.onDeleteMediaItem(source: MediaItemModel) = launch {
+    private suspend fun onDeleteMediaItem(source: MediaItemModel)  {
         val items = when (source) {
             is AlbumItemModel -> {
                 mediaControllerRepository.getAudiosOfAlbum(source.id)
@@ -103,7 +112,7 @@ internal class GlobalUiControllerImpl(
         _deleteMediaItemEventFlow.tryEmit(uris)
     }
 
-    private fun CoroutineScope.onPlayNextClick(source: MediaItemModel) = launch {
+    private suspend fun onPlayNextClick(source: MediaItemModel) {
         val items = getAudios(source)
         val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
         if (havePlayingQueue) {
@@ -116,7 +125,7 @@ internal class GlobalUiControllerImpl(
         }
     }
 
-    private fun CoroutineScope.onAddToQueue(source: MediaItemModel) = launch {
+    private suspend fun onAddToQueue(source: MediaItemModel) {
         val items = getAudios(source)
         val playListQueue = playerStateRepository.playListQueue
         if (playListQueue.isNotEmpty()) {
