@@ -3,11 +3,14 @@ package com.andannn.melodify.feature.home
 import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -31,7 +34,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -157,36 +159,20 @@ private fun HomeScreen(
                 derivedStateOf { uiState.previewMode }
             }
 
-            IconButton(
-                modifier = Modifier
-                    .align(alignment = Alignment.End)
-                    .padding(end = 10.dp),
-                onClick = {
-                    onEvent(HomeUiEvent.OnTogglePreviewMode)
-                }
-            ) {
-                when (previewMode) {
-                    MediaPreviewMode.GRID_PREVIEW -> {
-                        Icon(
-                            Icons.Rounded.Apps,
-                            contentDescription = ""
-                        )
-                    }
-
-                    MediaPreviewMode.LIST_PREVIEW -> {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.List,
-                            contentDescription = ""
-                        )
-                    }
-                }
-            }
 
             when (previewMode) {
                 MediaPreviewMode.GRID_PREVIEW -> {
                     LazyGridContent(
                         modifier =
                         Modifier.fillMaxSize(),
+                        layoutToggleButton = {
+                            LayoutToggleButton(
+                                previewMode = previewMode,
+                                onClick = {
+                                    onEvent(HomeUiEvent.OnTogglePreviewMode)
+                                }
+                            )
+                        },
                         mediaItems = mediaItems,
                         onClick = onMediaItemClick,
                         onLongPress = {
@@ -199,6 +185,14 @@ private fun HomeScreen(
                     LazyListContent(
                         modifier =
                         Modifier.fillMaxSize(),
+                        layoutToggleButton = {
+                            LayoutToggleButton(
+                                previewMode = previewMode,
+                                onClick = {
+                                    onEvent(HomeUiEvent.OnTogglePreviewMode)
+                                }
+                            )
+                        },
                         mediaItems = mediaItems,
                         onMusicItemClick = onMediaItemClick,
                         onShowMusicItemOption = {
@@ -215,14 +209,17 @@ private fun HomeScreen(
 private fun <T : MediaItemModel> LazyGridContent(
     mediaItems: ImmutableList<T>,
     modifier: Modifier = Modifier,
+    layoutToggleButton: @Composable () -> Unit = {},
     onClick: (T) -> Unit = {},
-    onLongPress: (T) -> Unit = {},
+    onLongPress: (T) -> Unit = {}
 ) {
     val hapticFeedBack = LocalHapticFeedback.current
     LazyVerticalGrid(
         modifier = modifier.fillMaxSize(),
         columns = GridCells.Adaptive(180.dp),
     ) {
+        item(span = { GridItemSpan(2) }) { layoutToggleButton() }
+
         items(
             items = mediaItems,
             key = { it.id },
@@ -233,7 +230,7 @@ private fun <T : MediaItemModel> LazyGridContent(
                     .animateItem(),
                 artCoverUri = Uri.parse(item.artWorkUri),
                 title = item.name,
-                subTitle = item.subTitle,
+                subTitle = item.subTitle(),
                 onClick = {
                     onClick.invoke(item)
                 },
@@ -246,13 +243,13 @@ private fun <T : MediaItemModel> LazyGridContent(
 
         item { ExtraPaddingBottom() }
     }
-
 }
 
 @Composable
 private fun <T : MediaItemModel> LazyListContent(
     mediaItems: ImmutableList<T>,
     modifier: Modifier = Modifier,
+    layoutToggleButton: @Composable () -> Unit = {},
     onMusicItemClick: (T) -> Unit = {},
     onShowMusicItemOption: (T) -> Unit = {},
 ) {
@@ -260,6 +257,9 @@ private fun <T : MediaItemModel> LazyListContent(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 5.dp),
     ) {
+        item {
+            layoutToggleButton()
+        }
         items(
             items = mediaItems,
             key = { it.id },
@@ -272,7 +272,7 @@ private fun <T : MediaItemModel> LazyListContent(
                 isActive = false,
                 albumArtUri = item.artWorkUri,
                 title = item.name,
-                subTitle = item.subTitle,
+                subTitle = item.subTitle(),
                 onMusicItemClick = {
                     onMusicItemClick.invoke(item)
                 },
@@ -286,14 +286,49 @@ private fun <T : MediaItemModel> LazyListContent(
     }
 }
 
-@get:Composable
-private val MediaItemModel.subTitle: String
-    get() = when (this) {
-        is AudioItemModel -> artist
-        is AlbumItemModel -> trackCount.toString() + "tracks"
-        is ArtistItemModel -> trackCount.toString() + "tracks"
-        else -> ""
+@Composable
+fun LayoutToggleButton(
+    previewMode: MediaPreviewMode,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        IconButton(
+            modifier = Modifier
+                .padding(end = 10.dp),
+            onClick = {
+                onClick()
+            }
+        ) {
+            when (previewMode) {
+                MediaPreviewMode.GRID_PREVIEW -> {
+                    Icon(
+                        Icons.AutoMirrored.Rounded.List,
+                        contentDescription = ""
+                    )
+                }
+
+                MediaPreviewMode.LIST_PREVIEW -> {
+                    Icon(
+                        Icons.Rounded.Apps,
+                        contentDescription = ""
+                    )
+                }
+            }
+        }
     }
+
+}
+
+
+private fun MediaItemModel.subTitle(): String = when (this) {
+    is AudioItemModel -> artist
+    is AlbumItemModel -> trackCount.toString() + "tracks"
+    is ArtistItemModel -> trackCount.toString() + "tracks"
+    else -> ""
+}
 
 @Preview
 @Composable
