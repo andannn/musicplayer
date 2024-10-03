@@ -30,10 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds

@@ -7,11 +7,11 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.common.drawer.GlobalUiController
-import com.andannn.melodify.common.drawer.SheetModel
+import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.core.domain.model.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
+import com.andannn.melodify.feature.common.drawer.SheetModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

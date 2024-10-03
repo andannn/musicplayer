@@ -2,12 +2,11 @@ package com.andannn.melodify
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andannn.melodify.common.drawer.GlobalUiController
-import com.andannn.melodify.common.drawer.BottomSheetStateProvider
-import com.andannn.melodify.common.drawer.DeleteMediaItemEventProvider
-import com.andannn.melodify.common.drawer.SheetModel
-import com.andannn.melodify.common.drawer.SheetOptionItem
+import com.andannn.melodify.feature.common.GlobalUiController
+import com.andannn.melodify.feature.common.BottomSheetStateProvider
+import com.andannn.melodify.feature.common.DeleteMediaItemEventProvider
 import com.andannn.melodify.core.player.MediaBrowserManager
+import com.andannn.melodify.feature.common.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,9 +44,9 @@ constructor(
         }
     }
 
-    fun onRequestDismissSheet(sheet: SheetModel, sheetItem: SheetOptionItem?) {
+    fun onRequestDismissSheet(event: UiEvent) {
         with(controller) {
-            viewModelScope.onDismissRequest(sheet, sheetItem)
+            viewModelScope.onDismissRequest(event)
         }
     }
 

@@ -18,20 +18,18 @@ import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.core.designsystem.component.AutoResizedText
-import com.andannn.melodify.core.designsystem.component.SmpMainIconButton
-import com.andannn.melodify.core.designsystem.component.SmpSubIconButton
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.component.AutoResizedText
+import com.andannn.melodify.feature.common.component.SmpMainIconButton
+import com.andannn.melodify.feature.common.component.SmpSubIconButton
 import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.util.getIcon
 

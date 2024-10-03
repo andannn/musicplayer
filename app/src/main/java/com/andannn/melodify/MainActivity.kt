@@ -24,8 +24,8 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.andannn.melodify.core.designsystem.dialog.ConnectFailedAlertDialog
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.dialog.ConnectFailedAlertDialog
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch

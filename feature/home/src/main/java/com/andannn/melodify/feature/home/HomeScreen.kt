@@ -52,12 +52,12 @@ import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.designsystem.component.ExtraPaddingBottom
-import com.andannn.melodify.core.designsystem.component.LargePreviewCard
-import com.andannn.melodify.core.designsystem.component.ListTileItemView
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.component.LargePreviewCard
+import com.andannn.melodify.feature.common.component.ListTileItemView
 import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.core.domain.model.MediaPreviewMode
+import com.andannn.melodify.feature.common.component.ExtraPaddingBottom
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList

@@ -43,7 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.feature.player.ui.BottomSheetState
 import com.andannn.melodify.feature.player.LyricState

@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.andannn.melodify.common.R
-import com.andannn.melodify.core.designsystem.component.SmpTextButton
-import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.component.SmpTextButton
+import com.andannn.melodify.feature.common.theme.MelodifyTheme
 
 @Composable
 fun PlayListHeader(
