@@ -1,9 +1,9 @@
 package com.andannn.melodify.feature.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andannn.melodify.common.drawer.BottomSheetController
+import com.andannn.melodify.common.drawer.GlobalUiController
+import com.andannn.melodify.common.drawer.SheetModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaPreviewMode
@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val TAG = "HomeViewModel"
@@ -39,7 +40,7 @@ class HomeViewModel
 @Inject
 constructor(
     private val mediaControllerRepository: MediaControllerRepository,
-    private val bottomSheetController: BottomSheetController,
+    private val globalUiController: GlobalUiController,
     private val mediaContentObserverRepository: MediaContentObserverRepository,
     private val userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
@@ -93,7 +94,9 @@ constructor(
     }
 
     private fun onShowMusicItemOption(mediaItemModel: MediaItemModel) {
-        bottomSheetController.onRequestShowSheet(mediaItemModel)
+        globalUiController.showBottomSheet(
+            SheetModel.MediaOptionSheet.fromMediaModel(mediaItemModel)
+        )
     }
 
     private fun createMediaItemsFlow(category: MediaCategory): Flow<CategoryWithContents> {
@@ -114,7 +117,7 @@ constructor(
     }
 
     private suspend fun getMediaItemsAndUpdateState(category: MediaCategory): List<MediaItemModel> {
-        Log.d(TAG, "getMediaItemsAndUpdateState: $category")
+        Timber.tag(TAG).d("getMediaItemsAndUpdateState: $category")
 
         return when (category) {
             MediaCategory.ALL_MUSIC -> mediaControllerRepository.getAllMediaItems()

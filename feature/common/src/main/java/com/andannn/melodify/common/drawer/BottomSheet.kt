@@ -4,7 +4,7 @@ import com.andannn.melodify.common.R
 import com.andannn.melodify.core.designsystem.icons.SmpIcon
 import com.andannn.melodify.core.designsystem.icons.SimpleMusicIcons
 
-enum class SheetItem(
+enum class SheetOptionItem(
     val smpIcon: SmpIcon,
     val text: Int,
 ) {
@@ -24,48 +24,4 @@ enum class SheetItem(
         smpIcon = SimpleMusicIcons.Timer,
         text = R.string.add_to_queue,
     ),
-}
-
-sealed class BottomSheet(
-    val itemList: List<SheetItem>,
-) {
-    data object MusicBottomSheet : BottomSheet(
-        listOf(
-            SheetItem.ADD_TO_QUEUE,
-            SheetItem.PLAY_NEXT,
-            SheetItem.DELETE,
-        ),
-    )
-
-    data object AlbumBottomSheet : BottomSheet(
-        listOf(
-            SheetItem.ADD_TO_QUEUE,
-            SheetItem.PLAY_NEXT,
-            SheetItem.DELETE,
-        ),
-    )
-
-    data object ArtistBottomSheet : BottomSheet(
-        listOf(
-            SheetItem.ADD_TO_QUEUE,
-            SheetItem.PLAY_NEXT,
-            SheetItem.DELETE,
-        ),
-    )
-
-    data object PlayListBottomSheet : BottomSheet(
-        listOf(
-            SheetItem.ADD_TO_QUEUE,
-            SheetItem.PLAY_NEXT,
-            SheetItem.DELETE,
-        ),
-    )
-
-    data object PlayerBottomSheet : BottomSheet(
-        listOf(
-            SheetItem.ADD_TO_QUEUE,
-            SheetItem.PLAY_NEXT,
-            SheetItem.SLEEP_TIMER,
-        ),
-    )
 }

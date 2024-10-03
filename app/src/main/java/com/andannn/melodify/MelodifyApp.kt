@@ -1,4 +1,4 @@
-package com.andannn.melodify.ui
+package com.andannn.melodify
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -15,15 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.andannn.melodify.MainActivityViewModel
-import com.andannn.melodify.common.drawer.BottomSheetModel
 import com.andannn.melodify.feature.player.PlayerStateViewModel
-import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.PlayerUiState
 import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
 import com.andannn.melodify.navigation.SmpNavHost
-import com.andannn.melodify.common.drawer.MediaBottomSheetView
-import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.common.drawer.MediaOptionBottomSheet
+import com.andannn.melodify.common.drawer.SheetModel
+import com.andannn.melodify.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.player.PlayerAreaView
 
 @Composable
@@ -49,8 +47,8 @@ fun MelodifyApp(
 
         BottomSheetContainer(
             bottomSheet = bottomSheetModel,
-            onDismissRequest = {
-                playerStateViewModel.onEvent(PlayerUiEvent.OnDismissDrawerRequest(it))
+            onDismissRequest = { sheet, option ->
+                mainViewModel.onRequestDismissSheet(sheet, option)
             }
         )
     }
@@ -58,17 +56,25 @@ fun MelodifyApp(
 
 @Composable
 private fun BottomSheetContainer(
-    bottomSheet: BottomSheetModel?,
-    onDismissRequest: (SheetItem?) -> Unit = {},
+    bottomSheet: SheetModel?,
+    onDismissRequest: (sheet: SheetModel, SheetOptionItem?) -> Unit = { _, _ -> },
 ) {
     val onDismissState = rememberUpdatedState(onDismissRequest)
     if (bottomSheet != null) {
-        MediaBottomSheetView(
-            bottomSheetModel = bottomSheet,
-            onDismissRequest = {
-                onDismissState.value(it)
-            },
-        )
+        when (bottomSheet) {
+            is SheetModel.MediaOptionSheet -> {
+                MediaOptionBottomSheet(
+                    optionSheet = bottomSheet,
+                    onDismissRequest = {
+                        onDismissState.value(bottomSheet, it)
+                    },
+                )
+            }
+
+            SheetModel.TimerSheet -> {
+
+            }
+        }
     }
 }
 

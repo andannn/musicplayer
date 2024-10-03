@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,7 +14,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,26 +26,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.andannn.melodify.core.designsystem.dialog.ConnectFailedAlertDialog
 import com.andannn.melodify.core.designsystem.theme.MelodifyTheme
-import com.andannn.melodify.ui.MelodifyApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 private const val TAG = "MainActivity"
+private val runTimePermissions =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(Manifest.permission.READ_MEDIA_AUDIO)
+    } else {
+        listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val runTimePermissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            listOf(Manifest.permission.READ_MEDIA_AUDIO)
-        } else {
-            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-        }
-
     private val mainViewModel: MainActivityViewModel by viewModels()
     private lateinit var intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -57,12 +53,12 @@ class MainActivity : ComponentActivity() {
         intentSenderLauncher = registerForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
         ) { result ->
-            Log.d(TAG, "activity result: $result")
+            Timber.tag(TAG).d("activity result: $result")
         }
 
         lifecycleScope.launch {
             mainViewModel.deleteMediaItemEventFlow.collect { uris ->
-                Log.d(TAG, "Requesting delete media items: $uris")
+                Timber.tag(TAG).d("Requesting delete media items: $uris")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     val editPendingIntent = MediaStore.createTrashRequest(
                         /* resolver = */ contentResolver,

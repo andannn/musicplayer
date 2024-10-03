@@ -2,8 +2,8 @@ package com.andannn.melodify.common.drawer.di
 
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
-import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.BottomSheetControllerImpl
+import com.andannn.melodify.common.drawer.GlobalUiController
+import com.andannn.melodify.common.drawer.GlobalUiControllerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,7 +19,7 @@ class BottomSheetModule {
     fun providesBottomSheetModule(
         mediaControllerRepository: MediaControllerRepository,
         playerMoRepository: PlayerStateRepository,
-    ): BottomSheetController = BottomSheetControllerImpl(
+    ): GlobalUiController = GlobalUiControllerImpl(
         playerStateRepository = playerMoRepository,
         mediaControllerRepository = mediaControllerRepository
     )

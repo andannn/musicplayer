@@ -15,63 +15,113 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class BottomSheetModel(
-    val source: MediaItemModel,
-    val bottomSheet: BottomSheet,
-)
+sealed interface SheetModel {
+    abstract class MediaOptionSheet(
+        open val source: MediaItemModel,
+        open val options: List<SheetOptionItem>,
+    ) : SheetModel {
+        companion object {
+            fun fromMediaModel(item: MediaItemModel): SheetModel {
+                return when (item) {
+                    is AlbumItemModel -> AlbumOptionSheet(item)
+                    is ArtistItemModel -> ArtistOptionSheet(item)
+                    is AudioItemModel -> AudioOptionSheet(item)
+                }
+            }
+        }
+    }
+
+    data class AudioOptionSheet(override val source: AudioItemModel) : MediaOptionSheet(
+        source = source,
+        options = listOf(
+            SheetOptionItem.ADD_TO_QUEUE,
+            SheetOptionItem.PLAY_NEXT,
+            SheetOptionItem.DELETE,
+        ),
+    )
+
+    data class PlayerOptionSheet(override val source: AudioItemModel) : MediaOptionSheet(
+        source = source,
+        options = listOf(
+            SheetOptionItem.ADD_TO_QUEUE,
+            SheetOptionItem.PLAY_NEXT,
+            SheetOptionItem.SLEEP_TIMER,
+        ),
+    )
+
+    data class AlbumOptionSheet(override val source: AlbumItemModel) : MediaOptionSheet(
+        source = source,
+        options = listOf(
+            SheetOptionItem.ADD_TO_QUEUE,
+            SheetOptionItem.PLAY_NEXT,
+            SheetOptionItem.DELETE,
+        ),
+    )
+
+    data class ArtistOptionSheet(override val source: ArtistItemModel) : MediaOptionSheet(
+        source = source,
+        options = listOf(
+            SheetOptionItem.ADD_TO_QUEUE,
+            SheetOptionItem.PLAY_NEXT,
+            SheetOptionItem.DELETE,
+        ),
+    )
+
+    data object TimerSheet : SheetModel
+
+}
 
 interface DeleteMediaItemEventProvider {
     val deleteMediaItemEventFlow: SharedFlow<List<String>>
 }
 
 interface BottomSheetStateProvider {
-    val bottomSheetModel: StateFlow<BottomSheetModel?>
+    val bottomSheetModel: StateFlow<SheetModel?>
 }
 
-interface BottomSheetController : BottomSheetStateProvider, DeleteMediaItemEventProvider {
-    fun onRequestShowSheet(mediaItem: MediaItemModel, sheet: BottomSheet? = null)
+interface GlobalUiController : BottomSheetStateProvider, DeleteMediaItemEventProvider {
+    fun showBottomSheet(sheet: SheetModel)
 
-    fun CoroutineScope.onDismissRequest(item: SheetItem?)
+    /**
+     * Handle the dismiss request from the bottom sheet.
+     *
+     * @param sheet The bottom sheet that is being dismissed.
+     * @param item The item that is clicked in the bottom sheet, which can be null.
+     */
+    fun CoroutineScope.onDismissRequest(sheet: SheetModel, item: SheetOptionItem?)
 }
 
-internal class BottomSheetControllerImpl(
+internal class GlobalUiControllerImpl(
     private val mediaControllerRepository: MediaControllerRepository,
     private val playerStateRepository: PlayerStateRepository,
-) : BottomSheetController {
-    override val bottomSheetModel: StateFlow<BottomSheetModel?>
+) : GlobalUiController {
+    override val bottomSheetModel: StateFlow<SheetModel?>
         get() = _bottomSheetModelFlow.asStateFlow()
 
     override val deleteMediaItemEventFlow: SharedFlow<List<String>>
         get() = _deleteMediaItemEventFlow
 
-    private val _bottomSheetModelFlow = MutableStateFlow<BottomSheetModel?>(null)
+    private val _bottomSheetModelFlow = MutableStateFlow<SheetModel?>(null)
     private val _deleteMediaItemEventFlow = MutableSharedFlow<List<String>>(1)
 
-    override fun onRequestShowSheet(mediaItem: MediaItemModel, sheet: BottomSheet?) {
-        _bottomSheetModelFlow.value =
-            BottomSheetModel(
-                source = mediaItem,
-                bottomSheet = sheet ?: buildDrawer(mediaItem),
-            )
+    override fun showBottomSheet(sheet: SheetModel) {
+        _bottomSheetModelFlow.value = sheet
     }
 
-    private fun buildDrawer(mediaItem: MediaItemModel): BottomSheet {
-
-        return when (mediaItem) {
-            is AlbumItemModel -> BottomSheet.AlbumBottomSheet
-            is ArtistItemModel -> BottomSheet.ArtistBottomSheet
-            is AudioItemModel -> BottomSheet.MusicBottomSheet
-        }
-    }
-
-    override fun CoroutineScope.onDismissRequest(item: SheetItem?) {
-        if (item != null) {
-            when (item) {
-                SheetItem.PLAY_NEXT -> onPlayNextClick(_bottomSheetModelFlow.value!!.source)
-                SheetItem.DELETE -> onDeleteMediaItem(_bottomSheetModelFlow.value!!.source)
-                SheetItem.ADD_TO_QUEUE -> onAddToQueue(_bottomSheetModelFlow.value!!.source)
-                SheetItem.SLEEP_TIMER -> TODO()
+    override fun CoroutineScope.onDismissRequest(sheet: SheetModel, item: SheetOptionItem?) {
+        when (sheet) {
+            is SheetModel.MediaOptionSheet -> {
+                if (item != null) {
+                    when (item) {
+                        SheetOptionItem.PLAY_NEXT -> onPlayNextClick(sheet.source)
+                        SheetOptionItem.DELETE -> onDeleteMediaItem(sheet.source)
+                        SheetOptionItem.ADD_TO_QUEUE -> onAddToQueue(sheet.source)
+                        SheetOptionItem.SLEEP_TIMER -> TODO()
+                    }
+                }
             }
+
+            SheetModel.TimerSheet -> TODO()
         }
 
         _bottomSheetModelFlow.value = null

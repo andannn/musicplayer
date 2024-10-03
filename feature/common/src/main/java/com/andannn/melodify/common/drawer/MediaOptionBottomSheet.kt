@@ -47,11 +47,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MediaBottomSheetView(
-    bottomSheetModel: BottomSheetModel,
+fun MediaOptionBottomSheet(
+    optionSheet: SheetModel.MediaOptionSheet,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
-    onDismissRequest: (SheetItem?) -> Unit = {},
+    onDismissRequest: (SheetOptionItem?) -> Unit = {},
 ) {
     val sheetState =
         rememberModalBottomSheetState()
@@ -65,12 +65,12 @@ fun MediaBottomSheetView(
         Surface(modifier = modifier.navigationBarsPadding()) {
             Column(Modifier.fillMaxWidth()) {
                 SheetHeader(
-                    mediaItem = bottomSheetModel.source,
+                    mediaItem = optionSheet.source,
                 )
 
                 HorizontalDivider()
 
-                bottomSheetModel.bottomSheet.itemList.map { item ->
+                optionSheet.options.map { item ->
                     SheetItem(
                         item = item,
                         onClick = {
@@ -151,7 +151,7 @@ private fun MediaItemModel.subTitle() = when (this) {
 
 @Composable
 fun SheetItem(
-    item: SheetItem,
+    item: SheetOptionItem,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
@@ -206,10 +206,9 @@ private fun MediaBottomDrawerDemo() {
         }
 
         if (isShow) {
-            MediaBottomSheetView(
-                bottomSheetModel = BottomSheetModel(
+            MediaOptionBottomSheet(
+                optionSheet = SheetModel.AudioOptionSheet(
                     source = source,
-                    bottomSheet = BottomSheet.MusicBottomSheet,
                 ),
                 onDismissRequest = {
                     isShow = false

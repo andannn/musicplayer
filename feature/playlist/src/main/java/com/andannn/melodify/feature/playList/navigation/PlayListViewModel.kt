@@ -3,13 +3,13 @@ package com.andannn.melodify.feature.playList.navigation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andannn.melodify.common.drawer.GlobalUiController
+import com.andannn.melodify.common.drawer.SheetModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
-import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.SheetItem
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -35,8 +35,6 @@ sealed interface PlayListEvent {
     ) : PlayListEvent
 
     data object OnHeaderOptionClick : PlayListEvent
-
-    data class OnDismissRequest(val item: SheetItem?) : PlayListEvent
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,7 +46,7 @@ constructor(
     private val contentObserverRepository: MediaContentObserverRepository,
     playerStateRepository: PlayerStateRepository,
     private val mediaControllerRepository: MediaControllerRepository,
-    private val bottomSheetController: BottomSheetController,
+    private val globalUiController: GlobalUiController,
 ) : ViewModel() {
     private val id =
         savedStateHandle.get<String>(ID) ?: ""
@@ -124,18 +122,16 @@ constructor(
             }
 
             is PlayListEvent.OnOptionClick -> {
-                bottomSheetController.onRequestShowSheet(event.mediaItem)
-            }
-
-            is PlayListEvent.OnDismissRequest -> {
-                with(bottomSheetController) {
-                    viewModelScope.onDismissRequest(event.item)
-                }
+                globalUiController.showBottomSheet(
+                    SheetModel.MediaOptionSheet.fromMediaModel(event.mediaItem)
+                )
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
                 state.value.headerInfoItem?.let {
-                    bottomSheetController.onRequestShowSheet(it)
+                    globalUiController.showBottomSheet(
+                        SheetModel.MediaOptionSheet.fromMediaModel(it)
+                    )
                 }
             }
         }

@@ -1,17 +1,19 @@
 package com.andannn.melodify
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andannn.melodify.common.drawer.BottomSheetController
+import com.andannn.melodify.common.drawer.GlobalUiController
 import com.andannn.melodify.common.drawer.BottomSheetStateProvider
 import com.andannn.melodify.common.drawer.DeleteMediaItemEventProvider
+import com.andannn.melodify.common.drawer.SheetModel
+import com.andannn.melodify.common.drawer.SheetOptionItem
 import com.andannn.melodify.core.player.MediaBrowserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 private const val TAG = "MainActivityViewModel"
@@ -20,7 +22,7 @@ private const val TAG = "MainActivityViewModel"
 class MainActivityViewModel
 @Inject
 constructor(
-    private val controller: BottomSheetController,
+    private val controller: GlobalUiController,
     private val mediaBrowserManager: MediaBrowserManager,
 ) : BottomSheetStateProvider by controller,
     DeleteMediaItemEventProvider by controller,
@@ -37,9 +39,15 @@ constructor(
                 mediaBrowserManager.connect()
                 _state.value = MainUiState.Ready
             } catch (e: TimeoutCancellationException) {
-                Log.d(TAG, "connect error: $e")
+                Timber.tag(TAG).d("connect error:  $e")
                 _state.value = MainUiState.Error(e)
             }
+        }
+    }
+
+    fun onRequestDismissSheet(sheet: SheetModel, sheetItem: SheetOptionItem?) {
+        with(controller) {
+            viewModelScope.onDismissRequest(sheet, sheetItem)
         }
     }
 

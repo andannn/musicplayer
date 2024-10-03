@@ -2,14 +2,13 @@ package com.andannn.melodify.feature.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andannn.melodify.common.drawer.BottomSheet
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.common.drawer.GlobalUiController
+import com.andannn.melodify.common.drawer.SheetModel
 import com.andannn.melodify.core.domain.model.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
@@ -45,8 +44,6 @@ sealed interface PlayerUiEvent {
 
     data object OnShuffleButtonClick : PlayerUiEvent
 
-    data class OnDismissDrawerRequest(val item: SheetItem?) : PlayerUiEvent
-
     data class OnProgressChange(val progress: Float) : PlayerUiEvent
 
     data class OnSwapPlayQueue(val from: Int, val to: Int) : PlayerUiEvent
@@ -67,7 +64,7 @@ constructor(
     private val mediaControllerRepository: MediaControllerRepository,
     private val lyricRepository: LyricRepository,
     private val playerStateRepository: PlayerStateRepository,
-    private val bottomSheetController: BottomSheetController
+    private val globalUiController: GlobalUiController
 ) : ViewModel() {
     private val interactingMusicItem = playerStateRepository.playingMediaStateFlow
     private val playerStateFlow = playerStateRepository
@@ -151,9 +148,8 @@ constructor(
             }
 
             is PlayerUiEvent.OnOptionIconClick -> {
-                bottomSheetController.onRequestShowSheet(
-                    event.mediaItem,
-                    BottomSheet.PlayerBottomSheet
+                globalUiController.showBottomSheet(
+                    SheetModel.PlayerOptionSheet(event.mediaItem)
                 )
             }
 
@@ -163,12 +159,6 @@ constructor(
                         duration.times(event.progress).toLong()
                     }
                 seekToTime(time)
-            }
-
-            is PlayerUiEvent.OnDismissDrawerRequest -> {
-                with(bottomSheetController) {
-                    viewModelScope.onDismissRequest(event.item)
-                }
             }
 
             is PlayerUiEvent.OnSwapPlayQueue -> {
