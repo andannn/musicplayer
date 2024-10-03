@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.common.theme.util
+package com.andannn.melodify.feature.common.util
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color

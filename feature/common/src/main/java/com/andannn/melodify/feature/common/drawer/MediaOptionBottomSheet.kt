@@ -43,7 +43,6 @@ import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.feature.common.icons.SmpIcon
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +50,8 @@ fun MediaOptionBottomSheet(
     optionSheet: SheetModel.MediaOptionSheet,
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
-    onDismissRequest: (SheetOptionItem?) -> Unit = {},
+    onClickOption: (SheetOptionItem) -> Unit = {},
+    onRequestDismiss: () -> Unit = {}
 ) {
     val sheetState =
         rememberModalBottomSheetState()
@@ -59,7 +59,7 @@ fun MediaOptionBottomSheet(
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = {
-            onDismissRequest.invoke(null)
+            onRequestDismiss.invoke()
         },
     ) {
         Surface(modifier = modifier.navigationBarsPadding()) {
@@ -74,7 +74,7 @@ fun MediaOptionBottomSheet(
                     SheetItem(
                         item = item,
                         onClick = {
-                            onDismissRequest.invoke(item)
+                            onClickOption.invoke(item)
                         },
                     )
                 }
@@ -206,7 +206,7 @@ private fun MediaBottomDrawerDemo() {
                 optionSheet = SheetModel.AudioOptionSheet(
                     source = source,
                 ),
-                onDismissRequest = {
+                onClickOption = {
                     isShow = false
                 },
             )

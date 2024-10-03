@@ -13,6 +13,8 @@ import androidx.media3.session.MediaSession
 import com.andannn.melodify.core.player.library.MediaLibrarySource
 import com.andannn.melodify.core.player.library.MediaLibrarySourceImpl
 import com.andannn.melodify.core.player.mediastore.MediaStoreSourceImpl
+import com.andannn.melodify.core.player.timer.SleepTimeCounterState
+import com.andannn.melodify.core.player.timer.SleepTimerController
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -20,7 +22,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.future
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -28,6 +32,9 @@ import kotlin.coroutines.CoroutineContext
 class PlayerService : MediaLibraryService(), CoroutineScope {
     @Inject
     lateinit var playerWrapper: PlayerWrapper
+
+    @Inject
+    lateinit var sleepCounterController: SleepTimerController
 
     private lateinit var mediaLibrarySession: MediaLibrarySession
 
@@ -61,6 +68,15 @@ class PlayerService : MediaLibraryService(), CoroutineScope {
             MediaLibrarySession.Builder(this, player, librarySessionCallback)
                 .setSessionActivity(getSingleTopActivity())
                 .build()
+
+        launch {
+            // waiting for finish
+            sleepCounterController.getCounterStateFlow().first {
+                it is SleepTimeCounterState.Finish
+            }
+
+            player.pause()
+        }
     }
 
     override fun onDestroy() {

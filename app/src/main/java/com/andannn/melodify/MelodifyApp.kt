@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -22,6 +21,7 @@ import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
 import com.andannn.melodify.navigation.SmpNavHost
 import com.andannn.melodify.feature.common.drawer.MediaOptionBottomSheet
 import com.andannn.melodify.feature.common.drawer.SheetModel
+import com.andannn.melodify.feature.common.drawer.SleepTimerCountingBottomSheet
 import com.andannn.melodify.feature.common.drawer.SleepTimerOptionBottomSheet
 import com.andannn.melodify.feature.player.PlayerAreaView
 
@@ -48,7 +48,7 @@ fun MelodifyApp(
 
         BottomSheetContainer(
             bottomSheet = bottomSheetModel,
-            onDismissRequest = { event ->
+            onEvent = { event ->
                 mainViewModel.onRequestDismissSheet(event)
             }
         )
@@ -58,25 +58,42 @@ fun MelodifyApp(
 @Composable
 private fun BottomSheetContainer(
     bottomSheet: SheetModel?,
-    onDismissRequest: (UiEvent) -> Unit = {},
+    onEvent: (UiEvent) -> Unit = {},
 ) {
-    val onDismissState = rememberUpdatedState(onDismissRequest)
     if (bottomSheet != null) {
         when (bottomSheet) {
             is SheetModel.MediaOptionSheet -> {
                 MediaOptionBottomSheet(
                     optionSheet = bottomSheet,
-                    onDismissRequest = {
-                        onDismissState.value(UiEvent.OnMediaOptionClick(bottomSheet, it))
+                    onClickOption = {
+                        onEvent(UiEvent.OnMediaOptionClick(bottomSheet, it))
                     },
+                    onRequestDismiss = {
+                        onEvent(UiEvent.OnDismissSheet(bottomSheet))
+                    }
                 )
             }
 
-            SheetModel.TimerSheet -> {
+            SheetModel.TimerOptionSheet -> {
                 SleepTimerOptionBottomSheet(
-                    onDismissRequest = {
-                        onDismissState.value(UiEvent.OnTimerOptionClick(it))
+                    onSelectOption = {
+                        onEvent(UiEvent.OnTimerOptionClick(it))
                     },
+                    onRequestDismiss = {
+                        onEvent(UiEvent.OnDismissSheet(bottomSheet))
+                    }
+                )
+            }
+
+            is SheetModel.TimerRemainTimeSheet -> {
+                SleepTimerCountingBottomSheet(
+                    remain = bottomSheet.remainTime,
+                    onCancelTimer = {
+                        onEvent(UiEvent.OnCancelTimer)
+                    },
+                    onRequestDismiss = {
+                        onEvent(UiEvent.OnDismissSheet(bottomSheet))
+                    }
                 )
             }
         }

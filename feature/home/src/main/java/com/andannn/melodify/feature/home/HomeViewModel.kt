@@ -95,7 +95,7 @@ constructor(
 
     private fun onShowMusicItemOption(mediaItemModel: MediaItemModel) {
         viewModelScope.launch {
-            globalUiController.showBottomSheet(
+            globalUiController.updateBottomSheet(
                 SheetModel.MediaOptionSheet.fromMediaModel(mediaItemModel)
             )
         }

@@ -40,7 +40,7 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Scale
-import com.andannn.melodify.feature.common.theme.util.ColorSchemeUtil
+import com.andannn.melodify.feature.common.util.ColorSchemeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

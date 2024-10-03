@@ -149,7 +149,7 @@ constructor(
 
             is PlayerUiEvent.OnOptionIconClick -> {
                 viewModelScope.launch {
-                    globalUiController.showBottomSheet(
+                    globalUiController.updateBottomSheet(
                         SheetModel.PlayerOptionSheet(event.mediaItem)
                     )
                 }

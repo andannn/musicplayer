@@ -16,9 +16,16 @@ import com.andannn.melodify.core.player.library.ARTIST_PREFIX
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.player.MediaBrowserManager
+import com.andannn.melodify.core.player.timer.SleepTimeCounterState
+import com.andannn.melodify.core.player.timer.SleepTimerController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.guava.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "MediaControllerRepository"
 
@@ -26,7 +33,8 @@ private const val TAG = "MediaControllerRepository"
 class MediaControllerRepositoryImpl
 @Inject
 constructor(
-    private val mediaBrowserManager: MediaBrowserManager
+    private val mediaBrowserManager: MediaBrowserManager,
+    private val sleepTimerController: SleepTimerController,
 ) : MediaControllerRepository {
 
     private val mediaBrowser
@@ -161,5 +169,30 @@ constructor(
 
     override fun removeMediaItem(index: Int) {
         mediaBrowser.removeMediaItem(index)
+    }
+
+    override fun isCounting(): Boolean {
+        return sleepTimerController.counterState is SleepTimeCounterState.Counting
+    }
+
+    override fun observeRemainTime() =
+        sleepTimerController.getCounterStateFlow()
+            .takeWhile {
+                it !is SleepTimeCounterState.Idle
+            }
+            .map {
+                when (it) {
+                    is SleepTimeCounterState.Counting -> it.remain
+                    SleepTimeCounterState.Finish -> 0.seconds
+                    SleepTimeCounterState.Idle -> error("")
+                }
+            }
+
+    override fun startSleepTimer(duration: Duration) {
+        sleepTimerController.startTimer(duration)
+    }
+
+    override fun cancelSleepTimer() {
+        sleepTimerController.cancelTimer()
     }
 }

@@ -7,6 +7,7 @@ import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.feature.common.icons.SimpleMusicIcons
 import com.andannn.melodify.feature.common.icons.SmpIcon
+import kotlin.time.Duration
 
 sealed interface SheetModel {
     abstract class MediaOptionSheet(
@@ -60,8 +61,11 @@ sealed interface SheetModel {
         ),
     )
 
-    data object TimerSheet : SheetModel
+    data object TimerOptionSheet : SheetModel
 
+    data class TimerRemainTimeSheet(
+        val remainTime: Duration
+    ) : SheetModel
 }
 
 enum class SheetOptionItem(

@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
@@ -35,7 +34,9 @@ import kotlin.time.Duration.Companion.minutes
 fun SleepTimerOptionBottomSheet(
     modifier: Modifier = Modifier,
     scope: CoroutineScope = rememberCoroutineScope(),
-    onDismissRequest: (SleepTimerOption?) -> Unit = {},
+    onSelectOption: (SleepTimerOption) -> Unit = {},
+    onRequestDismiss: () -> Unit = {}
+
 ) {
     val sheetState =
         rememberModalBottomSheetState()
@@ -43,13 +44,12 @@ fun SleepTimerOptionBottomSheet(
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = {
-            onDismissRequest.invoke(null)
+            onRequestDismiss.invoke()
         },
     ) {
         SleepTimerOptionSheetContent(
-            onDismissRequest = {
-                onDismissRequest.invoke(it)
-
+            onSelectOption = {
+                onSelectOption.invoke(it)
             }
         )
     }
@@ -66,9 +66,9 @@ enum class SleepTimerOption(
 }
 
 @Composable
-fun SleepTimerOptionSheetContent(
+private fun SleepTimerOptionSheetContent(
     modifier: Modifier = Modifier,
-    onDismissRequest: (SleepTimerOption) -> Unit = {},
+    onSelectOption: (SleepTimerOption) -> Unit = {},
 ) {
     Surface(modifier = modifier) {
         Column(
@@ -86,7 +86,7 @@ fun SleepTimerOptionSheetContent(
                 OptionItem(
                     text = if (it != SleepTimerOption.SONG_FINISH) it.timeMinutes.toString() else "when song finish",
                     onClick = {
-                        onDismissRequest.invoke(it)
+                        onSelectOption.invoke(it)
                     },
                 )
             }
@@ -142,7 +142,7 @@ private fun MediaBottomDrawerDemo() {
 
         if (isShow) {
             SleepTimerOptionBottomSheet(
-                onDismissRequest = {
+                onSelectOption = {
                     isShow = false
                 },
             )

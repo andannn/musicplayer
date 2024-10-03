@@ -124,7 +124,7 @@ constructor(
 
             is PlayListEvent.OnOptionClick -> {
                 viewModelScope.launch {
-                    globalUiController.showBottomSheet(
+                    globalUiController.updateBottomSheet(
                         SheetModel.MediaOptionSheet.fromMediaModel(event.mediaItem)
                     )
                 }
@@ -133,7 +133,7 @@ constructor(
             PlayListEvent.OnHeaderOptionClick -> {
                 viewModelScope.launch {
                     state.value.headerInfoItem?.let {
-                        globalUiController.showBottomSheet(
+                        globalUiController.updateBottomSheet(
                             SheetModel.MediaOptionSheet.fromMediaModel(it)
                         )
                     }
