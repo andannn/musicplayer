@@ -1,14 +1,52 @@
-import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    id("musicplayer.android.library")
-    id("musicplayer.android.testing")
+//    id("musicplayer.android.library")
+//    id("musicplayer.android.testing")
 
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.protobuf)
 }
 
+kotlin {
+    androidTarget {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = JavaVersion.VERSION_17.toString()
+            }
+        }
+    }
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+        }
+        commonTest.dependencies {
+        }
+    }
+}
+
 android {
+    defaultConfig.apply {
+        minSdk = 24
+    }
+
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
     namespace = "com.andannn.melodify.core.datastore"
 
     defaultConfig {
@@ -17,14 +55,14 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+
     implementation(libs.androidx.datastore)
     implementation(libs.protobuf.kotlin.lite)
 }
 
-// TODO: Remove this after problem solved.
-// Could not build this module when upgrade ksp to 1.9.22-1.0.17.
-// find this workaround in github:
-// https://github.com/google/ksp/issues/1590
 protobuf {
     protoc {
         artifact = libs.protobuf.protoc.get().toString()
@@ -42,13 +80,3 @@ protobuf {
         }
     }
 }
-//androidComponents {
-//    onVariants(selector().all()) { variant ->
-//        afterEvaluate {
-//            val capName = variant.name.capitalized()
-//            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
-//                setSource(tasks.getByName("generate${capName}Proto").outputs)
-//            }
-//        }
-//    }
-//}

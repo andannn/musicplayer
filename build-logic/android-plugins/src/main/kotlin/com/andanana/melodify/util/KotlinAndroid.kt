@@ -52,7 +52,6 @@ internal fun Project.configureKotlinAndroid(
         }
     }
 
-
     // kotlin extensions
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
