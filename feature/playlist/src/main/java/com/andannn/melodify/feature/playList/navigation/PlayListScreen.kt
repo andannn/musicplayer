@@ -42,7 +42,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.feature.common.component.ExtraPaddingBottom
 import com.andannn.melodify.feature.common.component.ListTileItemView
@@ -52,11 +51,12 @@ import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PlayListScreen(
     modifier: Modifier = Modifier,
-    viewModel: PlayListViewModel = hiltViewModel(),
+    viewModel: PlayListViewModel = koinViewModel(),
     onBackPressed: () -> Unit,
 ) {
     val uiState by viewModel.state.collectAsState()

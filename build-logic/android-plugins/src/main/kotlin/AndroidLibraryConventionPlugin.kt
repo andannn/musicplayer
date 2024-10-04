@@ -1,3 +1,4 @@
+import com.andanana.melodify.util.configureKoinAndroid
 import com.andanana.melodify.util.configureKotlinAndroid
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
@@ -14,6 +15,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this)
+                configureKoinAndroid(this)
                 defaultConfig.targetSdk = 34
             }
         }

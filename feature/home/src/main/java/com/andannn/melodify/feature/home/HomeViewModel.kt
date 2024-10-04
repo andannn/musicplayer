@@ -10,7 +10,6 @@ import com.andannn.melodify.core.domain.repository.MediaContentObserverRepositor
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,10 +34,7 @@ sealed interface HomeUiEvent {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
-class HomeViewModel
-@Inject
-constructor(
+class HomeViewModel(
     private val mediaControllerRepository: MediaControllerRepository,
     private val globalUiController: GlobalUiController,
     private val mediaContentObserverRepository: MediaContentObserverRepository,

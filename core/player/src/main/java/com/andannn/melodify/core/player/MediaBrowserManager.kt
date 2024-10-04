@@ -2,7 +2,6 @@ package com.andannn.melodify.core.player
 
 import android.app.Application
 import android.content.ComponentName
-import android.util.Log
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
@@ -10,8 +9,6 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.jvm.Throws
 
 private const val TAG = "MediaBrowserManager"
@@ -25,10 +22,7 @@ interface MediaBrowserManager {
     fun disConnect()
 }
 
-@Singleton
-class MediaBrowserManagerImpl
-@Inject
-constructor(
+class MediaBrowserManagerImpl(
     private val application: Application,
 ) : MediaBrowserManager {
     private var _mediaBrowser: MediaBrowser? = null

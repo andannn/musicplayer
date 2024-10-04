@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("musicplayer.android.library")
-    id("musicplayer.android.hilt")
     id("musicplayer.android.testing")
 
     alias(libs.plugins.protobuf)
@@ -43,13 +42,13 @@ protobuf {
         }
     }
 }
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val capName = variant.name.capitalized()
-            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
-                setSource(tasks.getByName("generate${capName}Proto").outputs)
-            }
-        }
-    }
-}
+//androidComponents {
+//    onVariants(selector().all()) { variant ->
+//        afterEvaluate {
+//            val capName = variant.name.capitalized()
+//            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
+//                setSource(tasks.getByName("generate${capName}Proto").outputs)
+//            }
+//        }
+//    }
+//}

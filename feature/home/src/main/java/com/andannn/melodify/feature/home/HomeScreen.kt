@@ -46,7 +46,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.andannn.melodify.common.R
 import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
@@ -61,11 +60,12 @@ import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = koinViewModel(),
     onNavigateToPlayList: (id: String, source: MediaListSource) -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItemModel) {

@@ -32,7 +32,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 internal fun Project.configureKotlinAndroid(
     commonExtension: CommonExtension<*, *, *, *, *>,
 ) {
-
     // android extensions
     commonExtension.apply {
         defaultConfig.apply {

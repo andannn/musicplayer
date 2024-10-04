@@ -8,8 +8,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -36,10 +34,7 @@ interface SleepTimerController : SleepTimeCounterProvider {
     fun cancelTimer()
 }
 
-@Singleton
-class SleepTimerControllerImpl
-@Inject
-constructor() : SleepTimerController, CoroutineScope {
+class SleepTimerControllerImpl : SleepTimerController, CoroutineScope {
     private val _counterState = MutableStateFlow<SleepTimeCounterState>(SleepTimeCounterState.Idle)
 
     private var _countingJob: Job? = null
