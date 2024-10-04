@@ -12,7 +12,6 @@ import com.andannn.melodify.core.domain.model.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
 import com.andannn.melodify.feature.common.drawer.SheetModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 sealed interface PlayerUiEvent {
     data object OnFavoriteButtonClick : PlayerUiEvent
@@ -57,10 +55,7 @@ sealed interface PlayerUiEvent {
 
 private const val TAG = "PlayerStateViewModel"
 
-@HiltViewModel
-class PlayerStateViewModel
-@Inject
-constructor(
+class PlayerStateViewModel(
     private val mediaControllerRepository: MediaControllerRepository,
     private val lyricRepository: LyricRepository,
     private val playerStateRepository: PlayerStateRepository,

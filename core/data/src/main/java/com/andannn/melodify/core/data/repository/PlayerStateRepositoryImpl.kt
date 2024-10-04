@@ -9,13 +9,8 @@ import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.player.PlayerWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PlayerStateRepositoryImpl
-@Inject
-constructor(
+class PlayerStateRepositoryImpl(
     private val playerWrapper: PlayerWrapper,
 ) : PlayerStateRepository {
     override val currentPositionMs: Long

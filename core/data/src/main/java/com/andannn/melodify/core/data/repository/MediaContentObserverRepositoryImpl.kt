@@ -6,21 +6,15 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val TAG = "MediaContentObserverRepository"
 
-@Singleton
-class MediaContentObserverRepositoryImpl
-@Inject
-constructor(
-    @ApplicationContext context: Context,
+class MediaContentObserverRepositoryImpl(
+    context: Context,
 ) : MediaContentObserverRepository {
     private val contentResolver = context.contentResolver
 

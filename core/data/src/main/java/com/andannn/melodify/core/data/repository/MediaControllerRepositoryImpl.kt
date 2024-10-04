@@ -21,17 +21,12 @@ import com.andannn.melodify.core.player.timer.SleepTimerController
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.guava.await
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 private const val TAG = "MediaControllerRepository"
 
-@Singleton
-class MediaControllerRepositoryImpl
-@Inject
-constructor(
+internal class MediaControllerRepositoryImpl(
     private val mediaBrowserManager: MediaBrowserManager,
     private val sleepTimerController: SleepTimerController,
 ) : MediaControllerRepository {

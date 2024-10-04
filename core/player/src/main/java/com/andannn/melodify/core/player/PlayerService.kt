@@ -18,23 +18,19 @@ import com.andannn.melodify.core.player.timer.SleepTimerController
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class PlayerService : MediaLibraryService(), CoroutineScope {
-    @Inject
-    lateinit var playerWrapper: PlayerWrapper
+    private val playerWrapper: PlayerWrapper by inject()
 
-    @Inject
-    lateinit var sleepCounterController: SleepTimerController
+    private val sleepCounterController: SleepTimerController  by inject()
 
     private lateinit var mediaLibrarySession: MediaLibrarySession
 

@@ -1,7 +1,6 @@
 plugins {
     id("musicplayer.android.application")
     id("musicplayer.android.application.compose")
-    id("musicplayer.android.hilt")
     id("musicplayer.android.testing")
 }
 
@@ -80,6 +79,10 @@ tasks.named("preBuild") {
 
 dependencies {
     implementation(project(":core:domain"))
+    implementation(project(":core:data"))
+    implementation(project(":core:datastore"))
+    implementation(project(":core:database"))
+    implementation(project(":core:network"))
     implementation(project(":core:player"))
 
     implementation(project(":feature:common"))
@@ -95,7 +98,6 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     // Navigation
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.compose.material3)

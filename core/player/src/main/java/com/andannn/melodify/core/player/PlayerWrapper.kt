@@ -13,8 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.onStart
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val TAG = "PlayerRepository"
 
@@ -42,11 +40,7 @@ interface PlayerWrapper {
     fun observePlayMode(): StateFlow<Int>
 }
 
-@Singleton
-class PlayerWrapperImpl
-@Inject
-constructor(
-) : PlayerWrapper {
+internal class PlayerWrapperImpl : PlayerWrapper {
     private var _player: Player? = null
 
     private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Idle)
@@ -218,7 +212,7 @@ constructor(
 
     override fun observePlayerState(): StateFlow<PlayerState> = _playerStateFlow
     override val playList: List<MediaItem>
-        get()  {
+        get() {
             val timeline = _player?.currentTimeline ?: return emptyList()
             return MutableList(timeline.windowCount) { index ->
                 timeline.getWindow(index, Timeline.Window()).mediaItem

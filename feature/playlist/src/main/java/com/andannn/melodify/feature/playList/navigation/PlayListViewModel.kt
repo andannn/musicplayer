@@ -11,7 +11,6 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 sealed interface PlayListEvent {
     data class OnStartPlayAtIndex(
@@ -39,10 +37,7 @@ sealed interface PlayListEvent {
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
-class PlayListViewModel
-@Inject
-constructor(
+class PlayListViewModel(
     savedStateHandle: SavedStateHandle,
     private val contentObserverRepository: MediaContentObserverRepository,
     playerStateRepository: PlayerStateRepository,

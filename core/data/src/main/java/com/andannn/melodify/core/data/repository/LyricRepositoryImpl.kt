@@ -8,15 +8,10 @@ import com.andannn.melodify.core.network.LrclibService
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val TAG = "LyricRepository"
 
-@Singleton
-class LyricRepositoryImpl
-@Inject
-constructor(
+class LyricRepositoryImpl(
     private val lyricDao: LyricDao,
     private val lyricLocalDataSource: LrclibService
 ) : LyricRepository {

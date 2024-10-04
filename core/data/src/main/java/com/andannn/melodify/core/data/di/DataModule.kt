@@ -10,28 +10,12 @@ import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
 import com.andannn.melodify.core.data.repository.UserPreferenceRepositoryImpl
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface DataModule {
-
-    @Binds
-    fun bindsPlayerStateRepository(musicRepository: PlayerStateRepositoryImpl): PlayerStateRepository
-
-    @Binds
-    fun bindsSmpPreferenceRepository(musicRepository: UserPreferenceRepositoryImpl): UserPreferenceRepository
-
-    @Binds
-    fun bindsMediaContentsRepository(mediaContentsRepository: MediaControllerRepositoryImpl): MediaControllerRepository
-
-    @Binds
-    fun bindsMediaContentObserverRepository(mediaContentsRepository: MediaContentObserverRepositoryImpl): MediaContentObserverRepository
-
-    @Binds
-    fun bindsLyricRepository(lyricRepository: LyricRepositoryImpl): LyricRepository
+val dataModule = module {
+    single<PlayerStateRepository> { PlayerStateRepositoryImpl(get()) }
+    single<UserPreferenceRepository> { UserPreferenceRepositoryImpl(get()) }
+    single<MediaControllerRepository> { MediaControllerRepositoryImpl(get(), get()) }
+    single<MediaContentObserverRepository> { MediaContentObserverRepositoryImpl(get()) }
+    single<LyricRepository> { LyricRepositoryImpl(get(), get()) }
 }
-

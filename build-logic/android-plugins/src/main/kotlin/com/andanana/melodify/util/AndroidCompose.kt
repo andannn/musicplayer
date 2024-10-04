@@ -19,6 +19,8 @@ internal fun Project.configureAndroidCompose(commonExtension: CommonExtension<*,
             add("implementation", platform(bom))
             add("androidTestImplementation", platform(bom))
 
+            add("implementation", libs.findLibrary("koin.androidx.compose").get())
+
             add("lintChecks", libs.findLibrary("compose.lint.checks").get())
 
             add("implementation", libs.findLibrary("androidx.compose.ui.tooling.preview").get())

@@ -1,3 +1,4 @@
+import com.andanana.melodify.util.configureKoinAndroid
 import com.andanana.melodify.util.configureKotlinAndroid
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
@@ -16,6 +17,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
+                configureKoinAndroid(this)
                 defaultConfig.targetSdk = 34
             }
         }

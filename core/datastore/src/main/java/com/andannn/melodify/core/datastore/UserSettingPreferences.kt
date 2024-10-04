@@ -2,11 +2,8 @@ package com.andannn.melodify.core.datastore
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class UserSettingPreferences
-@Inject
-constructor(
+class UserSettingPreferences(
     private val userPreferences: DataStore<UserPreferences>,
 ) {
     val userDate =

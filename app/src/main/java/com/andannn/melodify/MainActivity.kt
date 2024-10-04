@@ -13,7 +13,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +25,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.andannn.melodify.feature.common.dialog.ConnectFailedAlertDialog
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "MainActivity"
 private val runTimePermissions =
@@ -39,9 +38,8 @@ private val runTimePermissions =
         listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val mainViewModel: MainActivityViewModel by viewModels()
+    private val mainViewModel: MainActivityViewModel  by viewModel()
 
     private lateinit var intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 

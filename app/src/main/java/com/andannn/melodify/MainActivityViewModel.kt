@@ -6,23 +6,18 @@ import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.feature.common.BottomSheetStateProvider
 import com.andannn.melodify.feature.common.DeleteMediaItemEventProvider
 import com.andannn.melodify.core.player.MediaBrowserManager
-import com.andannn.melodify.core.player.timer.SleepTimeCounterProvider
-import com.andannn.melodify.core.player.timer.SleepTimerController
 import com.andannn.melodify.feature.common.UiEvent
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 import timber.log.Timber
-import javax.inject.Inject
 
 private const val TAG = "MainActivityViewModel"
 
-@HiltViewModel
-class MainActivityViewModel
-@Inject
-constructor(
+class MainActivityViewModel(
     private val controller: GlobalUiController,
     private val mediaBrowserManager: MediaBrowserManager,
 ) : BottomSheetStateProvider by controller,

@@ -1,6 +1,5 @@
 plugins {
     id("musicplayer.android.library")
-    id("musicplayer.android.hilt")
     id("musicplayer.android.library.compose")
 }
 
@@ -20,6 +19,5 @@ dependencies {
     implementation(libs.androidx.compose.material.iconsExtended)
 
     // Navigation
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
 }

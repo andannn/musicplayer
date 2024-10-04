@@ -1,25 +1,15 @@
 package com.andannn.melodify.core.network.di
 
-import android.app.Application
 import com.andannn.melodify.core.network.LrclibService
 import com.andannn.melodify.core.network.LrclibServiceImpl
 import com.andannn.melodify.core.network.lrclibResourceClientBuilder
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import org.koin.android.ext.koin.androidApplication
+import org.koin.dsl.module
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ServiceModule {
-    @Provides
-    @Singleton
-    fun providesHttpClient(
-        application: Application
-    ): LrclibService {
-        return LrclibServiceImpl(
-            application,
+val serviceModule = module {
+    single<LrclibService> {
+        LrclibServiceImpl(
+            androidApplication(),
             lrclibResourceClientBuilder(),
         )
     }
