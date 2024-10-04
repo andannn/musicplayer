@@ -42,5 +42,9 @@ gradlePlugin {
             id = "musicplayer.android.serialization"
             implementationClass = "AndroidSerializationPlugin"
         }
+        register("kotlinMultiplatformLibrary") {
+            id = "melodify.kmp.library"
+            implementationClass = "KotlinMultiplatformLibraryConventionPlugin"
+        }
     }
 }
