@@ -39,7 +39,7 @@ reorderable = "2.3.3"
 kotlinxSerializationJson = "1.7.3"
 ktor = "2.3.12"
 timber = "5.0.1"
-koin-bom = "3.5.3"
+koin-bom = "4.0.0"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
