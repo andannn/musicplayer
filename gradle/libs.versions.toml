@@ -85,7 +85,8 @@ material-color-utilities-android = { module = "com.materialkolor:material-color-
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
-androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore" }
+datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore" }
+datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "androidxDatastore" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3" }

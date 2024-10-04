@@ -29,8 +29,13 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.datastore)
+            implementation(libs.datastore.core.okio)
         }
-        commonTest.dependencies {
+
+        androidMain.dependencies {
         }
     }
 }
@@ -59,7 +64,7 @@ dependencies {
     implementation(libs.koin.core)
     implementation(libs.koin.android)
 
-    implementation(libs.androidx.datastore)
+    implementation(libs.datastore)
     implementation(libs.protobuf.kotlin.lite)
 }
 
