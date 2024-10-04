@@ -1,5 +1,5 @@
 [versions]
-composeLintChecks = "1.3.1"
+composeLintChecks = "1.4.1"
 firebaseBom = "33.3.0"
 kotlinxCollectionsImmutable = "0.3.8"
 ksp = "2.0.20-1.0.25"
