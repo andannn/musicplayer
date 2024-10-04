@@ -3,14 +3,14 @@ package com.andannn.melodify.feature.playList.navigation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
-import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.SheetItem
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
+import com.andannn.melodify.feature.common.drawer.SheetModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface PlayListEvent {
@@ -35,8 +36,6 @@ sealed interface PlayListEvent {
     ) : PlayListEvent
 
     data object OnHeaderOptionClick : PlayListEvent
-
-    data class OnDismissRequest(val item: SheetItem?) : PlayListEvent
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -48,7 +47,7 @@ constructor(
     private val contentObserverRepository: MediaContentObserverRepository,
     playerStateRepository: PlayerStateRepository,
     private val mediaControllerRepository: MediaControllerRepository,
-    private val bottomSheetController: BottomSheetController,
+    private val globalUiController: GlobalUiController,
 ) : ViewModel() {
     private val id =
         savedStateHandle.get<String>(ID) ?: ""
@@ -124,18 +123,20 @@ constructor(
             }
 
             is PlayListEvent.OnOptionClick -> {
-                bottomSheetController.onRequestShowSheet(event.mediaItem)
-            }
-
-            is PlayListEvent.OnDismissRequest -> {
-                with(bottomSheetController) {
-                    viewModelScope.onDismissRequest(event.item)
+                viewModelScope.launch {
+                    globalUiController.updateBottomSheet(
+                        SheetModel.MediaOptionSheet.fromMediaModel(event.mediaItem)
+                    )
                 }
             }
 
             PlayListEvent.OnHeaderOptionClick -> {
-                state.value.headerInfoItem?.let {
-                    bottomSheetController.onRequestShowSheet(it)
+                viewModelScope.launch {
+                    state.value.headerInfoItem?.let {
+                        globalUiController.updateBottomSheet(
+                            SheetModel.MediaOptionSheet.fromMediaModel(it)
+                        )
+                    }
                 }
             }
         }

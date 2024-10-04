@@ -4,6 +4,8 @@ import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.PlayMode
+import kotlinx.coroutines.flow.Flow
+import kotlin.time.Duration
 
 interface MediaControllerRepository {
     suspend fun getAllMediaItems(): List<AudioItemModel>
@@ -45,4 +47,12 @@ interface MediaControllerRepository {
     fun moveMediaItem(from: Int, to: Int)
 
     fun removeMediaItem(index: Int)
+
+    fun isCounting(): Boolean
+
+    fun observeRemainTime(): Flow<Duration>
+
+    fun startSleepTimer(duration: Duration)
+
+    fun cancelSleepTimer()
 }

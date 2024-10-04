@@ -28,7 +28,7 @@ constructor(
         get() = playerWrapper.playingIndexInQueue
 
     override val playListQueue: List<AudioItemModel>
-        get() = playerWrapper.observePlayListQueue().value.map {
+        get() = playerWrapper.playList.map {
             it.toAppItem() as? AudioItemModel ?: error("invalid")
         }
 

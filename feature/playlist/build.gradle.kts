@@ -13,15 +13,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:designsystem"))
     implementation(project(":core:domain"))
     implementation(project(":feature:common"))
 
-    implementation(libs.androidx.core.ktx)
-
-    implementation(libs.kotlinx.coroutines.guava)
-
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.iconsExtended)
 
     // Navigation
     implementation(libs.androidx.hilt.navigation.compose)

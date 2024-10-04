@@ -9,4 +9,13 @@
     <string name="play_next">Nächste abspielen</string>
     <string name="play_queue">Nächste</string>
     <string name="lyrics">LYRICS</string>
+    <string name="play">Abspielen</string>
+    <string name="shuffle">Mischen</string>
+    <string name="track_count">%s Lieder</string>
+    <string name="sleep_timer">Schlafzeit hinzufügen</string>
+    <string name="end_of_song">Ende des Liedes</string>
+    <string name="number_hours">%s Stunden</string>
+    <string name="number_minutes">%s Minuten</string>
+    <string name="number_seconds">%s Sekunden</string>
+    <string name="cancel_timer">Timer abbrechen</string>
 </resources>

@@ -7,11 +7,11 @@ import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.PlayerStateRepository
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.common.drawer.BottomSheetController
-import com.andannn.melodify.common.drawer.SheetItem
+import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.core.domain.model.LyricModel
 import com.andannn.melodify.core.domain.repository.LyricRepository
 import com.andannn.melodify.core.domain.util.combine
+import com.andannn.melodify.feature.common.drawer.SheetModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -44,8 +44,6 @@ sealed interface PlayerUiEvent {
 
     data object OnShuffleButtonClick : PlayerUiEvent
 
-    data class OnDismissDrawerRequest(val item: SheetItem?) : PlayerUiEvent
-
     data class OnProgressChange(val progress: Float) : PlayerUiEvent
 
     data class OnSwapPlayQueue(val from: Int, val to: Int) : PlayerUiEvent
@@ -66,7 +64,7 @@ constructor(
     private val mediaControllerRepository: MediaControllerRepository,
     private val lyricRepository: LyricRepository,
     private val playerStateRepository: PlayerStateRepository,
-    private val bottomSheetController: BottomSheetController
+    private val globalUiController: GlobalUiController
 ) : ViewModel() {
     private val interactingMusicItem = playerStateRepository.playingMediaStateFlow
     private val playerStateFlow = playerStateRepository
@@ -150,7 +148,11 @@ constructor(
             }
 
             is PlayerUiEvent.OnOptionIconClick -> {
-                bottomSheetController.onRequestShowSheet(event.mediaItem)
+                viewModelScope.launch {
+                    globalUiController.updateBottomSheet(
+                        SheetModel.PlayerOptionSheet(event.mediaItem)
+                    )
+                }
             }
 
             is PlayerUiEvent.OnProgressChange -> {
@@ -159,12 +161,6 @@ constructor(
                         duration.times(event.progress).toLong()
                     }
                 seekToTime(time)
-            }
-
-            is PlayerUiEvent.OnDismissDrawerRequest -> {
-                with(bottomSheetController) {
-                    viewModelScope.onDismissRequest(event.item)
-                }
             }
 
             is PlayerUiEvent.OnSwapPlayQueue -> {

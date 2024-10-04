@@ -9,4 +9,13 @@
     <string name="play_next">다음 재생</string>
     <string name="play_queue">재생 목록</string>
     <string name="lyrics">가사</string>
+    <string name="play">재생</string>
+    <string name="shuffle">셔플</string>
+    <string name="track_count">%s 곡</string>
+    <string name="sleep_timer">슬립 타이머</string>
+    <string name="end_of_song">노래 끝</string>
+    <string name="number_hours">%s 시간</string>
+    <string name="number_minutes">%s 분</string>
+    <string name="number_seconds">%s 초</string>
+    <string name="cancel_timer">타이머 취소</string>
 </resources>
