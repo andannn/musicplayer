@@ -86,6 +86,6 @@ enum class SheetOptionItem(
     ),
     SLEEP_TIMER(
         smpIcon = SimpleMusicIcons.Timer,
-        text = R.string.add_to_queue,
+        text = R.string.sleep_timer,
     ),
 }

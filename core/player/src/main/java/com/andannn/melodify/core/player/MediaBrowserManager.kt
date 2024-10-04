@@ -9,6 +9,7 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.withTimeout
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.jvm.Throws
@@ -38,11 +39,11 @@ constructor(
         }
 
     override suspend fun connect() {
-        Log.d(TAG, "connect: start")
+        Timber.tag(TAG).d("connect: start")
         _mediaBrowser = withTimeout(5000) {
             providerMediaBrowser(application).await()
         }
-        Log.d(TAG, "connect: finish")
+        Timber.tag(TAG).d("connect: finish")
     }
 
     override fun disConnect() {

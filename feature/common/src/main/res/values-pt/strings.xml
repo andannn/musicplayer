@@ -12,4 +12,10 @@
     <string name="play">Tocar</string>
     <string name="shuffle">Aleatório</string>
     <string name="track_count">%s músicas</string>
+    <string name="sleep_timer">Temporizador de desligamento</string>
+    <string name="end_of_song">Fim da música</string>
+    <string name="number_hours">%s horas</string>
+    <string name="number_minutes">%s minutos</string>
+    <string name="number_seconds">%s segundos</string>
+    <string name="cancel_timer">Cancelar temporizador</string>
 </resources>

@@ -106,6 +106,8 @@ internal class GlobalUiControllerImpl(
 
             UiEvent.OnCancelTimer -> {
                 mediaControllerRepository.cancelSleepTimer()
+                cancelCollectingRemainTime()
+                closeSheet()
             }
 
             is UiEvent.OnDismissSheet -> {

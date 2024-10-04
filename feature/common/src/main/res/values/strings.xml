@@ -12,4 +12,10 @@
     <string name="play">Play</string>
     <string name="shuffle">Shuffle</string>
     <string name="track_count">%s tracks</string>
+    <string name="sleep_timer">Sleep Timer</string>
+    <string name="end_of_song">End of song</string>
+    <string name="number_hours">%s hours</string>
+    <string name="number_minutes">%s minutes</string>
+    <string name="number_seconds">%s seconds</string>
+    <string name="cancel_timer">Cancel Timer</string>
 </resources>

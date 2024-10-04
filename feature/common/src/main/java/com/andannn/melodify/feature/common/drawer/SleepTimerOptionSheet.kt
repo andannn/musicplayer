@@ -22,9 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.andannn.melodify.common.R
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
+import com.andannn.melodify.feature.common.util.durationString
 import kotlinx.coroutines.CoroutineScope
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -75,8 +78,10 @@ private fun SleepTimerOptionSheetContent(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                modifier = Modifier.padding(8.dp),
-                text = "SleepTimer",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                text = stringResource(id = R.string.sleep_timer),
                 style = MaterialTheme.typography.titleLarge,
             )
 
@@ -84,7 +89,11 @@ private fun SleepTimerOptionSheetContent(
 
             SleepTimerOption.entries.forEach {
                 OptionItem(
-                    text = if (it != SleepTimerOption.SONG_FINISH) it.timeMinutes.toString() else "when song finish",
+                    text = if (it != SleepTimerOption.SONG_FINISH) {
+                        durationString(it.timeMinutes!!)
+                    } else {
+                        stringResource(id = R.string.end_of_song)
+                    },
                     onClick = {
                         onSelectOption.invoke(it)
                     },

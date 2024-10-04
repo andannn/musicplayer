@@ -1,30 +1,34 @@
 package com.andannn.melodify.feature.common.drawer
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Close
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.andannn.melodify.common.R
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
-import kotlinx.coroutines.CoroutineScope
+import com.andannn.melodify.feature.common.util.durationString
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SleepTimerCountingBottomSheet(
     remain: Duration,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     onRequestDismiss: () -> Unit = {},
     onCancelTimer: () -> Unit = {},
 ) {
@@ -39,9 +43,6 @@ fun SleepTimerCountingBottomSheet(
     ) {
         SleepTimerCounterSheetContent(
             remain = remain,
-            onClickClose = {
-                onRequestDismiss.invoke()
-            },
             onClickCancel = {
                 onCancelTimer.invoke()
             }
@@ -53,16 +54,47 @@ fun SleepTimerCountingBottomSheet(
 private fun SleepTimerCounterSheetContent(
     remain: Duration,
     modifier: Modifier = Modifier,
-    onClickClose: () -> Unit = {},
     onClickCancel: () -> Unit = {}
 ) {
     Surface(modifier = modifier) {
         Column {
-            Text(remain.toString())
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                text = stringResource(id = R.string.sleep_timer),
+                style = MaterialTheme.typography.titleLarge,
+            )
 
-            IconButton(onClick = onClickCancel) {
-                Icon(Icons.Sharp.Close, "")
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally),
+            ) {
+                Text(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    text = durationString(duration = remain),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedButton(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally),
+                onClick = onClickCancel,
+            ) {
+                Text(
+                    text = stringResource(id = R.string.cancel_timer),
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -73,7 +105,7 @@ private fun SleepTimerCounterSheetContent(
 private fun SleepTimerCounterSheetContentPreview() {
     MelodifyTheme {
         SleepTimerCounterSheetContent(
-            remain = 2.minutes
+            remain = 121234.seconds
         )
     }
 }

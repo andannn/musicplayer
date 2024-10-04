@@ -42,6 +42,7 @@ private val runTimePermissions =
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainActivityViewModel by viewModels()
+
     private lateinit var intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 
     override fun onCreate(savedInstanceState: Bundle?) {
