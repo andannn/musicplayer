@@ -1,21 +1,13 @@
 package com.andannn.melodify.core.datastore
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.DataStoreFactory
-import androidx.datastore.core.okio.OkioStorage
-import okio.FileSystem
-import okio.Path
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import okio.Path.Companion.toPath
 
-fun createDataStore(
-    producePath: () -> Path,
-    fileSystem: FileSystem,
-    ): DataStore<UserPreferences> =
-    DataStoreFactory.create(
-        storage = OkioStorage(
-            fileSystem = fileSystem,
-            producePath = producePath,
-            serializer = UserPreferencesSerializer,
-        ),
+fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath(
+        produceFile = { producePath().toPath() }
     )
 
 internal const val dataStoreFileName = "dice.preferences_pb"

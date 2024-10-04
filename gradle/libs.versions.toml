@@ -86,6 +86,7 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
 datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDatastore" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 datastore-core-okio = { group = "androidx.datastore", name = "datastore-core-okio", version.ref = "androidxDatastore" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }

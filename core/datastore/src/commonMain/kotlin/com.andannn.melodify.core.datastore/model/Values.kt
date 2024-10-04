@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.datastore.values
+package com.andannn.melodify.core.datastore.model
 
 object PlatModeValues {
     /**

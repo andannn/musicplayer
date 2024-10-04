@@ -1,8 +1,8 @@
 package com.andannn.melodify.core.data.repository
 
 import com.andannn.melodify.core.datastore.UserSettingPreferences
-import com.andannn.melodify.core.datastore.values.PlatModeValues
-import com.andannn.melodify.core.datastore.values.PreviewModeValues
+import com.andannn.melodify.core.datastore.model.PlatModeValues
+import com.andannn.melodify.core.datastore.model.PreviewModeValues
 import com.andannn.melodify.core.domain.model.MediaPreviewMode
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.UserSetting
