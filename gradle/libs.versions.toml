@@ -40,6 +40,7 @@ kotlinxSerializationJson = "1.7.3"
 ktor = "2.3.12"
 timber = "5.0.1"
 koin-bom = "3.5.3"
+napierVersion = "1.4.1"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -109,6 +110,8 @@ koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+napier = { group = "io.github.aakira", name = "napier", version.ref = "napierVersion" }
+
 
 # dependecy in build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

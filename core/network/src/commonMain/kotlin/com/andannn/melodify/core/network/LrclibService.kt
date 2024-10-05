@@ -1,14 +1,11 @@
 package com.andannn.melodify.core.network
 
-import android.app.Application
-import android.os.Build
 import com.andannn.melodify.core.network.model.LyricData
 import com.andannn.melodify.core.network.resources.ApiRes
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.get
-import io.ktor.client.request.header
 
 interface LrclibService {
     /**
@@ -28,26 +25,26 @@ interface LrclibService {
 }
 
 internal class LrclibServiceImpl(
-    application: Application,
     httpClient: HttpClient,
 ) : LrclibService {
-
-    private val userAgent: String
-
-    init {
-        val packageManager = application.packageManager
-        val packageName = application.packageName
-
-        val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-        val packageInfo = packageManager.getPackageInfo(packageName, 0)
-        val appLabel = packageManager.getApplicationLabel(applicationInfo)
-        userAgent =
-            "${appLabel}/${packageInfo.versionName} (${Build.MANUFACTURER}; ${Build.MODEL}; ${Build.VERSION.RELEASE}) // https://github.com/andannn/Melodify"
-    }
+//
+//    private val userAgent: String
+//
+//    init {
+//        val packageManager = application.packageManager
+//        val packageName = application.packageName
+//
+//        val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+//        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+//        val appLabel = packageManager.getApplicationLabel(applicationInfo)
+//        userAgent =
+//            "${appLabel}/${packageInfo.versionName} (${Build.MANUFACTURER}; ${Build.MODEL}; ${Build.VERSION.RELEASE}) // https://github.com/andannn/Melodify"
+//    }
 
     private val httpClient = httpClient.config {
         defaultRequest {
-            header("User-Agent", userAgent)
+//            header("User-Agent", userAgent)
+            url("https://lrclib.net/")
         }
     }
 
