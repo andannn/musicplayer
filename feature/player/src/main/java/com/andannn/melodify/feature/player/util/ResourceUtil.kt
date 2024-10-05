@@ -4,7 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.RepeatOn
 import androidx.compose.material.icons.rounded.RepeatOneOn
-import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.common.R
 import com.andannn.melodify.feature.player.ui.shrinkable.bottom.SheetTab
 

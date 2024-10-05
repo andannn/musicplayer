@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
 import kotlinx.coroutines.flow.Flow
 

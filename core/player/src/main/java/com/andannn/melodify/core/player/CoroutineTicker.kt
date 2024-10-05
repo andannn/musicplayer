@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.domain.model.util
+package com.andannn.melodify.core.player
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

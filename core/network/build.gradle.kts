@@ -3,12 +3,11 @@ plugins {
     alias(libs.plugins.serialization)
 }
 
-kotlin {
-    @Suppress("UnstableApiUsage")
-    androidLibrary {
-        namespace = "com.andannn.melodify.core.datastore"
-    }
+android {
+    namespace = "com.andannn.melodify.core.network"
+}
 
+kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.ktor.client.core)

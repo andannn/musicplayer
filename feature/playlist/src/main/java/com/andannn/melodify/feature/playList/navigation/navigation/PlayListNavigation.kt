@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.andannn.melodify.core.domain.model.MediaListSource
+import com.andannn.melodify.core.data.model.MediaListSource
 
 const val MUSIC_LIST_ROUTE = "music_list_route"
 const val SOURCE = "source"

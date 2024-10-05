@@ -1,6 +1,6 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.LyricModel
+import com.andannn.melodify.core.data.model.LyricModel
 import kotlinx.coroutines.flow.Flow
 
 interface LyricRepository {

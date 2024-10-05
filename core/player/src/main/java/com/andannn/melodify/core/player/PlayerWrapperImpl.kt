@@ -4,8 +4,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
-import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.core.domain.model.util.CoroutineTicker
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -178,6 +176,8 @@ internal class PlayerWrapperImpl : PlayerWrapper {
 
     override val currentPositionMs: Long
         get() = _player?.currentPosition ?: 0
+    override val currentDurationMs: Long
+        get() = _player?.duration ?: 0
 
     override val playerState: PlayerState
         get() = _playerStateFlow.value

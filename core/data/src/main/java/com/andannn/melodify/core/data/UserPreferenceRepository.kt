@@ -1,8 +1,8 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.MediaPreviewMode
-import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.core.domain.model.UserSetting
+import com.andannn.melodify.core.data.model.MediaPreviewMode
+import com.andannn.melodify.core.data.model.PlayMode
+import com.andannn.melodify.core.data.model.UserSetting
 import kotlinx.coroutines.flow.Flow
 
 interface UserPreferenceRepository {

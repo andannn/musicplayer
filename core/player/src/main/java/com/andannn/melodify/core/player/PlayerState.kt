@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.domain.model
+package com.andannn.melodify.core.player
 
 sealed class PlayerState(
     open val currentPositionMs: Long

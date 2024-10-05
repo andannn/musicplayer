@@ -1,7 +1,7 @@
 package com.andannn.melodify.core.data.util
 
 import com.andannn.melodify.core.database.entity.LyricEntity
-import com.andannn.melodify.core.domain.model.LyricModel
+import com.andannn.melodify.core.data.model.LyricModel
 import com.andannn.melodify.core.network.model.LyricData
 
 fun LyricEntity.toLyricModel(): LyricModel = LyricModel(

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.andannn.melodify.feature.common.component.AutoResizedText
 import com.andannn.melodify.feature.common.component.SmpMainIconButton
 import com.andannn.melodify.feature.common.component.SmpSubIconButton
-import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.util.getIcon

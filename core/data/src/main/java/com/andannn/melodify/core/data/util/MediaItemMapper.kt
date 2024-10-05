@@ -4,11 +4,11 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.andannn.melodify.core.domain.model.AlbumItemModel
-import com.andannn.melodify.core.domain.model.ArtistItemModel
-import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.data.model.AlbumItemModel
+import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.core.player.library.LibraryRootCategory
-import com.andannn.melodify.core.domain.model.MediaItemModel
+import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.player.library.PLAYABLE_MEDIA_ITEM_PREFIX
 import com.andannn.melodify.core.player.util.UNIQUE_ID_KEY
 import com.andannn.melodify.core.player.util.buildMediaItem

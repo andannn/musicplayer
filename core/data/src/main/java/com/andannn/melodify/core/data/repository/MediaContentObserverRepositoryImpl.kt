@@ -5,7 +5,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
+import com.andannn.melodify.core.data.MediaContentObserverRepository
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

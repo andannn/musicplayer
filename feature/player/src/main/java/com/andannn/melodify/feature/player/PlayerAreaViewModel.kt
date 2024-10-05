@@ -2,19 +2,19 @@ package com.andannn.melodify.feature.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.repository.MediaControllerRepository
-import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
-import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.core.domain.model.PlayerState
+import com.andannn.melodify.core.data.util.combine6
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.MediaControllerRepository
+import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
+import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.feature.common.GlobalUiController
-import com.andannn.melodify.core.domain.model.LyricModel
-import com.andannn.melodify.core.domain.repository.LyricRepository
-import com.andannn.melodify.core.domain.util.combine
+import com.andannn.melodify.core.data.model.LyricModel
+import com.andannn.melodify.core.data.LyricRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 sealed interface PlayerUiEvent {
     data object OnFavoriteButtonClick : PlayerUiEvent
@@ -62,12 +61,12 @@ class PlayerStateViewModel(
     private val globalUiController: GlobalUiController
 ) : ViewModel() {
     private val interactingMusicItem = playerStateMonitoryRepository.playingMediaStateFlow
-    private val playerStateFlow = playerStateMonitoryRepository
-        .observePlayerState()
-        .distinctUntilChanged()
-        .onEach {
-            Timber.tag(TAG).d("play state changed $it")
-        }
+    private val playStateFlow = combine(
+        playerStateMonitoryRepository.observeIsPlaying(),
+        playerStateMonitoryRepository.observeProgressFactor(),
+    ) { isPlaying, progress ->
+        PlayState(isPlaying, progress)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val lyricFlow: Flow<LyricState> = interactingMusicItem
@@ -85,9 +84,9 @@ class PlayerStateViewModel(
     private val playListQueueFlow = playerStateMonitoryRepository.playListQueueStateFlow
 
     val playerUiStateFlow =
-        combine(
+        combine6(
             interactingMusicItem,
-            playerStateFlow,
+            playStateFlow,
             playModeFlow,
             isShuffleFlow,
             playListQueueFlow,
@@ -97,7 +96,6 @@ class PlayerStateViewModel(
                 PlayerUiState.Inactive
             } else {
                 PlayerUiState.Active(
-                    state = state,
                     lyric = lyric,
                     mediaItem = interactingMusicItem,
                     duration = mediaControllerRepository.duration ?: 0L,
@@ -105,6 +103,8 @@ class PlayerStateViewModel(
                     isShuffle = isShuffle,
                     isFavorite = false,
                     playListQueue = playListQueue,
+                    isPlaying = state.isPlaying,
+                    progress = state.playProgress,
                 )
             }
         }
@@ -205,6 +205,11 @@ class PlayerStateViewModel(
     }
 }
 
+private data class PlayState(
+    val isPlaying: Boolean,
+    val playProgress: Float
+)
+
 sealed class LyricState {
     data object Loading : LyricState()
 
@@ -215,7 +220,6 @@ sealed class PlayerUiState {
     data object Inactive : PlayerUiState()
 
     data class Active(
-        val state: PlayerState = PlayerState.Idle,
         val lyric: LyricState = LyricState.Loading,
         val isShuffle: Boolean = false,
         val duration: Long = 0L,
@@ -223,11 +227,7 @@ sealed class PlayerUiState {
         val playMode: PlayMode = PlayMode.REPEAT_ALL,
         val mediaItem: AudioItemModel,
         val playListQueue: List<AudioItemModel>,
-    ) : PlayerUiState() {
-        val progress: Float
-            get() = state.currentPositionMs.toFloat().div(duration)
-
-        val isPlaying: Boolean
-            get() = state is PlayerState.Playing
-    }
+        val progress: Float,
+        val isPlaying: Boolean,
+    ) : PlayerUiState()
 }

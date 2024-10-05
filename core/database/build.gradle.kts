@@ -3,12 +3,11 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
-kotlin {
-    @Suppress("UnstableApiUsage")
-    androidLibrary {
-        namespace = "com.andannn.melodify.core.database"
-    }
+android {
+    namespace = "com.andannn.melodify.feature.database"
+}
 
+kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.room.runtime)

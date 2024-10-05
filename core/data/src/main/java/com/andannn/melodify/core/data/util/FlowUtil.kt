@@ -1,11 +1,11 @@
 @file:Suppress("UNCHECKED_CAST")
 
-package com.andannn.melodify.core.domain.util
+package com.andannn.melodify.core.data.util
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
-fun <T1, T2, T3, T4, T5, T6, R> combine(
+fun <T1, T2, T3, T4, T5, T6, R> combine6(
     flow: Flow<T1>,
     flow2: Flow<T2>,
     flow3: Flow<T3>,

@@ -1,4 +1,6 @@
+import com.andanana.melodify.util.configureKotlinAndroid
 import com.andanana.melodify.util.configureKotlinMultiplatform
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -8,12 +10,16 @@ class KotlinMultiplatformLibraryConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             with(pluginManager) {
-                apply("com.android.kotlin.multiplatform.library")
+                apply("com.android.library")
                 apply("org.jetbrains.kotlin.multiplatform")
             }
 
             extensions.configure<KotlinMultiplatformExtension> {
                 configureKotlinMultiplatform(this)
+            }
+
+            extensions.configure<LibraryExtension> {
+                configureKotlinAndroid(this)
             }
         }
     }

@@ -1,7 +1,7 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.PlayMode
 import kotlinx.coroutines.flow.Flow
 import kotlin.time.Duration
 

@@ -2,12 +2,13 @@ package com.andannn.melodify.core.data.repository
 
 import com.andannn.melodify.core.data.util.fromRepeatMode
 import com.andannn.melodify.core.data.util.toAppItem
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.PlayMode
+import com.andannn.melodify.core.player.PlayerState
+import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
 import com.andannn.melodify.core.player.PlayerWrapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 class PlayerStateMonitoryRepositoryImpl(
@@ -15,9 +16,6 @@ class PlayerStateMonitoryRepositoryImpl(
 ) : PlayerStateMonitoryRepository {
     override val currentPositionMs: Long
         get() = playerWrapper.currentPositionMs
-
-    override val playerState: PlayerState
-        get() = playerWrapper.playerState
 
     override val playingIndexInQueue: Int
         get() = playerWrapper.playingIndexInQueue
@@ -46,9 +44,26 @@ class PlayerStateMonitoryRepositoryImpl(
             fromRepeatMode(it)
         }
 
-    override fun observePlayMode() = playerWrapper.observePlayMode().map {
-        fromRepeatMode(it)
-    }
+    override fun observePlayMode() = playerWrapper.observePlayMode()
+        .map {
+            fromRepeatMode(it)
+        }
+        .distinctUntilChanged()
 
-    override fun observePlayerState() = playerWrapper.observePlayerState()
+
+    override fun observeIsPlaying() = playerWrapper.observePlayerState()
+        .map {
+            it is PlayerState.Playing
+        }
+        .distinctUntilChanged()
+
+    override fun observeProgressFactor() = playerWrapper.observePlayerState()
+        .map {
+            if (currentPositionMs == 0L) {
+                return@map 0f
+            } else {
+                it.currentPositionMs.toFloat().div(playerWrapper.currentDurationMs).coerceIn(0f, 1f)
+            }
+        }
+        .distinctUntilChanged()
 }

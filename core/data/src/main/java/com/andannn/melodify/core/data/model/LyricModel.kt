@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.domain.model
+package com.andannn.melodify.core.data.model
 
 data class LyricModel(
     val plainLyrics: String,

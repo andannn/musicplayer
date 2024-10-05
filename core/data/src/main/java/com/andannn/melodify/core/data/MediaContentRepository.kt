@@ -1,8 +1,8 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.AlbumItemModel
-import com.andannn.melodify.core.domain.model.ArtistItemModel
-import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.data.model.AlbumItemModel
+import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
 
 interface MediaContentRepository {
     suspend fun getAllMediaItems(): List<AudioItemModel>

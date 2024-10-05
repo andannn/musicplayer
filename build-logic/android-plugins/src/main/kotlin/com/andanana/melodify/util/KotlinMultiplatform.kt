@@ -1,17 +1,19 @@
 package com.andanana.melodify.util
 
-import com.android.build.api.dsl.androidLibrary
 import org.gradle.api.Project
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
+@ExperimentalKotlinGradlePluginApi
 fun Project.configureKotlinMultiplatform(
     extension: KotlinMultiplatformExtension,
 ) {
     with(extension) {
-        @Suppress("UnstableApiUsage")
-        androidLibrary {
-            compileSdk = 34
-            minSdk = 24
+        compilerOptions {
+            androidTarget {
+                compilerOptions.jvmTarget.set(JvmTarget.JVM_17)
+            }
         }
 
         iosX64()

@@ -1,10 +1,10 @@
 package com.andannn.melodify.feature.common.drawer
 
 import com.andannn.melodify.common.R
-import com.andannn.melodify.core.domain.model.AlbumItemModel
-import com.andannn.melodify.core.domain.model.ArtistItemModel
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.MediaItemModel
+import com.andannn.melodify.core.data.model.AlbumItemModel
+import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.feature.common.icons.SimpleMusicIcons
 import com.andannn.melodify.feature.common.icons.SmpIcon
 import kotlin.time.Duration

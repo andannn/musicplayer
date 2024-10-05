@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState

@@ -36,10 +36,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.andannn.melodify.core.domain.model.AlbumItemModel
-import com.andannn.melodify.core.domain.model.ArtistItemModel
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.MediaItemModel
+import com.andannn.melodify.core.data.model.AlbumItemModel
+import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.feature.common.icons.SmpIcon
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.coroutines.CoroutineScope

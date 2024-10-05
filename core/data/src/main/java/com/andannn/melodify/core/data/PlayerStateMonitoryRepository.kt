@@ -1,15 +1,12 @@
-package com.andannn.melodify.core.domain.repository
+package com.andannn.melodify.core.data
 
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.core.domain.model.PlayerState
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.PlayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerStateMonitoryRepository {
     val currentPositionMs: Long
-
-    val playerState: PlayerState
 
     val playingIndexInQueue: Int
 
@@ -25,5 +22,7 @@ interface PlayerStateMonitoryRepository {
 
     fun observePlayMode(): Flow<PlayMode>
 
-    fun observePlayerState(): Flow<PlayerState>
+    fun observeIsPlaying(): Flow<Boolean>
+
+    fun observeProgressFactor(): Flow<Float>
 }

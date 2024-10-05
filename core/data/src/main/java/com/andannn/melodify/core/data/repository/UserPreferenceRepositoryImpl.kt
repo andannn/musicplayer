@@ -3,10 +3,10 @@ package com.andannn.melodify.core.data.repository
 import com.andannn.melodify.core.datastore.UserSettingPreferences
 import com.andannn.melodify.core.datastore.model.PlatModeValues
 import com.andannn.melodify.core.datastore.model.PreviewModeValues
-import com.andannn.melodify.core.domain.model.MediaPreviewMode
-import com.andannn.melodify.core.domain.model.PlayMode
-import com.andannn.melodify.core.domain.model.UserSetting
-import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
+import com.andannn.melodify.core.data.model.MediaPreviewMode
+import com.andannn.melodify.core.data.model.PlayMode
+import com.andannn.melodify.core.data.model.UserSetting
+import com.andannn.melodify.core.data.UserPreferenceRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map

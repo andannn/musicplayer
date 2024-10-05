@@ -40,9 +40,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.feature.common.component.CircleBorderImage
-import com.andannn.melodify.core.domain.model.PlayMode
+import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.common.util.verticalGradientScrim
 import com.andannn.melodify.feature.player.LyricState

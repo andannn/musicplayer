@@ -13,7 +13,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
+    implementation(project(":core:data"))
     implementation(project(":feature:common"))
 
     implementation(libs.androidx.compose.material3)

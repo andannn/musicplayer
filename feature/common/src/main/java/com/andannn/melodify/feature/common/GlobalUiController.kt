@@ -1,13 +1,13 @@
 package com.andannn.melodify.feature.common
 
 import com.andannn.melodify.core.data.util.uri
-import com.andannn.melodify.core.domain.model.AlbumItemModel
-import com.andannn.melodify.core.domain.model.ArtistItemModel
-import com.andannn.melodify.core.domain.model.AudioItemModel
-import com.andannn.melodify.core.domain.model.MediaItemModel
-import com.andannn.melodify.core.domain.repository.MediaContentRepository
-import com.andannn.melodify.core.domain.repository.MediaControllerRepository
-import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
+import com.andannn.melodify.core.data.model.AlbumItemModel
+import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.MediaItemModel
+import com.andannn.melodify.core.data.MediaContentRepository
+import com.andannn.melodify.core.data.MediaControllerRepository
+import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.common.drawer.SleepTimerOption

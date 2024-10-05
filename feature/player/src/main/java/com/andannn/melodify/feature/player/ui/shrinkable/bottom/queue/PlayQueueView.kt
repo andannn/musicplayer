@@ -17,7 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.andannn.melodify.feature.common.component.ListTileItemView
-import com.andannn.melodify.core.domain.model.AudioItemModel
+import com.andannn.melodify.core.data.model.AudioItemModel
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem

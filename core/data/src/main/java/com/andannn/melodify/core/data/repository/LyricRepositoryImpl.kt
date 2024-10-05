@@ -3,7 +3,7 @@ package com.andannn.melodify.core.data.repository
 import com.andannn.melodify.core.data.util.toLyricEntity
 import com.andannn.melodify.core.data.util.toLyricModel
 import com.andannn.melodify.core.database.LyricDao
-import com.andannn.melodify.core.domain.repository.LyricRepository
+import com.andannn.melodify.core.data.LyricRepository
 import com.andannn.melodify.core.network.LrclibService
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
