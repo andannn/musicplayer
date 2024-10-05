@@ -79,7 +79,9 @@ fun PlayListHeader(
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier = Modifier,
-                        text = stringResource(id = R.string.track_count, trackCount),
+                        text = "stringResource",
+//TODO:
+//                        text = stringResource(id = R.string.track_count, trackCount),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -97,7 +99,8 @@ fun PlayListHeader(
             SmpTextButton(
                 modifier = Modifier.weight(1f),
                 imageVector = Icons.Rounded.PlayArrow,
-                text = stringResource(id = R.string.play),
+// TODO:
+                text = "stringResource(id = R.string.play)",
                 onClick = onPlayAllButtonClick,
             )
             Spacer(modifier = Modifier.width(10.dp))
@@ -109,7 +112,9 @@ fun PlayListHeader(
 
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = stringResource(id = R.string.shuffle),
+                    text = "stringResource(id = R.string.shuffle)",
+// TODO
+//                    text = stringResource(id = R.string.shuffle),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                 )

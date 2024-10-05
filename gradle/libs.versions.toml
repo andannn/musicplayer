@@ -23,6 +23,7 @@ androidGradlePlugin = "8.2.1"
 coreSplashscreen = "1.0.1"
 kotlinxCoroutines = "1.9.0"
 coilCompose = "2.7.0"
+coil3Compose = "3.0.0-alpha09"
 androidxRoom = "2.7.0-alpha09"
 androidxDatastore = "1.1.1"
 protobuf = "4.28.2"
@@ -41,6 +42,8 @@ ktor = "2.3.12"
 timber = "5.0.1"
 koin-bom = "3.5.3"
 sqlite = "2.5.0-SNAPSHOT"
+compose-plugin = "1.6.11"
+androidx-lifecycle = "2.8.0"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -83,6 +86,8 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "kotlinxCoroutines" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil3Compose" }
+coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3Compose" }
 material-color-utilities-android = { module = "com.materialkolor:material-color-utilities-android", version.ref = "materialColorUtilitiesAndroid" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidxRoom" }
@@ -112,6 +117,8 @@ koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 
 # dependecy in build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -132,6 +139,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 google-service = { id = "com.google.gms.google-services", version.ref = "googleService" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

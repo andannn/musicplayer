@@ -9,6 +9,7 @@ import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.core.player.library.LibraryRootCategory
 import com.andannn.melodify.core.data.model.MediaItemModel
+import com.andannn.melodify.core.data.util.uri
 import com.andannn.melodify.core.player.library.PLAYABLE_MEDIA_ITEM_PREFIX
 import com.andannn.melodify.core.player.util.UNIQUE_ID_KEY
 import com.andannn.melodify.core.player.util.buildMediaItem
@@ -52,7 +53,7 @@ private val uniqueId get() = "media_item_unique_id" + counter++
 fun AudioItemModel.toMediaItem(generateUniqueId: Boolean = false): MediaItem {
     return buildMediaItem(
         title = name,
-        sourceUri = uri,
+        sourceUri = Uri.parse(uri),
         mediaId = PLAYABLE_MEDIA_ITEM_PREFIX + id,
         imageUri = Uri.parse(artWorkUri),
         trackNumber = cdTrackNumber,
@@ -64,9 +65,3 @@ fun AudioItemModel.toMediaItem(generateUniqueId: Boolean = false): MediaItem {
         uniqueId = if (generateUniqueId) uniqueId else null
     )
 }
-
-val AudioItemModel.uri: Uri
-    get() = Uri.withAppendedPath(
-        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-        id.toString()
-    )

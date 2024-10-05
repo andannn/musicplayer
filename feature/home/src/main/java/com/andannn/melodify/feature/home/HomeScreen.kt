@@ -145,7 +145,7 @@ private fun HomeScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
                             Text(
-                                text = stringResource(id = ResourceUtil.getCategoryResource(item)),
+                                text = "stringResource(id = ResourceUtil.getCategoryResource(item))",
                             )
                         },
                         onClick = {
@@ -246,7 +246,7 @@ private fun <T : MediaItemModel> LazyGridContent(
                 modifier = Modifier
                     .padding(horizontal = 4.dp, vertical = 3.dp)
                     .animateItem(),
-                artCoverUri = Uri.parse(item.artWorkUri),
+                artCoverUri = item.artWorkUri,
                 title = item.name,
                 subTitle = subTitle(item),
                 onClick = {
@@ -348,8 +348,9 @@ private fun subTitle(
     model: MediaItemModel
 ): String = when (model) {
     is AudioItemModel -> model.artist
-    is AlbumItemModel -> stringResource(id = R.string.track_count, model.trackCount)
-    is ArtistItemModel -> stringResource(id = R.string.track_count, model.trackCount)
+// TODO:
+//    is AlbumItemModel -> stringResource(id = R.string.track_count, model.trackCount)
+//    is ArtistItemModel -> stringResource(id = R.string.track_count, model.trackCount)
     else -> ""
 }
 

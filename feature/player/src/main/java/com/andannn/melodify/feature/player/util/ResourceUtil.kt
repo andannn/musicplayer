@@ -14,8 +14,8 @@ fun PlayMode.getIcon() =
         PlayMode.REPEAT_OFF -> Icons.Rounded.Repeat
         PlayMode.REPEAT_ALL -> Icons.Rounded.RepeatOn
     }
-
-fun SheetTab.getLabel() = when(this) {
-    SheetTab.NEXT_SONG -> R.string.play_queue
-    SheetTab.LYRICS -> R.string.lyrics
-}
+// TODO:
+//fun SheetTab.getLabel() = when(this) {
+//    SheetTab.NEXT_SONG -> R.string.play_queue
+//    SheetTab.LYRICS -> R.string.lyrics
+//}

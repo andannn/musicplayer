@@ -50,7 +50,6 @@ import com.andannn.melodify.feature.player.LyricState
 import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics.LyricsView
 import com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue.PlayQueue
-import com.andannn.melodify.feature.player.util.getLabel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -228,7 +227,9 @@ private fun TabBar(
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 text = @Composable {
                     Text(
-                        text = stringResource(item.getLabel()),
+                        text = "stringResource(item.getLabel())",
+// TODO
+//                        text = stringResource(item.getLabel()),
                     )
                 },
                 interactionSource = source,
