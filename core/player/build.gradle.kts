@@ -1,12 +1,22 @@
+
 plugins {
-    id("musicplayer.android.library")
+    id("melodify.kmp.library")
 }
 
 android {
     namespace = "com.andannn.melodify.feature.core.player"
+}
 
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+kotlin {
+
+    sourceSets {
+        commonMain.dependencies {
+
+        }
+
+        androidMain.dependencies {
+
+        }
     }
 }
 

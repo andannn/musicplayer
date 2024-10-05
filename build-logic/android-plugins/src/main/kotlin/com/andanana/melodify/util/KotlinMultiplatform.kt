@@ -25,6 +25,7 @@ fun Project.configureKotlinMultiplatform(
                 val bom = libs.findLibrary("koin-bom").get()
                 implementation(project.dependencies.platform(bom))
                 implementation(libs.findLibrary("koin.core").get())
+                implementation(libs.findLibrary("kotlinx.coroutines.core").get())
             }
 
             androidMain.dependencies {

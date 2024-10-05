@@ -5,10 +5,10 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
-import com.andannn.melodify.core.player.mediastore.MediaStoreSource
-import com.andannn.melodify.core.player.mediastore.model.AlbumData
-import com.andannn.melodify.core.player.mediastore.model.ArtistData
-import com.andannn.melodify.core.player.mediastore.model.AudioData
+import com.andannn.melodify.core.player.library.mediastore.MediaStoreSource
+import com.andannn.melodify.core.player.library.mediastore.model.AlbumData
+import com.andannn.melodify.core.player.library.mediastore.model.ArtistData
+import com.andannn.melodify.core.player.library.mediastore.model.AudioData
 import com.andannn.melodify.core.player.util.buildMediaItem
 
 interface MediaLibrarySource {

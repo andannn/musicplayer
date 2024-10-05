@@ -7,7 +7,6 @@ import com.andannn.melodify.core.data.LyricRepository
 import com.andannn.melodify.core.network.LrclibService
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 private const val TAG = "LyricRepository"
 
@@ -37,7 +36,8 @@ class LyricRepositoryImpl(
                 lyric = lyricData.toLyricEntity()
             )
         } catch (e: Exception) {
-            Timber.tag(TAG).d("Error getting lyric: ${e.message}")
+// TODO:
+//            Timber.tag(TAG).d("Error getting lyric: ${e.message}")
             return
         }
     }

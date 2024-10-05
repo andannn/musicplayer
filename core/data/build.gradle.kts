@@ -1,23 +1,28 @@
+import org.jetbrains.kotlin.cfg.pseudocode.and
+
 plugins {
-    id("musicplayer.android.library")
-    id("musicplayer.android.room")
-    id("musicplayer.android.testing")
+    id("melodify.kmp.library")
 }
 
 android {
     namespace = "com.andannn.melodify.core.data"
+}
 
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core:datastore"))
+            implementation(project(":core:network"))
+            implementation(project(":core:database"))
+        }
+
+        androidMain.dependencies {
+            implementation(project(":core:player"))
+        }
     }
 }
 
 dependencies {
-    implementation(project(":core:datastore"))
-    implementation(project(":core:player"))
-    implementation(project(":core:network"))
-    implementation(project(":core:database"))
-
     implementation(libs.kotlinx.coroutines.guava)
 
     implementation(libs.androidx.media3.common)

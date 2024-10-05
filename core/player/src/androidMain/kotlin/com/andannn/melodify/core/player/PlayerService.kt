@@ -12,7 +12,7 @@ import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
 import com.andannn.melodify.core.player.library.MediaLibrarySource
 import com.andannn.melodify.core.player.library.MediaLibrarySourceImpl
-import com.andannn.melodify.core.player.mediastore.MediaStoreSourceImpl
+import com.andannn.melodify.core.player.library.mediastore.MediaStoreSourceImpl
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture

@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.player.mediastore.model
+package com.andannn.melodify.core.player.library.mediastore.model
 
 import android.net.Uri
 
