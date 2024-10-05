@@ -13,8 +13,6 @@ import androidx.media3.session.MediaSession
 import com.andannn.melodify.core.player.library.MediaLibrarySource
 import com.andannn.melodify.core.player.library.MediaLibrarySourceImpl
 import com.andannn.melodify.core.player.mediastore.MediaStoreSourceImpl
-import com.andannn.melodify.core.player.timer.SleepTimeCounterState
-import com.andannn.melodify.core.player.timer.SleepTimerController
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -30,7 +28,7 @@ import org.koin.android.ext.android.inject
 class PlayerService : MediaLibraryService(), CoroutineScope {
     private val playerWrapper: PlayerWrapper by inject()
 
-    private val sleepCounterController: SleepTimerController  by inject()
+    private val sleepCounterController: SleepTimerController by inject()
 
     private lateinit var mediaLibrarySession: MediaLibrarySession
 

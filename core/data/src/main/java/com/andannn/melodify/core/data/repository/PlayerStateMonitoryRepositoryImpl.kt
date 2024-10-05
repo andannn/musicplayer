@@ -5,14 +5,14 @@ import com.andannn.melodify.core.data.util.toAppItem
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
-import com.andannn.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
 import com.andannn.melodify.core.player.PlayerWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class PlayerStateRepositoryImpl(
+class PlayerStateMonitoryRepositoryImpl(
     private val playerWrapper: PlayerWrapper,
-) : PlayerStateRepository {
+) : PlayerStateMonitoryRepository {
     override val currentPositionMs: Long
         get() = playerWrapper.currentPositionMs
 
@@ -40,6 +40,7 @@ class PlayerStateRepositoryImpl(
         }
 
     override fun observeIsShuffle() = playerWrapper.observeIsShuffle()
+
     override val playMode: PlayMode
         get() = playerWrapper.observePlayMode().value.let {
             fromRepeatMode(it)

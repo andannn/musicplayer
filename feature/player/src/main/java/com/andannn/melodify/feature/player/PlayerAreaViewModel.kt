@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
-import com.andannn.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
 import com.andannn.melodify.core.domain.model.PlayMode
 import com.andannn.melodify.core.domain.model.PlayerState
 import com.andannn.melodify.feature.common.GlobalUiController
@@ -58,11 +58,11 @@ private const val TAG = "PlayerStateViewModel"
 class PlayerStateViewModel(
     private val mediaControllerRepository: MediaControllerRepository,
     private val lyricRepository: LyricRepository,
-    private val playerStateRepository: PlayerStateRepository,
+    private val playerStateMonitoryRepository: PlayerStateMonitoryRepository,
     private val globalUiController: GlobalUiController
 ) : ViewModel() {
-    private val interactingMusicItem = playerStateRepository.playingMediaStateFlow
-    private val playerStateFlow = playerStateRepository
+    private val interactingMusicItem = playerStateMonitoryRepository.playingMediaStateFlow
+    private val playerStateFlow = playerStateMonitoryRepository
         .observePlayerState()
         .distinctUntilChanged()
         .onEach {
@@ -78,11 +78,11 @@ class PlayerStateViewModel(
                 .onStart { emit(LyricState.Loading) }
         }
 
-    private val playModeFlow = playerStateRepository.observePlayMode()
+    private val playModeFlow = playerStateMonitoryRepository.observePlayMode()
 
-    private val isShuffleFlow = playerStateRepository.observeIsShuffle()
+    private val isShuffleFlow = playerStateMonitoryRepository.observeIsShuffle()
 
-    private val playListQueueFlow = playerStateRepository.playListQueueStateFlow
+    private val playListQueueFlow = playerStateMonitoryRepository.playListQueueStateFlow
 
     val playerUiStateFlow =
         combine(
@@ -131,7 +131,7 @@ class PlayerStateViewModel(
         when (event) {
             PlayerUiEvent.OnFavoriteButtonClick -> {}
             PlayerUiEvent.OnPlayModeButtonClick -> {
-                val nextPlayMode = playerStateRepository.playMode.next()
+                val nextPlayMode = playerStateMonitoryRepository.playMode.next()
                 mediaControllerRepository.setPlayMode(nextPlayMode)
             }
 

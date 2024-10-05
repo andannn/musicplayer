@@ -5,8 +5,9 @@ import com.andannn.melodify.core.domain.model.AlbumItemModel
 import com.andannn.melodify.core.domain.model.ArtistItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaItemModel
+import com.andannn.melodify.core.domain.repository.MediaContentRepository
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
-import com.andannn.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.common.drawer.SleepTimerOption
@@ -53,8 +54,9 @@ interface GlobalUiController : BottomSheetStateProvider, DeleteMediaItemEventPro
 }
 
 internal class GlobalUiControllerImpl(
+    private val mediaContentRepository: MediaContentRepository,
     private val mediaControllerRepository: MediaControllerRepository,
-    private val playerStateRepository: PlayerStateRepository,
+    private val playerStateMonitoryRepository: PlayerStateMonitoryRepository,
 ) : GlobalUiController {
     override val bottomSheetModel: SharedFlow<SheetModel?>
         get() = _bottomSheetModelFlow.asSharedFlow()
@@ -152,11 +154,11 @@ internal class GlobalUiControllerImpl(
     private suspend fun onDeleteMediaItem(source: MediaItemModel) {
         val items = when (source) {
             is AlbumItemModel -> {
-                mediaControllerRepository.getAudiosOfAlbum(source.id)
+                mediaContentRepository.getAudiosOfAlbum(source.id)
             }
 
             is ArtistItemModel -> {
-                mediaControllerRepository.getAudiosOfArtist(source.id)
+                mediaContentRepository.getAudiosOfArtist(source.id)
             }
 
             is AudioItemModel -> {
@@ -170,10 +172,10 @@ internal class GlobalUiControllerImpl(
 
     private suspend fun onPlayNextClick(source: MediaItemModel) {
         val items = getAudios(source)
-        val havePlayingQueue = playerStateRepository.playListQueue.isNotEmpty()
+        val havePlayingQueue = playerStateMonitoryRepository.playListQueue.isNotEmpty()
         if (havePlayingQueue) {
             mediaControllerRepository.addMediaItems(
-                index = playerStateRepository.playingIndexInQueue + 1,
+                index = playerStateMonitoryRepository.playingIndexInQueue + 1,
                 mediaItems = items
             )
         } else {
@@ -183,7 +185,7 @@ internal class GlobalUiControllerImpl(
 
     private suspend fun onAddToQueue(source: MediaItemModel) {
         val items = getAudios(source)
-        val playListQueue = playerStateRepository.playListQueue
+        val playListQueue = playerStateMonitoryRepository.playListQueue
         if (playListQueue.isNotEmpty()) {
             mediaControllerRepository.addMediaItems(
                 index = playListQueue.size,
@@ -197,11 +199,11 @@ internal class GlobalUiControllerImpl(
     private suspend fun getAudios(source: MediaItemModel): List<AudioItemModel> {
         return when (source) {
             is AlbumItemModel -> {
-                mediaControllerRepository.getAudiosOfAlbum(source.id)
+                mediaContentRepository.getAudiosOfAlbum(source.id)
             }
 
             is ArtistItemModel -> {
-                mediaControllerRepository.getAudiosOfArtist(source.id)
+                mediaContentRepository.getAudiosOfArtist(source.id)
             }
 
             is AudioItemModel -> {

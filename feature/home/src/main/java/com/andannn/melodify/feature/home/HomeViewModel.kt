@@ -7,6 +7,7 @@ import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaPreviewMode
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
+import com.andannn.melodify.core.domain.repository.MediaContentRepository
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
 import com.andannn.melodify.core.domain.repository.UserPreferenceRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
@@ -36,6 +37,7 @@ sealed interface HomeUiEvent {
 class HomeViewModel(
     private val mediaControllerRepository: MediaControllerRepository,
     private val globalUiController: GlobalUiController,
+    private val mediaContentRepository: MediaContentRepository,
     private val mediaContentObserverRepository: MediaContentObserverRepository,
     private val userPreferenceRepository: UserPreferenceRepository
 ) : ViewModel() {
@@ -117,9 +119,9 @@ class HomeViewModel(
         Timber.tag(TAG).d("getMediaItemsAndUpdateState: $category")
 
         return when (category) {
-            MediaCategory.ALL_MUSIC -> mediaControllerRepository.getAllMediaItems()
-            MediaCategory.ALBUM -> mediaControllerRepository.getAllAlbums()
-            MediaCategory.ARTIST -> mediaControllerRepository.getAllArtist()
+            MediaCategory.ALL_MUSIC -> mediaContentRepository.getAllMediaItems()
+            MediaCategory.ALBUM -> mediaContentRepository.getAllAlbums()
+            MediaCategory.ARTIST -> mediaContentRepository.getAllArtist()
         }
     }
 }

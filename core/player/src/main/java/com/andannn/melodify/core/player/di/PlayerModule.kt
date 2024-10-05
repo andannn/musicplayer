@@ -4,12 +4,14 @@ import com.andannn.melodify.core.player.MediaBrowserManager
 import com.andannn.melodify.core.player.MediaBrowserManagerImpl
 import com.andannn.melodify.core.player.PlayerWrapper
 import com.andannn.melodify.core.player.PlayerWrapperImpl
-import com.andannn.melodify.core.player.timer.SleepTimerController
-import com.andannn.melodify.core.player.timer.SleepTimerControllerImpl
+import com.andannn.melodify.core.player.SleepTimerController
+import com.andannn.melodify.core.player.SleepTimerControllerImpl
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val playerModule = module {
-    single<PlayerWrapper> { PlayerWrapperImpl() }
-    single<MediaBrowserManager> { MediaBrowserManagerImpl(get()) }
-    single<SleepTimerController> { SleepTimerControllerImpl() }
+    singleOf(::PlayerWrapperImpl).bind(PlayerWrapper::class)
+    singleOf(::MediaBrowserManagerImpl).bind(MediaBrowserManager::class)
+    singleOf(::SleepTimerControllerImpl).bind(SleepTimerController::class)
 }

@@ -3,7 +3,6 @@ package com.andannn.melodify
 import android.app.Application
 import com.andannn.melodify.core.data.di.dataModule
 import com.andannn.melodify.core.database.di.databaseModule
-import com.andannn.melodify.core.datastore.di.dataStoreModule
 import com.andannn.melodify.core.datastore.di.userPreferencesModule
 import com.andannn.melodify.core.network.di.serviceModule
 import com.andannn.melodify.core.player.di.playerModule
@@ -33,7 +32,6 @@ class SimpleMusicApplication : Application() {
                     dataModule,
                     playerModule,
                     serviceModule,
-                    dataStoreModule,
                     userPreferencesModule,
                     databaseModule,
                     globalUiControllerModule,

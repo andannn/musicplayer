@@ -6,7 +6,7 @@ import com.andannn.melodify.core.domain.model.PlayerState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
-interface PlayerStateRepository {
+interface PlayerStateMonitoryRepository {
     val currentPositionMs: Long
 
     val playerState: PlayerState

@@ -8,8 +8,9 @@ import com.andannn.melodify.core.domain.model.MediaItemModel
 import com.andannn.melodify.core.domain.model.AudioItemModel
 import com.andannn.melodify.core.domain.model.MediaListSource
 import com.andannn.melodify.core.domain.repository.MediaControllerRepository
-import com.andannn.melodify.core.domain.repository.PlayerStateRepository
+import com.andannn.melodify.core.domain.repository.PlayerStateMonitoryRepository
 import com.andannn.melodify.core.domain.repository.MediaContentObserverRepository
+import com.andannn.melodify.core.domain.repository.MediaContentRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -40,8 +41,9 @@ sealed interface PlayListEvent {
 class PlayListViewModel(
     savedStateHandle: SavedStateHandle,
     private val contentObserverRepository: MediaContentObserverRepository,
-    playerStateRepository: PlayerStateRepository,
+    playerStateMonitoryRepository: PlayerStateMonitoryRepository,
     private val mediaControllerRepository: MediaControllerRepository,
+    private val mediaContentRepository: MediaContentRepository,
     private val globalUiController: GlobalUiController,
 ) : ViewModel() {
     private val id =
@@ -64,7 +66,7 @@ class PlayListViewModel(
                 getPlayListContent()
             }
 
-    private val playingItemFlow = playerStateRepository.playingMediaStateFlow
+    private val playingItemFlow = playerStateMonitoryRepository.playingMediaStateFlow
 
     val state = combine(
         playListContentFlow,
@@ -81,8 +83,8 @@ class PlayListViewModel(
         return when (mediaListSource) {
             MediaListSource.ALBUM -> {
                 val albumItem =
-                    mediaControllerRepository.getAlbumByAlbumId(id.toLong())
-                val playableItems = mediaControllerRepository.getAudiosOfAlbum(id.toLong())
+                    mediaContentRepository.getAlbumByAlbumId(id.toLong())
+                val playableItems = mediaContentRepository.getAudiosOfAlbum(id.toLong())
                     .sortedBy { it.cdTrackNumber }
                 PlayListContent(
                     headerInfoItem = albumItem,
@@ -92,9 +94,9 @@ class PlayListViewModel(
 
             MediaListSource.ARTIST -> {
                 val headerItem =
-                    mediaControllerRepository.getArtistByAlbumId(id.toLong())
+                    mediaContentRepository.getArtistByAlbumId(id.toLong())
 
-                val playableItems = mediaControllerRepository.getAudiosOfArtist(id.toLong())
+                val playableItems = mediaContentRepository.getAudiosOfArtist(id.toLong())
                 PlayListContent(
                     headerInfoItem = headerItem,
                     audioList = playableItems.toImmutableList(),
