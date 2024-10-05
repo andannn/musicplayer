@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.data.util
+package com.andannn.melodify.core.data.repository
 
 import android.net.Uri
 import android.provider.MediaStore
@@ -12,7 +12,6 @@ import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.player.library.PLAYABLE_MEDIA_ITEM_PREFIX
 import com.andannn.melodify.core.player.util.UNIQUE_ID_KEY
 import com.andannn.melodify.core.player.util.buildMediaItem
-
 
 fun MediaItem.toAppItem(): MediaItemModel = when {
     mediaId.contains(PLAYABLE_MEDIA_ITEM_PREFIX) -> AudioItemModel(

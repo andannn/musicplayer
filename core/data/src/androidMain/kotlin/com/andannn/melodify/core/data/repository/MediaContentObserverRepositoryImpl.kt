@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onStart
 
 private const val TAG = "MediaContentObserverRepository"
 
-class MediaContentObserverRepositoryImpl(
+internal class MediaContentObserverRepositoryImpl(
     context: Context,
 ) : MediaContentObserverRepository {
     private val contentResolver = context.contentResolver

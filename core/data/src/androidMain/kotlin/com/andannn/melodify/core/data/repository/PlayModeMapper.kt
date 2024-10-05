@@ -1,4 +1,4 @@
-package com.andannn.melodify.core.data.util
+package com.andannn.melodify.core.data.repository
 
 import androidx.media3.common.Player
 import com.andannn.melodify.core.data.model.PlayMode

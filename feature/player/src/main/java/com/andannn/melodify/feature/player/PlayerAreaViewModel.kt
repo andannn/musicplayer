@@ -10,6 +10,7 @@ import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.core.data.model.LyricModel
 import com.andannn.melodify.core.data.LyricRepository
+import com.andannn.melodify.core.data.model.next
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

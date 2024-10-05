@@ -1,7 +1,8 @@
 package com.andannn.melodify
 
 import android.app.Application
-import com.andannn.melodify.core.data.di.dataModule
+import com.andannn.melodify.core.data.di.commonDataModule
+import com.andannn.melodify.core.data.di.platformDataModule
 import com.andannn.melodify.core.database.di.databaseModule
 import com.andannn.melodify.core.datastore.di.userPreferencesModule
 import com.andannn.melodify.core.network.di.serviceModule
@@ -29,7 +30,8 @@ class SimpleMusicApplication : Application() {
             modules(
                 listOf(
                     appModule,
-                    dataModule,
+                    commonDataModule,
+                    platformDataModule,
                     playerModule,
                     serviceModule,
                     userPreferencesModule,

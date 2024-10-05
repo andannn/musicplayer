@@ -1,6 +1,6 @@
 package com.andannn.melodify.feature.common
 
-import com.andannn.melodify.core.data.util.uri
+import com.andannn.melodify.core.data.repository.uri
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
