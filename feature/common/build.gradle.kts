@@ -30,7 +30,7 @@ kotlin {
 }
 
 compose.resources {
-    publicResClass = false
+    publicResClass = true
     generateResClass = auto
 }
 

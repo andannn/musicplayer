@@ -1,6 +1,8 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.andannn.melodify.feature.home
 
-import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -43,10 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.andannn.melodify.common.R
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
@@ -60,7 +59,11 @@ import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.feature.home.util.ResourceUtil
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import org.koin.androidx.compose.koinViewModel
+import melodify.feature.common.generated.resources.Res
+import melodify.feature.common.generated.resources.track_count
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeRoute(
@@ -145,7 +148,7 @@ private fun HomeScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                         text = @Composable {
                             Text(
-                                text = "stringResource(id = ResourceUtil.getCategoryResource(item))",
+                                text = stringResource(ResourceUtil.getCategoryResource(item)),
                             )
                         },
                         onClick = {
@@ -164,7 +167,6 @@ private fun HomeScreen(
             val previewMode by remember {
                 derivedStateOf { uiState.previewMode }
             }
-
 
             when (previewMode) {
                 MediaPreviewMode.GRID_PREVIEW -> {
@@ -221,6 +223,7 @@ private fun HomeScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun <T : MediaItemModel> LazyGridContent(
     mediaItems: ImmutableList<T>,
@@ -245,7 +248,7 @@ private fun <T : MediaItemModel> LazyGridContent(
             LargePreviewCard(
                 modifier = Modifier
                     .padding(horizontal = 4.dp, vertical = 3.dp)
-                    .animateItem(),
+                    .animateItemPlacement(),
                 artCoverUri = item.artWorkUri,
                 title = item.name,
                 subTitle = subTitle(item),
@@ -288,7 +291,7 @@ private fun <T : MediaItemModel> LazyListContent(
                 modifier =
                 Modifier
                     .padding(vertical = 4.dp)
-                    .animateItem(),
+                    .animateItemPlacement(),
                 isActive = false,
                 albumArtUri = item.artWorkUri,
                 title = item.name,
@@ -348,9 +351,8 @@ private fun subTitle(
     model: MediaItemModel
 ): String = when (model) {
     is AudioItemModel -> model.artist
-// TODO:
-//    is AlbumItemModel -> stringResource(id = R.string.track_count, model.trackCount)
-//    is ArtistItemModel -> stringResource(id = R.string.track_count, model.trackCount)
+    is AlbumItemModel -> stringResource(Res.string.track_count, model.trackCount)
+    is ArtistItemModel -> stringResource(Res.string.track_count, model.trackCount)
     else -> ""
 }
 

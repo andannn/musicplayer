@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 private const val TAG = "HomeViewModel"
 
@@ -116,7 +115,8 @@ class HomeViewModel(
     }
 
     private suspend fun getMediaItemsAndUpdateState(category: MediaCategory): List<MediaItemModel> {
-        Timber.tag(TAG).d("getMediaItemsAndUpdateState: $category")
+// TODO:
+//        Timber.tag(TAG).d("getMediaItemsAndUpdateState: $category")
 
         return when (category) {
             MediaCategory.ALL_MUSIC -> mediaContentRepository.getAllMediaItems()
