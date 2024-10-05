@@ -31,7 +31,6 @@ fun Project.configureKotlinMultiplatform(
 
             commonTest.dependencies {
                 implementation(libs.findLibrary("kotlin.test").get())
-                implementation(libs.findLibrary("napier").get())
             }
         }
     }

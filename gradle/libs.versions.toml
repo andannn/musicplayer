@@ -23,7 +23,7 @@ androidGradlePlugin = "8.2.1"
 coreSplashscreen = "1.0.1"
 kotlinxCoroutines = "1.9.0"
 coilCompose = "2.7.0"
-androidxRoom = "2.6.1"
+androidxRoom = "2.7.0-alpha09"
 androidxDatastore = "1.1.1"
 protobuf = "4.28.2"
 media3 = "1.4.1"
@@ -40,7 +40,7 @@ kotlinxSerializationJson = "1.7.3"
 ktor = "2.3.12"
 timber = "5.0.1"
 koin-bom = "3.5.3"
-napierVersion = "1.4.1"
+sqlite = "2.5.0-SNAPSHOT"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -110,8 +110,7 @@ koin-core = { module = "io.insert-koin:koin-core" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
-napier = { group = "io.github.aakira", name = "napier", version.ref = "napierVersion" }
-
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 
 # dependecy in build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }

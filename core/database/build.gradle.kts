@@ -1,13 +1,22 @@
 plugins {
-    id("musicplayer.android.library")
-    id("musicplayer.android.room")
-    id("musicplayer.android.testing")
+    id("melodify.kmp.library")
+    id("com.google.devtools.ksp")
 }
 
-android {
-    namespace = "com.andannn.melodify.core.database"
-
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+kotlin {
+    @Suppress("UnstableApiUsage")
+    androidLibrary {
+        namespace = "com.andannn.melodify.core.database"
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
+        }
+    }
+}
+
+dependencies {
+    ksp(libs.room.compiler)
 }
