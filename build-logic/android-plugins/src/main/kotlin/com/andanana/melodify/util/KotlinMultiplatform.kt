@@ -28,6 +28,10 @@ fun Project.configureKotlinMultiplatform(
             androidMain.dependencies {
                 implementation(libs.findLibrary("koin.android").get())
             }
+
+            commonTest.dependencies {
+                implementation(libs.findLibrary("kotlin.test").get())
+            }
         }
     }
 }
