@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.playList.navigation
+package com.andannn.melodify.feature.playList
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -23,15 +23,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.andannn.melodify.common.R
+import coil3.compose.AsyncImage
 import com.andannn.melodify.feature.common.component.SmpTextButton
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
+import melodify.feature.common.generated.resources.Res
+import melodify.feature.common.generated.resources.play
+import melodify.feature.common.generated.resources.shuffle
+import melodify.feature.common.generated.resources.track_count
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PlayListHeader(
@@ -79,9 +82,7 @@ fun PlayListHeader(
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier = Modifier,
-                        text = "stringResource",
-//TODO:
-//                        text = stringResource(id = R.string.track_count, trackCount),
+                        text = stringResource(Res.string.track_count, trackCount),
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -99,8 +100,7 @@ fun PlayListHeader(
             SmpTextButton(
                 modifier = Modifier.weight(1f),
                 imageVector = Icons.Rounded.PlayArrow,
-// TODO:
-                text = "stringResource(id = R.string.play)",
+                text = stringResource(Res.string.play),
                 onClick = onPlayAllButtonClick,
             )
             Spacer(modifier = Modifier.width(10.dp))
@@ -112,9 +112,7 @@ fun PlayListHeader(
 
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = "stringResource(id = R.string.shuffle)",
-// TODO
-//                    text = stringResource(id = R.string.shuffle),
+                    text = stringResource(Res.string.shuffle),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                 )

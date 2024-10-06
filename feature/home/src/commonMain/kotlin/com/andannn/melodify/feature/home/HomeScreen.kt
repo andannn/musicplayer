@@ -351,8 +351,8 @@ private fun subTitle(
     model: MediaItemModel
 ): String = when (model) {
     is AudioItemModel -> model.artist
-    is AlbumItemModel -> stringResource(Res.string.track_count, model.trackCount)
-    is ArtistItemModel -> stringResource(Res.string.track_count, model.trackCount)
+    is AlbumItemModel -> stringResource(Res.string.track_count, model.trackCount.toString())
+    is ArtistItemModel -> stringResource(Res.string.track_count, model.trackCount.toString())
     else -> ""
 }
 

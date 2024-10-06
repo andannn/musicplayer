@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.playList.navigation
+package com.andannn.melodify.feature.playList
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -12,6 +12,8 @@ import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
 import com.andannn.melodify.core.data.MediaContentObserverRepository
 import com.andannn.melodify.core.data.MediaContentRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
+import com.andannn.melodify.feature.playList.navigation.ID
+import com.andannn.melodify.feature.playList.navigation.SOURCE
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,7 +52,8 @@ class PlayListViewModel(
         savedStateHandle.get<String>(ID) ?: ""
 
     val mediaListSource =
-        savedStateHandle.get<MediaListSource>(SOURCE) ?: MediaListSource.ALBUM
+        MediaListSource.fromString(savedStateHandle.get<String>(SOURCE) ?: "")
+            ?: MediaListSource.ALBUM
 
     private val contentUri
         get() = with(contentObserverRepository) {

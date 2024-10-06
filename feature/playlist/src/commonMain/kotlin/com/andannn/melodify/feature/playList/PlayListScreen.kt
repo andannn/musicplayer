@@ -1,8 +1,9 @@
-package com.andannn.melodify.feature.playList.navigation
+package com.andannn.melodify.feature.playList
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +41,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.feature.common.component.ExtraPaddingBottom
@@ -51,7 +51,8 @@ import com.andannn.melodify.core.data.model.MediaListSource
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import org.koin.androidx.compose.koinViewModel
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PlayListScreen(
@@ -91,7 +92,7 @@ fun PlayListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CommonPlayListContent(
     header: ArtistItemModel,
@@ -125,7 +126,7 @@ fun CommonPlayListContent(
                 key = { item -> item.id },
             ) { item: AudioItemModel ->
                 ListTileItemView(
-                    modifier = Modifier.padding(vertical = 4.dp).animateItem(),
+                    modifier = Modifier.padding(vertical = 4.dp).animateItemPlacement(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = item.artWorkUri,
                     title = item.name,
@@ -150,6 +151,7 @@ fun CommonPlayListContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun AlbumPlayListContent(
     header: AlbumItemModel,
@@ -259,7 +261,7 @@ private fun AlbumPlayListContent(
                 key = { it.id },
             ) { item ->
                 ListTileItemView(
-                    modifier = Modifier.padding(vertical = 4.dp).animateItem(),
+                    modifier = Modifier.padding(vertical = 4.dp).animateItemPlacement(),
                     isActive = playingMediaItem?.id == item.id,
                     albumArtUri = header.artWorkUri,
                     title = item.name,

@@ -6,13 +6,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.andannn.melodify.core.data.model.MediaListSource
+import com.andannn.melodify.feature.playList.PlayListScreen
 
 const val MUSIC_LIST_ROUTE = "music_list_route"
 const val SOURCE = "source"
 const val ID = "album_id"
 
 fun NavController.navigateToPlayList(id: String, source: MediaListSource) {
-    this.navigate("$MUSIC_LIST_ROUTE/$source/$id")
+    this.navigate("$MUSIC_LIST_ROUTE/${source.toNavArg()}/$id")
 }
 
 fun NavGraphBuilder.playListScreen(onBackPressed: () -> Unit) {
@@ -24,7 +25,7 @@ fun NavGraphBuilder.playListScreen(onBackPressed: () -> Unit) {
                     type = NavType.StringType
                 },
                 navArgument(name = SOURCE) {
-                    type = NavType.EnumType(MediaListSource::class.java)
+                    type = NavType.StringType
                 },
             ),
     ) {

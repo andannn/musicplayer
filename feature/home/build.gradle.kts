@@ -23,7 +23,6 @@ kotlin {
 
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.coil3.compose)
 
             implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose.viewmodel)
