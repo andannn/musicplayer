@@ -36,4 +36,11 @@ compose.resources {
 
 android {
     namespace = "com.andannn.melodify.common"
+
+    buildFeatures {
+        compose = true
+    }
+}
+dependencies {
+    debugImplementation(libs.androidx.ui.tooling)
 }

@@ -104,14 +104,3 @@ fun PlayListCard(
         }
     }
 }
-
-@Preview
-@Composable
-private fun PlayListCardPreview() {
-    PlayListCard(
-        albumArtUri = "",
-        title = "Title",
-        coverImage = Icons.Rounded.FavoriteBorder,
-        trackCount = 0
-    )
-}
