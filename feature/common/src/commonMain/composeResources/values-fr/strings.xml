@@ -11,11 +11,11 @@
     <string name="lyrics">LYRICS</string>
     <string name="play">Jouer</string>
     <string name="shuffle">Mélanger</string>
-    <string name="track_count">%s pistes</string>
+    <string name="track_count">%1$s pistes</string>
     <string name="sleep_timer">Minuteur de mise en veille</string>
     <string name="end_of_song">Fin de la chanson</string>
-    <string name="number_hours">%s heures</string>
-    <string name="number_minutes">%s minutes</string>
-    <string name="number_seconds">%s secondes</string>
+    <string name="number_hours">%1$s heures</string>
+    <string name="number_minutes">%1$s minutes</string>
+    <string name="number_seconds">%1$s secondes</string>
     <string name="cancel_timer">Annuler le minuteur</string>
 </resources>

@@ -11,11 +11,11 @@
     <string name="lyrics">LYRICS</string>
     <string name="play">Reproducir</string>
     <string name="shuffle">Aleatorio</string>
-    <string name="track_count">%s canciones</string>
+    <string name="track_count">%1$s canciones</string>
     <string name="sleep_timer">Temporizador de apagado</string>
     <string name="end_of_song">Fin de la canción</string>
-    <string name="number_hours">%s horas</string>
-    <string name="number_minutes">%s minutos</string>
-    <string name="number_seconds">%s segundos</string>
+    <string name="number_hours">%1$s horas</string>
+    <string name="number_minutes">%1$s minutos</string>
+    <string name="number_seconds">%1$s segundos</string>
     <string name="cancel_timer">Cancelar temporizador</string>
 </resources>

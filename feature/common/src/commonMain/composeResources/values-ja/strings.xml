@@ -11,11 +11,11 @@
     <string name="lyrics">歌詞</string>
     <string name="play">再生</string>
     <string name="shuffle">シャッフル</string>
-    <string name="track_count">%s 曲</string>
+    <string name="track_count">%1$s 曲</string>
     <string name="sleep_timer">スリープタイマー</string>
     <string name="end_of_song">曲の終わり</string>
-    <string name="number_hours">%s 時間</string>
-    <string name="number_minutes">%s 分</string>
-    <string name="number_seconds">%s 秒</string>
+    <string name="number_hours">%1$s 時間</string>
+    <string name="number_minutes">%1$s 分</string>
+    <string name="number_seconds">%1$s 秒</string>
     <string name="cancel_timer">タイマーをキャンセル</string>
 </resources>

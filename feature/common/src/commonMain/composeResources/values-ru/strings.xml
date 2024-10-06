@@ -11,11 +11,11 @@
     <string name="lyrics">LYRICS</string>
     <string name="play">Воспроизвести</string>
     <string name="shuffle">Перемешать</string>
-    <string name="track_count">%s треков</string>
+    <string name="track_count">%1$s треков</string>
     <string name="sleep_timer">Таймер сна</string>
     <string name="end_of_song">Конец песни</string>
-    <string name="number_hours">%s часов</string>
-    <string name="number_minutes">%s минут</string>
-    <string name="number_seconds">%s секунд</string>
+    <string name="number_hours">%1$s часов</string>
+    <string name="number_minutes">%1$s минут</string>
+    <string name="number_seconds">%1$s секунд</string>
     <string name="cancel_timer">Отменить таймер</string>
 </resources>
