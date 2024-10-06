@@ -9,9 +9,9 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val commonDataModule = module {
+internal val commonDataModule = module {
     singleOf(::LyricRepositoryImpl).bind(LyricRepository::class)
     singleOf(::UserPreferenceRepositoryImpl).bind(UserPreferenceRepository::class)
 }
 
-expect val platformDataModule : Module
+expect val dataModule : List<Module>

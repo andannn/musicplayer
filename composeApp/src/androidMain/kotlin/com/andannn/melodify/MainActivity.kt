@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -26,9 +25,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.andannn.melodify.feature.common.dialog.ConnectFailedAlertDialog
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private const val TAG = "MainActivity"
@@ -41,7 +40,7 @@ private val runTimePermissions =
     }
 
 class MainActivity : ComponentActivity() {
-    private val mainViewModel: MainActivityViewModel  by viewModel()
+    private val mainViewModel: MainActivityViewModel by viewModel()
 
     private lateinit var intentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
 
@@ -49,20 +48,17 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        val targetSdkVersion = application.applicationInfo.targetSdkVersion
-        Log.d(TAG, "onCreate: ${targetSdkVersion}")
-
         enableEdgeToEdge()
 
         intentSenderLauncher = registerForActivityResult(
             contract = ActivityResultContracts.StartIntentSenderForResult(),
         ) { result ->
-            Timber.tag(TAG).d("activity result: $result")
+            Napier.d(tag = TAG) { "activity result: $result" }
         }
 
         lifecycleScope.launch {
             mainViewModel.deleteMediaItemEventFlow.collect { uris ->
-                Timber.tag(TAG).d("Requesting delete media items: $uris")
+                Napier.d(tag = TAG) { "Requesting delete media items: $uris" }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     val editPendingIntent = MediaStore.createTrashRequest(
                         /* resolver = */ contentResolver,

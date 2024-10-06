@@ -4,12 +4,12 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.onStart
-import timber.log.Timber
 
 private const val TAG = "PlayerWrapper"
 
@@ -71,12 +71,11 @@ internal class PlayerWrapperImpl : PlayerWrapper {
                 playWhenReady: Boolean,
                 reason: Int,
             ) {
-                Timber.tag(TAG)
-                    .d("onPlayWhenReadyChanged: playWhenReady $playWhenReady reason $reason")
+                Napier.d(tag = TAG) { "onPlayWhenReadyChanged: playWhenReady $playWhenReady reason $reason" }
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                Timber.tag(TAG).d("onIsPlayingChanged: $isPlaying")
+                Napier.d(tag = TAG) { "onIsPlayingChanged: $isPlaying" }
                 with(_player!!) {
                     if (isPlaying) {
                         _playerStateFlow.value = PlayerState.Playing(currentPosition)
@@ -103,7 +102,7 @@ internal class PlayerWrapperImpl : PlayerWrapper {
                 mediaItem: MediaItem?,
                 reason: Int,
             ) {
-                Timber.tag(TAG).d("onMediaItemTransition: $mediaItem")
+                Napier.d(tag = TAG) { "onMediaItemTransition: $mediaItem" }
                 _playingIndexInQueueFlow.value = _player!!.currentMediaItemIndex
                 _playingMediaItemStateFlow.tryEmit(mediaItem)
             }
@@ -142,18 +141,18 @@ internal class PlayerWrapperImpl : PlayerWrapper {
             }
 
             override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-                Timber.tag(TAG).d("onShuffleModeEnabledChanged: $shuffleModeEnabled")
+                Napier.d(tag = TAG) { "onShuffleModeEnabledChanged: $shuffleModeEnabled" }
                 _isShuffleFlow.value = shuffleModeEnabled
             }
 
             override fun onRepeatModeChanged(repeatMode: Int) {
-                Timber.tag(TAG).d("onRepeatModeChanged: $repeatMode")
+                Napier.d(tag = TAG) { "onRepeatModeChanged: $repeatMode" }
                 _playerModeFlow.value = repeatMode
             }
         }
 
     override fun setUpPlayer(player: Player) {
-        Timber.tag(TAG).d("setUpPlayer")
+        Napier.d(tag = TAG) { "setUpPlayer" }
         player.prepare()
         player.addListener(playerListener)
         player.repeatMode = Player.REPEAT_MODE_ALL
@@ -163,7 +162,7 @@ internal class PlayerWrapperImpl : PlayerWrapper {
     }
 
     override fun release() {
-        Timber.tag(TAG).d("release")
+        Napier.d(tag = TAG) { "release" }
         _playerStateFlow.value = PlayerState.Idle
         _playerModeFlow.value = Player.REPEAT_MODE_ALL
         _isShuffleFlow.value = false

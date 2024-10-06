@@ -10,7 +10,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val playerModule = module {
+actual val playerModule = module {
     singleOf(::PlayerWrapperImpl).bind(PlayerWrapper::class)
     singleOf(::MediaBrowserManagerImpl).bind(MediaBrowserManager::class)
     singleOf(::SleepTimerControllerImpl).bind(SleepTimerController::class)

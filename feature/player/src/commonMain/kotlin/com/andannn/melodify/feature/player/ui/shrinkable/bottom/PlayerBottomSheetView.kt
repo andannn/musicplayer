@@ -47,6 +47,7 @@ import com.andannn.melodify.feature.player.PlayerUiEvent
 import com.andannn.melodify.feature.player.ui.shrinkable.bottom.lyrics.LyricsView
 import com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue.PlayQueue
 import com.andannn.melodify.feature.player.util.getLabel
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -141,11 +142,11 @@ internal fun PlayerBottomSheetView(
                     SheetTab.NEXT_SONG -> {
                         PlayQueue(
                             onSwapFinished = { from, to ->
-//                                Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
+                                Napier.d(tag = TAG) { "PlayQueueView: drag stopped from $from to $to" }
                                 onEvent(PlayerUiEvent.OnSwapPlayQueue(from, to))
                             },
                             onDeleteFinished = {
-//                                Timber.tag(TAG).d("onDeleteFinished $it")
+                                Napier.d(tag = TAG) { "onDeleteFinished $it" }
                                 onEvent(PlayerUiEvent.OnDeleteMediaItem(it))
                             },
                             onItemClick = {

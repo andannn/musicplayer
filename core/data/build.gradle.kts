@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.cfg.pseudocode.and
-
 plugins {
     id("melodify.kmp.library")
 }
@@ -14,9 +12,6 @@ kotlin {
             implementation(project(":core:datastore"))
             implementation(project(":core:network"))
             implementation(project(":core:database"))
-        }
-
-        androidMain.dependencies {
             implementation(project(":core:player"))
         }
     }

@@ -3,22 +3,20 @@ package com.andannn.melodify
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andannn.melodify.feature.common.GlobalUiController
-import com.andannn.melodify.feature.common.BottomSheetStateProvider
 import com.andannn.melodify.feature.common.DeleteMediaItemEventProvider
 import com.andannn.melodify.core.player.MediaBrowserManager
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 private const val TAG = "MainActivityViewModel"
 
 class MainActivityViewModel(
     private val controller: GlobalUiController,
     private val mediaBrowserManager: MediaBrowserManager,
-) : BottomSheetStateProvider by controller,
-    DeleteMediaItemEventProvider by controller,
+) : DeleteMediaItemEventProvider by controller,
     ViewModel() {
 
     private val _state = MutableStateFlow<MainUiState>(MainUiState.Init)
@@ -32,7 +30,7 @@ class MainActivityViewModel(
                 mediaBrowserManager.connect()
                 _state.value = MainUiState.Ready
             } catch (e: TimeoutCancellationException) {
-                Timber.tag(TAG).d("connect error:  $e")
+                Napier.d(tag = TAG) { "connect error:  $e" }
                 _state.value = MainUiState.Error(e)
             }
         }

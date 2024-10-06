@@ -43,9 +43,6 @@ internal fun MiniPlayerLayout(
     modifier: Modifier = Modifier,
     onEvent: (PlayerUiEvent) -> Unit = {},
 ) {
-// TODO: It seems that there is a bug: Recomposition is done but ui is not update.
-//       I can not tell why this happened.
-//       Use <rememberUpdatedState> as a workaround.
     val titleState = rememberUpdatedState(title)
     val artistState = rememberUpdatedState(artist)
 

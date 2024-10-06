@@ -10,7 +10,7 @@ import com.andannn.melodify.feature.playList.navigation.navigateToPlayList
 import com.andannn.melodify.feature.playList.navigation.playListScreen
 
 @Composable
-fun SmpNavHost(
+fun MelodifyNavHost(
     navHostController: NavHostController,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,

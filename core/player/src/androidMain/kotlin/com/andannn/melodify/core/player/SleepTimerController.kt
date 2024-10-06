@@ -1,5 +1,6 @@
 package com.andannn.melodify.core.player
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -7,7 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -51,14 +51,14 @@ class SleepTimerControllerImpl : SleepTimerController, CoroutineScope {
             while (true) {
                 _counterState.value = SleepTimeCounterState.Counting(currentRemainTime)
 
-                Timber.tag(TAG).d("_counterState ${_counterState.value}")
+                Napier.d(tag = TAG) { "_counterState ${_counterState.value}" }
 
                 delay(1000)
                 currentRemainTime = currentRemainTime.minus(1.seconds)
 
                 if (currentRemainTime.isNegative()) {
                     _counterState.value = SleepTimeCounterState.Finish
-                    Timber.tag(TAG).d("_counterState ${_counterState.value}")
+                    Napier.d(tag = TAG) { "_counterState ${_counterState.value}" }
                     break
                 }
             }
@@ -68,7 +68,7 @@ class SleepTimerControllerImpl : SleepTimerController, CoroutineScope {
     override fun cancelTimer() {
         _countingJob?.cancel()
         _counterState.value = SleepTimeCounterState.Idle
-        Timber.tag(TAG).d("_counterState ${_counterState.value}")
+        Napier.d(tag = TAG) { "_counterState ${_counterState.value}" }
     }
 
     override val coroutineContext: CoroutineContext

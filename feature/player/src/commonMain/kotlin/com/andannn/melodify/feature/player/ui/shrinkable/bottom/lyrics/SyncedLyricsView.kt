@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.milliseconds
@@ -72,8 +73,8 @@ fun SyncedLyricsView(
         val info = state.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull {
             it.index == state.currentPlayingIndex
         }
-//        Timber.tag(TAG)
-//            .d("SyncedLyricsView: scroll to ${state.currentPlayingIndex} with info ${info.toString()}")
+        Napier.d(tag = TAG)
+        { "SyncedLyricsView: scroll to ${state.currentPlayingIndex} with info ${info.toString()}" }
         if (info != null) {
             state.lazyListState.animateScrollToItem(
                 state.currentPlayingIndex,

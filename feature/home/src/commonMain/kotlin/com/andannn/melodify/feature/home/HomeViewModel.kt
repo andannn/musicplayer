@@ -11,6 +11,7 @@ import com.andannn.melodify.core.data.MediaContentRepository
 import com.andannn.melodify.core.data.MediaControllerRepository
 import com.andannn.melodify.core.data.UserPreferenceRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,12 +53,12 @@ class HomeViewModel(
         _contentWithCategoryFlow,
         _previewModeFlow,
     ) { contentWithCategory, previewMode ->
-            HomeUiState(
-                currentCategory = contentWithCategory.category,
-                mediaItems = contentWithCategory.mediaItems.toImmutableList(),
-                previewMode = previewMode
-            )
-        }
+        HomeUiState(
+            currentCategory = contentWithCategory.category,
+            mediaItems = contentWithCategory.mediaItems.toImmutableList(),
+            previewMode = previewMode
+        )
+    }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), HomeUiState())
 
     fun onEvent(event: HomeUiEvent) {
@@ -115,8 +116,7 @@ class HomeViewModel(
     }
 
     private suspend fun getMediaItemsAndUpdateState(category: MediaCategory): List<MediaItemModel> {
-// TODO:
-//        Timber.tag(TAG).d("getMediaItemsAndUpdateState: $category")
+        Napier.d(tag = TAG) { "getMediaItemsAndUpdateState: $category" }
 
         return when (category) {
             MediaCategory.ALL_MUSIC -> mediaContentRepository.getAllMediaItems()

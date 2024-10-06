@@ -21,6 +21,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
+            implementation(compose.material3)
 
             implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose.viewmodel)
@@ -111,3 +112,4 @@ tasks.register("moveKeyStoreRelease") {
 tasks.named("preBuild") {
     dependsOn("moveKeyStoreRelease")
 }
+

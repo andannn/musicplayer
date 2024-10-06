@@ -1,11 +1,13 @@
 package com.andannn.melodify
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,7 +20,7 @@ import com.andannn.melodify.feature.common.UiEvent
 import com.andannn.melodify.feature.player.PlayerStateViewModel
 import com.andannn.melodify.feature.player.PlayerUiState
 import com.andannn.melodify.feature.player.ui.ShrinkPlayerHeight
-import com.andannn.melodify.navigation.SmpNavHost
+import com.andannn.melodify.navigation.MelodifyNavHost
 import com.andannn.melodify.feature.common.drawer.MediaOptionBottomSheet
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SleepTimerCountingBottomSheet
@@ -34,7 +36,11 @@ fun MelodifyApp(
     playerStateViewModel: PlayerStateViewModel = koinViewModel(),
     controller: GlobalUiController = koinInject(),
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
         val state by playerStateViewModel.playerUiStateFlow.collectAsState()
 
         SmpNavHostContainer(
@@ -112,7 +118,7 @@ fun SmpNavHostContainer(
     navController: NavHostController = rememberNavController(),
 ) {
     Box(modifier = modifier) {
-        SmpNavHost(
+        MelodifyNavHost(
             modifier = Modifier.fillMaxWidth(),
             navHostController = navController,
             onBackPressed = navController::popBackStack,

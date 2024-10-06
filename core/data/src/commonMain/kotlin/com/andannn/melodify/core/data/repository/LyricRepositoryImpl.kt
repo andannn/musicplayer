@@ -5,6 +5,7 @@ import com.andannn.melodify.core.data.util.toLyricModel
 import com.andannn.melodify.core.database.LyricDao
 import com.andannn.melodify.core.data.LyricRepository
 import com.andannn.melodify.core.network.LrclibService
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -36,8 +37,7 @@ class LyricRepositoryImpl(
                 lyric = lyricData.toLyricEntity()
             )
         } catch (e: Exception) {
-// TODO:
-//            Timber.tag(TAG).d("Error getting lyric: ${e.message}")
+            Napier.d(tag = TAG) { "Error getting lyric: ${e.message}" }
             return
         }
     }

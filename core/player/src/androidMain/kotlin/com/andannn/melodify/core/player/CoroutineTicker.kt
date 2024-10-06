@@ -1,11 +1,11 @@
 package com.andannn.melodify.core.player
 
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "CoroutineTicker"
@@ -20,7 +20,7 @@ class CoroutineTicker(
 
     fun startTicker() {
         if (jobTracker != null) {
-            Timber.tag(TAG).d("startTicker: already started ${this.hashCode()}")
+            Napier.d(tag = TAG) { "startTicker: already started ${this.hashCode()}" }
             return
         }
 

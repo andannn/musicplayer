@@ -1,4 +1,3 @@
-
 plugins {
     id("melodify.kmp.library")
 }
@@ -15,15 +14,11 @@ kotlin {
         }
 
         androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.guava)
 
+            // Media3
+            implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.session)
         }
     }
-}
-
-dependencies {
-    implementation(libs.kotlinx.coroutines.guava)
-
-    // Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
 }

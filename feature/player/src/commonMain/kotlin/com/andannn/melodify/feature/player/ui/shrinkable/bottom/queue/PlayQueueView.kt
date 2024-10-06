@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.andannn.melodify.feature.common.component.ListTileItemView
 import com.andannn.melodify.core.data.model.AudioItemModel
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
@@ -37,11 +38,11 @@ internal fun PlayQueue(
 ) {
     val playQueueState = rememberPlayQueueState(
         onSwapFinished = { from, to ->
-//            Timber.tag(TAG).d("PlayQueueView: drag stopped from $from to $to")
+            Napier.d(tag = TAG) { "PlayQueueView: drag stopped from $from to $to" }
             onSwapFinished(from, to)
         },
         onDeleteFinished = {
-//            Timber.tag(TAG).d("onDeleteFinished $it")
+            Napier.d(tag = TAG) { "onDeleteFinished $it" }
             onDeleteFinished(it)
         }
     )
@@ -81,7 +82,6 @@ internal fun PlayQueue(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReorderableCollectionItemScope.QueueItem(
     item: AudioItemModel,

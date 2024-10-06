@@ -11,6 +11,7 @@ import com.andannn.melodify.core.data.util.uri
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SheetOptionItem
 import com.andannn.melodify.feature.common.drawer.SleepTimerOption
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -73,8 +74,7 @@ internal class GlobalUiControllerImpl(
     }
 
     override suspend fun onEvent(event: UiEvent) {
-// TODO
-//        Timber.tag(TAG).d("onEvent: $event")
+        Napier.d(tag = TAG) { "onEvent: $event" }
         when (event) {
             is UiEvent.OnTimerOptionClick -> {
                 closeSheet()

@@ -5,10 +5,10 @@ import android.content.ComponentName
 import androidx.media3.session.MediaBrowser
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.guava.await
 import kotlinx.coroutines.withTimeout
-import timber.log.Timber
 import kotlin.jvm.Throws
 
 private const val TAG = "MediaBrowserManager"
@@ -33,11 +33,11 @@ class MediaBrowserManagerImpl(
         }
 
     override suspend fun connect() {
-        Timber.tag(TAG).d("connect: start")
+        Napier.d(tag = TAG) { "connect: start" }
         _mediaBrowser = withTimeout(5000) {
             providerMediaBrowser(application).await()
         }
-        Timber.tag(TAG).d("connect: finish")
+        Napier.d(tag = TAG) { "connect: finish" }
     }
 
     override fun disConnect() {

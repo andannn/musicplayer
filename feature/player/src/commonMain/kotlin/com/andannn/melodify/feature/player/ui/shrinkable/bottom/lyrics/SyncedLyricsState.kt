@@ -13,6 +13,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -81,7 +82,7 @@ class SyncedLyricsState(
             snapshotFlow {
                 lazyListState.firstVisibleItemIndex
             }.collect { firstVisibleIndex ->
-//                Timber.tag(TAG).d("First visible item index: $firstVisibleIndex")
+                Napier.d(tag = TAG) { "First visible item index: $firstVisibleIndex" }
                 if (lyricsState is LyricsState.Seeking) {
                     lyricsState = LyricsState.Seeking(
                         currentSeekIndex = firstVisibleIndex,
@@ -92,7 +93,7 @@ class SyncedLyricsState(
     }
 
     private fun onDragStop() {
-//        Timber.tag(TAG).d("onDragStop")
+        Napier.d(tag = TAG) { "onDragStop" }
 
         waitingToCancelSeekJob = launch {
             delay(5 * 1000)
@@ -101,8 +102,7 @@ class SyncedLyricsState(
     }
 
     private fun onDragStart() {
-//        Timber.tag(TAG).d("onDragStart")
-
+        Napier.d(tag = TAG) { "onDragStart" }
         waitingToCancelSeekJob?.cancel()
         lyricsState = LyricsState.Seeking(
             lazyListState.firstVisibleItemIndex,
@@ -125,12 +125,12 @@ class SyncedLyricsState(
             }
             .coerceAtLeast(0)
 
-//        Timber.tag(TAG)
-//            .d("onPositionChanged: $currentPositionMs, currentIndex $currentPlayingIndex")
+        Napier.d(tag = TAG)
+        { "onPositionChanged: $currentPositionMs, currentIndex $currentPlayingIndex" }
     }
 
     fun onSeekTimeClick(time: Long) {
-//        Timber.tag(TAG).d("onSeekTimeClick: $time")
+        Napier.d(tag = TAG) { "onSeekTimeClick: $time" }
 
         lyricsState = LyricsState.WaitingSeekingResult(time)
         onRequestSeekState.value(time)

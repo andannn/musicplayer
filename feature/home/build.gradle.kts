@@ -32,11 +32,6 @@ kotlin {
     }
 }
 
-compose.resources {
-    publicResClass = false
-    generateResClass = auto
-}
-
 android {
     namespace = "com.andannn.melodify.feature.home"
 }

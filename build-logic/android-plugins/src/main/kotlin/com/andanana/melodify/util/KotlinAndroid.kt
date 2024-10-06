@@ -41,16 +41,5 @@ internal fun Project.configureKotlinAndroid(
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
         }
-
-        dependencies {
-            "implementation"(libs.findLibrary("jakewharton.timber").get())
-        }
-    }
-
-    // kotlin extensions
-    tasks.withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
-        }
     }
 }
