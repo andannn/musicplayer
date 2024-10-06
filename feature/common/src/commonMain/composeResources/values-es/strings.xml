@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Inicio</string>
+    <string name="audio_page_title">Canciones</string>
+    <string name="album_page_title">Álbum</string>
+    <string name="artist_page_title">Artista</string>
+    <string name="add_to_queue">Añadir a la cola</string>
+    <string name="delete">Eliminar</string>
+    <string name="play_next">Reproducir siguiente</string>
+    <string name="play_queue">Próxima</string>
+    <string name="lyrics">LYRICS</string>
+    <string name="play">Reproducir</string>
+    <string name="shuffle">Aleatorio</string>
+    <string name="track_count">%1$s canciones</string>
+    <string name="sleep_timer">Temporizador de apagado</string>
+    <string name="end_of_song">Fin de la canción</string>
+    <string name="number_hours">%1$s horas</string>
+    <string name="number_minutes">%1$s minutos</string>
+    <string name="number_seconds">%1$s segundos</string>
+    <string name="cancel_timer">Cancelar temporizador</string>
+</resources>

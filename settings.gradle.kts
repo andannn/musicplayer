@@ -14,8 +14,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Melodify"
-include(":app")
-include(":core:domain")
+include(":composeApp")
 include(":core:data")
 include(":core:network")
 include(":core:player")

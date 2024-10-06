@@ -1,21 +1,24 @@
 plugins {
-    id("musicplayer.android.library")
+    id("melodify.kmp.library")
 }
 
 android {
     namespace = "com.andannn.melodify.feature.core.player"
-
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 }
 
-dependencies {
-    implementation(project(":core:domain"))
+kotlin {
 
-    implementation(libs.kotlinx.coroutines.guava)
+    sourceSets {
+        commonMain.dependencies {
 
-    // Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.session)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.guava)
+
+            // Media3
+            implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.session)
+        }
+    }
 }
