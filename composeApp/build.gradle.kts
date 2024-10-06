@@ -1,21 +1,56 @@
 plugins {
-    id("musicplayer.android.application")
-    id("musicplayer.android.application.compose")
-    id("musicplayer.android.testing")
+    id("melodify.kmp.application")
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core:data"))
+            implementation(project(":core:datastore"))
+            implementation(project(":core:database"))
+            implementation(project(":core:network"))
+            implementation(project(":core:player"))
+
+            implementation(project(":feature:common"))
+            implementation(project(":feature:home"))
+            implementation(project(":feature:player"))
+            implementation(project(":feature:playlist"))
+
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.ui)
+
+            implementation(libs.koin.core.viewmodel)
+            implementation(libs.koin.compose.viewmodel)
+
+            implementation(libs.navigation.compose)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.core.splashscreen)
+            implementation(libs.androidx.activity.compose)
+
+            // Firebase
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.analytics)
+            implementation(libs.firebase.crashlytics)
+        }
+    }
 }
 
 android {
     namespace = "com.andannn.melodify"
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
         applicationId = "com.andannn.melodify"
         versionCode = 13
         versionName = "0.1.7"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
         signingConfig = signingConfigs.getByName("debug")
     }
 
@@ -75,34 +110,4 @@ tasks.register("moveKeyStoreRelease") {
 
 tasks.named("preBuild") {
     dependsOn("moveKeyStoreRelease")
-}
-
-dependencies {
-    implementation(project(":core:data"))
-    implementation(project(":core:datastore"))
-    implementation(project(":core:database"))
-    implementation(project(":core:network"))
-    implementation(project(":core:player"))
-
-    implementation(project(":feature:common"))
-    implementation(project(":feature:home"))
-    implementation(project(":feature:player"))
-    implementation(project(":feature:playlist"))
-
-    implementation(libs.androidx.core.ktx)
-
-    implementation(libs.androidx.core.splashscreen)
-
-    // Activity
-    implementation(libs.androidx.activity.compose)
-
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
-
-    implementation(libs.androidx.compose.material3)
-
-    // Firebase
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
 }

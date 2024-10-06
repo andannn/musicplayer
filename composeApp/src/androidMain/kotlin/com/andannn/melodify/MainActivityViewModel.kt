@@ -6,13 +6,10 @@ import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.feature.common.BottomSheetStateProvider
 import com.andannn.melodify.feature.common.DeleteMediaItemEventProvider
 import com.andannn.melodify.core.player.MediaBrowserManager
-import com.andannn.melodify.feature.common.UiEvent
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
 import timber.log.Timber
 
 private const val TAG = "MainActivityViewModel"
@@ -38,12 +35,6 @@ class MainActivityViewModel(
                 Timber.tag(TAG).d("connect error:  $e")
                 _state.value = MainUiState.Error(e)
             }
-        }
-    }
-
-    fun onRequestDismissSheet(event: UiEvent) {
-        viewModelScope.launch {
-            controller.onEvent(event)
         }
     }
 

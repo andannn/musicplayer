@@ -46,5 +46,9 @@ gradlePlugin {
             id = "melodify.kmp.library"
             implementationClass = "KotlinMultiplatformLibraryConventionPlugin"
         }
+        register("kotlinMultiplatformApplication") {
+            id = "melodify.kmp.application"
+            implementationClass = "KMPApplicationConventionPlugin"
+        }
     }
 }

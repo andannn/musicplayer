@@ -43,8 +43,6 @@ internal fun Project.configureKotlinAndroid(
         }
 
         dependencies {
-            "implementation"(libs.findLibrary("kotlinx.coroutines.android").get())
-            "implementation"(libs.findLibrary("kotlinx.collections.immutable").get())
             "implementation"(libs.findLibrary("jakewharton.timber").get())
         }
     }

@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.andannn.melodify.feature.common.GlobalUiController
 import com.andannn.melodify.feature.common.UiEvent
 import com.andannn.melodify.feature.player.PlayerStateViewModel
 import com.andannn.melodify.feature.player.PlayerUiState
@@ -23,17 +24,18 @@ import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SleepTimerCountingBottomSheet
 import com.andannn.melodify.feature.common.drawer.SleepTimerOptionBottomSheet
 import com.andannn.melodify.feature.player.PlayerAreaView
-import org.koin.androidx.compose.koinViewModel
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MelodifyApp(
     modifier: Modifier = Modifier,
     playerStateViewModel: PlayerStateViewModel = koinViewModel(),
-    mainViewModel: MainActivityViewModel = koinViewModel(),
+    controller: GlobalUiController = koinInject(),
 ) {
-    Surface(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         val state by playerStateViewModel.playerUiStateFlow.collectAsState()
-        val bottomSheetModel by mainViewModel.bottomSheetModel.collectAsState(null)
 
         SmpNavHostContainer(
             modifier = Modifier.fillMaxSize(),
@@ -46,10 +48,14 @@ fun MelodifyApp(
             )
         }
 
+        val bottomSheetModel by controller.bottomSheetModel.collectAsState(null)
+        val scope = rememberCoroutineScope()
         BottomSheetContainer(
             bottomSheet = bottomSheetModel,
             onEvent = { event ->
-                mainViewModel.onRequestDismissSheet(event)
+                scope.launch {
+                    controller.onEvent(event)
+                }
             }
         )
     }
