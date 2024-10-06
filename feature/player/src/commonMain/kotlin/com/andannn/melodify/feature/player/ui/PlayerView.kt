@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalDensity
+import com.andannn.melodify.feature.common.component.AndroidBackHandler
 import com.andannn.melodify.feature.common.dynamic_theming.DynamicThemePrimaryColorsFromImage
 import com.andannn.melodify.feature.common.theme.MinContrastOfPrimaryVsSurface
 import com.andannn.melodify.feature.common.dynamic_theming.rememberDominantColorState
@@ -60,10 +61,10 @@ internal fun PlayerView(
             }
         }
 
-//        BackHandler(
-//            enabled = layoutState.playerState == PlayerState.Expand,
-//            layoutState::shrinkPlayerLayout,
-//        )
+        AndroidBackHandler(
+            enabled = layoutState.playerState == PlayerState.Expand,
+            layoutState::shrinkPlayerLayout,
+        )
 
         val surfaceColor = MaterialTheme.colorScheme.surface
         val dominantColorState =

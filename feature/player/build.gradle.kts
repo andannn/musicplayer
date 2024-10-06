@@ -9,7 +9,6 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.ui.tooling)
-
         }
 
         commonMain.dependencies {

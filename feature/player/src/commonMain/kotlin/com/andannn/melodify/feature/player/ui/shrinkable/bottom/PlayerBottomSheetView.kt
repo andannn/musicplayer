@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.feature.common.component.AndroidBackHandler
 import com.andannn.melodify.feature.player.ui.BottomSheetState
 import com.andannn.melodify.feature.player.LyricState
 import com.andannn.melodify.feature.player.PlayerUiEvent
@@ -51,6 +53,7 @@ import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.roundToInt
@@ -87,11 +90,11 @@ internal fun PlayerBottomSheetView(
     }
 
     val sheetState = rememberPlayerBottomSheetState()
-//    BackHandler(enabled = isExpand) {
-//        scope.launch {
-//            state.animateTo(BottomSheetState.Shrink)
-//        }
-//    }
+    AndroidBackHandler(enabled = isExpand) {
+        scope.launch {
+            state.animateTo(BottomSheetState.Shrink)
+        }
+    }
 
     Surface(
         modifier =
