@@ -36,4 +36,8 @@ compose.resources {
 
 android {
     namespace = "com.andannn.melodify.common"
+
+    buildFeatures {
+        compose = true
+    }
 }
