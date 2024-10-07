@@ -9,9 +9,13 @@ interface MediaContentObserverRepository {
 
     val allAudioUri: String
 
+    val allGenreUri: String
+
     fun getAlbumUri(albumId: Long): String
 
     fun getArtistUri(artistId: Long): String
+
+    fun getGenreUri(genreId: Long): String
 
     fun getContentChangedEventFlow(uri: String): Flow<Unit>
 }

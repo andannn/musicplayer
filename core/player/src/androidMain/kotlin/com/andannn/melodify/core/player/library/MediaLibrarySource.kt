@@ -9,10 +9,10 @@ import com.andannn.melodify.core.player.library.mediastore.MediaStoreSource
 import com.andannn.melodify.core.player.library.mediastore.model.AlbumData
 import com.andannn.melodify.core.player.library.mediastore.model.ArtistData
 import com.andannn.melodify.core.player.library.mediastore.model.AudioData
+import com.andannn.melodify.core.player.library.mediastore.model.GenreData
 import com.andannn.melodify.core.player.util.buildMediaItem
 
 interface MediaLibrarySource {
-
     fun getLibraryRoot(): MediaItem
 
     suspend fun getChildren(mediaId: String): List<MediaItem>
@@ -48,6 +48,8 @@ class MediaLibrarySourceImpl(
             mediaStoreSource.getAllAlbumData().map(::buildAlbumMediaItem)
         } else if (mediaId == LibraryRootCategory.ARTIST.mediaId) {
             mediaStoreSource.getAllArtistData().map(::buildArtistMediaItem)
+        } else if (mediaId == LibraryRootCategory.GENRE.mediaId) {
+            mediaStoreSource.getAllGenreData().map(::buildGenreMediaItem)
         } else if (mediaId == LibraryRootCategory.MINE_PLAYLIST.mediaId) {
 // TODO:
             emptyList()
@@ -66,6 +68,12 @@ class MediaLibrarySourceImpl(
                     }
                 }
 
+                LibraryRootCategory.GENRE -> {
+                    mediaStoreSource.getAudioOfGenre(id).map { music ->
+                        buildMusicMediaItem(music)
+                    }
+                }
+
                 LibraryRootCategory.MINE_PLAYLIST -> TODO()
                 else -> emptyList()
             }
@@ -73,6 +81,7 @@ class MediaLibrarySourceImpl(
             emptyList()
         }
     }
+
 
     override suspend fun getMediaItem(mediaId: String): MediaItem? {
         Log.d(TAG, "getMediaItem: mediaId $mediaId")
@@ -107,8 +116,15 @@ class MediaLibrarySourceImpl(
                     }
                 }
 
+                LibraryRootCategory.GENRE -> {
+                    mediaStoreSource.getGenreById(id)?.let {
+                        buildGenreMediaItem(it)
+                    }
+                }
+
                 LibraryRootCategory.MINE_PLAYLIST -> TODO()
-                else -> null
+
+                LibraryRootCategory.ALL_MUSIC -> error("")
             }
         } else {
             null
@@ -130,6 +146,15 @@ private fun buildAlbumMediaItem(album: AlbumData): MediaItem =
         isBrowsable = true,
         mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED,
     )
+
+private fun buildGenreMediaItem(genreData: GenreData): MediaItem = buildMediaItem(
+    title = genreData.name ?: "Unknown",
+    mediaId = LibraryRootCategory.GENRE.childrenPrefix + genreData.genreId,
+    imageUri = Uri.EMPTY,
+    isPlayable = false,
+    isBrowsable = true,
+    mediaType = MediaMetadata.MEDIA_TYPE_FOLDER_MIXED,
+)
 
 private fun buildArtistMediaItem(artist: ArtistData): MediaItem =
     buildMediaItem(

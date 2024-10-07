@@ -1,12 +1,12 @@
 package com.andannn.melodify.core.data.repository
 
 import android.net.Uri
-import android.provider.MediaStore
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.GenreItemModel
 import com.andannn.melodify.core.player.library.LibraryRootCategory
 import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.data.util.uri
@@ -42,6 +42,16 @@ fun MediaItem.toAppItem(): MediaItemModel = when {
         trackCount = mediaMetadata.totalTrackCount ?: 0,
         artWorkUri = mediaMetadata.artworkUri.toString()
     )
+
+    mediaId.contains(LibraryRootCategory.GENRE.childrenPrefix) -> {
+        val id = mediaId.substringAfter(LibraryRootCategory.GENRE.childrenPrefix)
+        GenreItemModel(
+            id = id.toLong(),
+            name = mediaMetadata.title.toString(),
+            trackCount = mediaMetadata.totalTrackCount ?: 0,
+            artWorkUri = mediaMetadata.artworkUri.toString()
+        )
+    }
 
     else -> error("Not a AppMediaItem $this")
 }

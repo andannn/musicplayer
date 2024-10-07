@@ -5,11 +5,15 @@ import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.provider.MediaStore
+import com.andannn.melodify.core.player.library.UNKNOWN_GENRE_ID
 import com.andannn.melodify.core.player.library.mediastore.model.AlbumData
 import com.andannn.melodify.core.player.library.mediastore.model.ArtistData
 import com.andannn.melodify.core.player.library.mediastore.model.AudioData
+import com.andannn.melodify.core.player.library.mediastore.model.GenreData
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,6 +24,10 @@ interface MediaStoreSource {
 
     suspend fun getAllArtistData(): List<ArtistData>
 
+    suspend fun getAllGenreData(): List<GenreData>
+
+    suspend fun getGenreById(id: Long): GenreData?
+
     suspend fun getArtistById(id: Long): ArtistData?
 
     suspend fun getAlbumById(id: Long): AlbumData?
@@ -27,6 +35,8 @@ interface MediaStoreSource {
     suspend fun getAudioInAlbum(id: Long): List<AudioData>
 
     suspend fun getAudioOfArtist(id: Long): List<AudioData>
+
+    suspend fun getAudioOfGenre(id: Long): List<AudioData>
 }
 
 class MediaStoreSourceImpl(
@@ -52,6 +62,27 @@ class MediaStoreSourceImpl(
         )?.use { cursor ->
             parseArtistInfoCursor(cursor)
         } ?: emptyList()
+
+    override suspend fun getAllGenreData() =
+        app.contentResolver.query2(
+            uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
+        )?.use { cursor ->
+            parseGenreInfoCursor(cursor)
+        } ?: emptyList()
+
+    override suspend fun getGenreById(id: Long): GenreData? {
+        if (id == UNKNOWN_GENRE_ID) {
+            return GenreData(UNKNOWN_GENRE_ID, "Unknown")
+        }
+
+        return app.contentResolver.query2(
+            uri = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
+            selection = "${MediaStore.Audio.Genres._ID} = ?",
+            selectionArgs = listOf(id.toString()).toTypedArray(),
+        )?.use { cursor ->
+            parseGenreInfoCursor(cursor)
+        }?.firstOrNull()
+    }
 
     override suspend fun getArtistById(id: Long) =
         app.contentResolver.query2(
@@ -89,6 +120,45 @@ class MediaStoreSourceImpl(
             parseMusicInfoCursor(cursor)
         } ?: emptyList()
 
+    override suspend fun getAudioOfGenre(id: Long): List<AudioData> {
+        if (VERSION.SDK_INT < Build.VERSION_CODES.R) return emptyList()
+
+        val result = if (id == UNKNOWN_GENRE_ID) {
+            // query genre id is not exist.
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Media.GENRE_ID} IS NULL",
+                selectionArgs = null,
+            )
+        } else {
+            app.contentResolver.query2(
+                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                selection = "${MediaStore.Audio.Media.GENRE_ID} = ?",
+                selectionArgs = listOf(id.toString()).toTypedArray(),
+            )
+        }
+
+        return result?.use { cursor ->
+            parseMusicInfoCursor(cursor)
+        } ?: emptyList()
+    }
+
+    private fun parseGenreInfoCursor(cursor: Cursor): List<GenreData> {
+        val itemList = mutableListOf<GenreData>()
+
+        val idIndex = cursor.getColumnIndex(MediaStore.Audio.Genres._ID)
+        val genreIndex = cursor.getColumnIndex(MediaStore.Audio.Genres.NAME)
+        while (cursor.moveToNext()) {
+            itemList.add(
+                GenreData(
+                    genreId = cursor.getLong(idIndex),
+                    name = cursor.getString(genreIndex),
+                ),
+            )
+        }
+        return itemList
+    }
+
     private fun parseMusicInfoCursor(cursor: Cursor): List<AudioData> {
         val itemList = mutableListOf<AudioData>()
 
@@ -104,6 +174,22 @@ class MediaStoreSourceImpl(
         val artistIdIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)
         val cdTrackNumberIndex = cursor.getColumnIndex(MediaStore.Audio.Media.CD_TRACK_NUMBER)
         val discNumberIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DISC_NUMBER)
+        val numTracksIndex = cursor.getColumnIndex(MediaStore.Audio.Media.NUM_TRACKS)
+        val bitrateIndex = cursor.getColumnIndex(MediaStore.Audio.Media.BITRATE)
+        val yearIndex = cursor.getColumnIndex(MediaStore.Audio.Media.YEAR)
+        val trackIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TRACK)
+        val composerIndex = cursor.getColumnIndex(MediaStore.Audio.Media.COMPOSER)
+        val genreIndex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            cursor.getColumnIndex(MediaStore.Audio.Media.GENRE)
+        } else {
+            null
+        }
+        val genreIdIndex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            cursor.getColumnIndex(MediaStore.Audio.Media.GENRE_ID)
+        } else {
+            null
+        }
+
         while (cursor.moveToNext()) {
             itemList.add(
                 AudioData(
@@ -118,7 +204,14 @@ class MediaStoreSourceImpl(
                     artist = cursor.getString(artistIndex),
                     artistId = cursor.getLong(artistIdIndex),
                     cdTrackNumber = cursor.getInt(cdTrackNumberIndex),
-                    discNumberIndex = cursor.getInt(discNumberIndex),
+                    discNumber = cursor.getInt(discNumberIndex),
+                    numTracks = cursor.getInt(numTracksIndex),
+                    bitrate = cursor.getInt(bitrateIndex),
+                    genre = genreIndex?.let { cursor.getString(it) },
+                    genreId = genreIdIndex?.let { cursor.getLong(it) },
+                    year = cursor.getString(yearIndex),
+                    track = cursor.getString(trackIndex),
+                    composer = cursor.getString(composerIndex),
                 ),
             )
         }
@@ -150,12 +243,15 @@ class MediaStoreSourceImpl(
         val idIndex = cursor.getColumnIndex(MediaStore.Audio.Albums._ID)
         val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
         val numberOfSongsIndex = cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)
+        val numberOfSongsForArtistIndex =
+            cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS_FOR_ARTIST)
         while (cursor.moveToNext()) {
             itemList.add(
                 AlbumData(
                     albumId = cursor.getLong(idIndex),
                     title = cursor.getString(albumIndex),
                     trackCount = cursor.getInt(numberOfSongsIndex),
+                    numberOfSongsForArtist = cursor.getInt(numberOfSongsForArtistIndex),
                 ),
             )
         }

@@ -7,6 +7,7 @@ import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.data.MediaContentRepository
 import com.andannn.melodify.core.data.MediaControllerRepository
 import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
+import com.andannn.melodify.core.data.model.GenreItemModel
 import com.andannn.melodify.core.data.util.uri
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.common.drawer.SheetOptionItem
@@ -118,6 +119,7 @@ internal class GlobalUiControllerImpl(
                     SheetModel.TimerOptionSheet -> {
                         closeSheet()
                     }
+
                     is SheetModel.TimerRemainTimeSheet -> {
                         cancelCollectingRemainTime()
                         closeSheet()
@@ -161,9 +163,14 @@ internal class GlobalUiControllerImpl(
                 mediaContentRepository.getAudiosOfArtist(source.id)
             }
 
+            is GenreItemModel -> {
+                mediaContentRepository.getAudiosOfGenre(source.id)
+            }
+
             is AudioItemModel -> {
                 listOf(source)
             }
+
         }
         val uris = items.map { it.uri }
 
@@ -204,6 +211,10 @@ internal class GlobalUiControllerImpl(
 
             is ArtistItemModel -> {
                 mediaContentRepository.getAudiosOfArtist(source.id)
+            }
+
+            is GenreItemModel -> {
+                mediaContentRepository.getAudiosOfGenre(source.id)
             }
 
             is AudioItemModel -> {

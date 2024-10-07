@@ -104,15 +104,17 @@ class HomeViewModel(
                 MediaCategory.ALL_MUSIC -> getContentChangedEventFlow(allAudioUri)
                 MediaCategory.ALBUM -> getContentChangedEventFlow(allAlbumUri)
                 MediaCategory.ARTIST -> getContentChangedEventFlow(allArtistUri)
+                MediaCategory.GENRE -> getContentChangedEventFlow(allGenreUri)
             }
         }
 
-        return contentChangedFlow.mapLatest {
-            CategoryWithContents(
-                category = category,
-                mediaItems = getMediaItemsAndUpdateState(category)
-            )
-        }
+        return contentChangedFlow
+            .mapLatest {
+                CategoryWithContents(
+                    category = category,
+                    mediaItems = getMediaItemsAndUpdateState(category)
+                )
+            }
     }
 
     private suspend fun getMediaItemsAndUpdateState(category: MediaCategory): List<MediaItemModel> {
@@ -122,6 +124,7 @@ class HomeViewModel(
             MediaCategory.ALL_MUSIC -> mediaContentRepository.getAllMediaItems()
             MediaCategory.ALBUM -> mediaContentRepository.getAllAlbums()
             MediaCategory.ARTIST -> mediaContentRepository.getAllArtist()
+            MediaCategory.GENRE -> mediaContentRepository.getAllGenre()
         }
     }
 }

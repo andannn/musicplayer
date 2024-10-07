@@ -5,13 +5,17 @@ const val ROOT_ID = "[rootID]"
 const val ALL_MUSIC_ID = "[all_musicID]"
 const val ALBUM_ID = "[albumID]"
 const val ARTIST_ID = "[artistID]"
+const val GENRE_ID = "[genreID]"
 const val MINE_PLAYLIST_ID = "[mine_play_list_ID]"
 
 const val ALBUM_PREFIX = "album_"
 const val ARTIST_PREFIX = "artist_"
+const val GENRE_PREFIX = "genre_"
 private const val MINE_PLAYLIST_PREFIX = "playlist_"
 
 const val PLAYABLE_MEDIA_ITEM_PREFIX = "media_item_"
+
+internal const val UNKNOWN_GENRE_ID =  0L
 
 enum class LibraryRootCategory(
     val mediaId: String,
@@ -32,6 +36,11 @@ enum class LibraryRootCategory(
         mediaId = ARTIST_ID,
         childrenPrefix = ARTIST_PREFIX,
         childrenMatchRegex = "$ARTIST_PREFIX\\d+",
+    ),
+    GENRE(
+        mediaId = GENRE_ID,
+        childrenPrefix = GENRE_PREFIX,
+        childrenMatchRegex = "$GENRE_PREFIX\\d+",
     ),
     MINE_PLAYLIST(
         mediaId = MINE_PLAYLIST_ID,
