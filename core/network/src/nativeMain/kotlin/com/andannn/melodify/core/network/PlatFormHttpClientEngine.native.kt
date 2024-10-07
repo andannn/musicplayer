@@ -1,6 +1,6 @@
 package com.andannn.melodify.core.network
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 
-internal actual val PlatformHttpClient: HttpClient
-    get() = TODO("Not yet implemented")
+internal actual val PlatformHttpClient: HttpClient = HttpClient(CIO)

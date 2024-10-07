@@ -2,13 +2,13 @@ package com.andannn.melodify.core.database.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.AndroidSQLiteDriver
-import com.andannn.melodify.core.database.LyricDao
 import com.andannn.melodify.core.database.MelodifyDataBase
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.Module
 import org.koin.dsl.module
 
-actual val databaseModule = module {
+internal actual val platformDatabaseModule: Module = module {
     single<MelodifyDataBase> {
         val appContext = androidContext().applicationContext
         val dbFile = appContext.getDatabasePath("melodify_database.db")
@@ -20,6 +20,4 @@ actual val databaseModule = module {
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
     }
-
-    single<LyricDao> { get<MelodifyDataBase>().getLyricDao() }
 }

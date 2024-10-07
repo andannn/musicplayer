@@ -8,7 +8,6 @@ import com.andannn.melodify.core.data.repository.MediaContentObserverRepositoryI
 import com.andannn.melodify.core.data.repository.MediaContentRepositoryImpl
 import com.andannn.melodify.core.data.repository.MediaControllerRepositoryImpl
 import com.andannn.melodify.core.data.repository.PlayerStateMonitoryRepositoryImpl
-import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
