@@ -13,7 +13,7 @@
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>NSAppleMusicUsageDescription</key>
-    <string>我们需要访问您的音乐库以播放您的音乐。</string>
+        <string>我们需要访问您的音乐库以播放您的音乐。</string>
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
