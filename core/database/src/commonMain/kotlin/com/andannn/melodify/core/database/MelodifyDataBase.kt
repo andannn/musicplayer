@@ -1,7 +1,9 @@
 package com.andannn.melodify.core.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import com.andannn.melodify.core.database.entity.LyricEntity
 import com.andannn.melodify.core.database.entity.LyricWithAudioCrossRef
 
@@ -17,6 +19,13 @@ internal object Tables {
     ],
     version = 1
 )
+@ConstructedBy(MelodifyDataBaseConstructor::class)
 abstract class MelodifyDataBase : RoomDatabase() {
     abstract fun getLyricDao(): LyricDao
+}
+
+// The Room compiler generates the `actual` implementations.
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object MelodifyDataBaseConstructor : RoomDatabaseConstructor<MelodifyDataBase> {
+    override fun initialize(): MelodifyDataBase
 }
