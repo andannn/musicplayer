@@ -50,6 +50,7 @@ import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.GenreItemModel
 import com.andannn.melodify.feature.common.component.LargePreviewCard
 import com.andannn.melodify.feature.common.component.ListTileItemView
 import com.andannn.melodify.core.data.model.MediaListSource
@@ -83,6 +84,10 @@ fun HomeRoute(
 
             is AudioItemModel -> {
                 homeViewModel.onEvent(HomeUiEvent.OnPlayMusic(mediaItem))
+            }
+
+            is GenreItemModel -> {
+                onNavigateToPlayList(mediaItem.id.toString(), MediaListSource.GENRE)
             }
         }
     }
@@ -248,7 +253,7 @@ private fun <T : MediaItemModel> LazyGridContent(
             LargePreviewCard(
                 modifier = Modifier
                     .padding(horizontal = 4.dp, vertical = 3.dp)
-                    .animateItemPlacement(),
+                    .animateItem(),
                 artCoverUri = item.artWorkUri,
                 title = item.name,
                 subTitle = subTitle(item),
@@ -291,7 +296,7 @@ private fun <T : MediaItemModel> LazyListContent(
                 modifier =
                 Modifier
                     .padding(vertical = 4.dp)
-                    .animateItemPlacement(),
+                    .animateItem(),
                 isActive = false,
                 albumArtUri = item.artWorkUri,
                 title = item.name,

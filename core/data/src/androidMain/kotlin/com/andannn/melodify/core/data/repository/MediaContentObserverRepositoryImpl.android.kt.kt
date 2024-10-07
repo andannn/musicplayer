@@ -27,12 +27,19 @@ internal class MediaContentObserverRepositoryImpl(
     override val allAudioUri: String
         get() = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString()
 
+    override val allGenreUri: String
+        get() = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.toString()
+
     override fun getAlbumUri(albumId: Long): String {
         return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString() + "/" + albumId
     }
 
     override fun getArtistUri(artistId: Long): String {
         return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString() + "/" + artistId
+    }
+
+    override fun getGenreUri(genreId: Long): String {
+        return MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.toString() + "/" + genreId
     }
 
     override fun getContentChangedEventFlow(uri: String): Flow<Unit> {

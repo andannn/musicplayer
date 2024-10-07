@@ -45,3 +45,15 @@ data class ArtistItemModel(
         val DEFAULT = ArtistItemModel(0, "", "", 0)
     }
 }
+
+data class GenreItemModel constructor(
+    override val id: Long,
+    override val name: String,
+    override val artWorkUri: String,
+    val trackCount: Int,
+) : MediaItemModel {
+    companion object {
+        val DEFAULT = GenreItemModel(0, "", "", 0)
+        val UNKNOWN = GenreItemModel(-1, "", "", 0)
+    }
+}

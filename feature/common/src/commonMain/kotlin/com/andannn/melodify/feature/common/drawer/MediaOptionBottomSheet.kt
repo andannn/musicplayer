@@ -37,6 +37,7 @@ import coil3.compose.AsyncImage
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.core.data.model.GenreItemModel
 import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.feature.common.icons.SmpIcon
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
@@ -49,7 +50,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun MediaOptionBottomSheet(
     optionSheet: SheetModel.MediaOptionSheet,
     modifier: Modifier = Modifier,
-    scope: CoroutineScope = rememberCoroutineScope(),
     onClickOption: (SheetOptionItem) -> Unit = {},
     onRequestDismiss: () -> Unit = {}
 ) {
@@ -142,6 +142,10 @@ private fun MediaItemModel.subTitle() = when (this) {
 
     is AudioItemModel -> {
         artist
+    }
+
+    is GenreItemModel -> {
+        ""
     }
 }
 

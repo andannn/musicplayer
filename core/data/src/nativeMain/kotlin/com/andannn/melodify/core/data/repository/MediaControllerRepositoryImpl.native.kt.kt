@@ -54,7 +54,6 @@ internal class MediaControllerRepositoryImpl(
         return false
     }
 
-
     override fun observeRemainTime() = flow {
         emit(0.milliseconds)
     }

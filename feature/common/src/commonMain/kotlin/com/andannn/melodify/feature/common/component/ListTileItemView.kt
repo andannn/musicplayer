@@ -1,6 +1,7 @@
 package com.andannn.melodify.feature.common.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -25,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 
@@ -75,7 +75,7 @@ fun ListTileItemView(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 } else {
-                    AsyncImage(
+                        AsyncImage(
                         modifier =
                         Modifier
                             .size(50.dp)
@@ -90,16 +90,19 @@ fun ListTileItemView(
 
             Column(
                 modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = subTitle,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                if (subTitle.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        text = subTitle,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
 
             if (swapIconModifier == null) {
@@ -115,46 +118,5 @@ fun ListTileItemView(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun MusicCardPreview1() {
-    MaterialTheme {
-        ListTileItemView(
-            albumArtUri = "",
-            title = "Title",
-            subTitle = "artist",
-            showTrackNum = true,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun MusicCardPreviewActive() {
-    MaterialTheme {
-        ListTileItemView(
-            albumArtUri = "",
-            title = "Title",
-            trackNum = 9,
-            subTitle = "artist",
-            isActive = true,
-            showTrackNum = true,
-        )
-    }
-}
-@Preview
-@Composable
-private fun MusicCardSwap() {
-    MaterialTheme {
-        ListTileItemView(
-            albumArtUri = "",
-            swapIconModifier = Modifier,
-            title = "Title",
-            subTitle = "artist",
-            showTrackNum = true,
-        )
     }
 }

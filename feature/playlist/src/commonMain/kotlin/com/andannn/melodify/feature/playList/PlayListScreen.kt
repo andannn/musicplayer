@@ -47,6 +47,8 @@ import com.andannn.melodify.feature.common.component.ExtraPaddingBottom
 import com.andannn.melodify.feature.common.component.ListTileItemView
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
+import com.andannn.melodify.core.data.model.GenreItemModel
+import com.andannn.melodify.core.data.model.MediaItemModel
 import com.andannn.melodify.core.data.model.MediaListSource
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -89,13 +91,24 @@ fun PlayListScreen(
                 onBackPressed = onBackPressed,
             )
         }
+
+        MediaListSource.GENRE -> {
+            CommonPlayListContent(
+                modifier = modifier,
+                header = uiState.headerInfoItem ?: GenreItemModel.DEFAULT,
+                audioList = uiState.audioList,
+                playingMediaItem = uiState.playingMediaItem,
+                onEvent = viewModel::onEvent,
+                onBackPressed = onBackPressed,
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CommonPlayListContent(
-    header: ArtistItemModel,
+    header: MediaItemModel,
     audioList: ImmutableList<AudioItemModel>,
     playingMediaItem: AudioItemModel?,
     modifier: Modifier = Modifier,

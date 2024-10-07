@@ -19,6 +19,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -60,11 +61,13 @@ class PlayListViewModel(
             when (mediaListSource) {
                 MediaListSource.ALBUM -> getAlbumUri(id.toLong())
                 MediaListSource.ARTIST -> getArtistUri(id.toLong())
+                MediaListSource.GENRE -> getGenreUri(id.toLong())
             }
         }
 
     private val playListContentFlow =
         contentObserverRepository.getContentChangedEventFlow(contentUri)
+            .distinctUntilChanged()
             .mapLatest { _ ->
                 getPlayListContent()
             }
@@ -97,13 +100,24 @@ class PlayListViewModel(
 
             MediaListSource.ARTIST -> {
                 val headerItem =
-                    mediaContentRepository.getArtistByAlbumId(id.toLong())
+                    mediaContentRepository.getArtistByArtistId(id.toLong())
 
                 val playableItems = mediaContentRepository.getAudiosOfArtist(id.toLong())
                 PlayListContent(
                     headerInfoItem = headerItem,
                     audioList = playableItems.toImmutableList(),
                 )
+            }
+
+            MediaListSource.GENRE -> {
+                val headerItem = mediaContentRepository.getGenreByGenreId(id.toLong())
+
+                val playableItems = mediaContentRepository.getAudiosOfGenre(id.toLong())
+                PlayListContent(
+                    headerInfoItem = headerItem,
+                    audioList = playableItems.toImmutableList(),
+                )
+
             }
         }
     }
