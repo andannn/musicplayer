@@ -1,5 +1,10 @@
 package com.andannn.melodify.core.data.repository
 
+import android.content.Context
+import android.database.ContentObserver
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
 import com.andannn.melodify.core.data.MediaContentRepository
 import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
@@ -14,17 +19,98 @@ import com.andannn.melodify.core.player.library.ARTIST_PREFIX
 import com.andannn.melodify.core.player.library.GENRE_ID
 import com.andannn.melodify.core.player.library.GENRE_PREFIX
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.guava.await
 
 private const val TAG = "MediaContentRepository"
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class MediaContentRepositoryImpl(
+    context: Context,
     private val mediaBrowserManager: MediaBrowserManager,
 ) : MediaContentRepository {
     private val mediaBrowser
         get() = mediaBrowserManager.mediaBrowser
 
-    override suspend fun getAllMediaItems() = mediaBrowser.getChildren(
+    private val contentResolver = context.contentResolver
+
+    override fun getAllMediaItemsFlow() =
+        contentChangedEventFlow(allAudioUri)
+            .mapLatest {
+                getAllMediaItems()
+            }
+            .distinctUntilChanged()
+
+    override fun getAllAlbumsFlow() =
+        contentChangedEventFlow(allAlbumUri)
+            .mapLatest {
+                getAllAlbums()
+            }
+            .distinctUntilChanged()
+
+    override fun getAllArtistFlow() =
+        contentChangedEventFlow(allArtistUri)
+            .mapLatest {
+                getAllArtist()
+            }
+            .distinctUntilChanged()
+
+    override fun getAllGenreFlow() =
+        contentChangedEventFlow(allGenreUri)
+            .mapLatest {
+                getAllGenre()
+            }
+            .distinctUntilChanged()
+
+    override fun getAudiosOfAlbumFlow(albumId: Long) =
+        contentChangedEventFlow(getAlbumUri(albumId))
+            .mapLatest {
+                getAudiosOfAlbum(albumId)
+            }
+            .distinctUntilChanged()
+
+    override fun getAudiosOfArtistFlow(artistId: Long) =
+        contentChangedEventFlow(getArtistUri(artistId))
+            .mapLatest {
+                getAudiosOfArtist(artistId)
+            }
+            .distinctUntilChanged()
+
+    override fun getAudiosOfGenreFlow(genreId: Long) =
+        contentChangedEventFlow(getGenreUri(genreId))
+            .mapLatest {
+                getAudiosOfGenre(genreId)
+            }
+            .distinctUntilChanged()
+
+    override fun getAlbumByAlbumIdFlow(albumId: Long) =
+        contentChangedEventFlow(getAlbumUri(albumId))
+            .mapLatest {
+                getAlbumByAlbumId(albumId)
+            }
+            .distinctUntilChanged()
+
+    override fun getArtistByArtistIdFlow(artistId: Long) =
+        contentChangedEventFlow(getArtistUri(artistId))
+            .mapLatest {
+                getArtistByArtistId(artistId)
+            }
+            .distinctUntilChanged()
+
+    override fun getGenreByGenreIdFlow(genreId: Long) =
+        contentChangedEventFlow(getGenreUri(genreId))
+            .mapLatest {
+                getGenreByGenreId(genreId)
+            }
+            .distinctUntilChanged()
+
+    private suspend fun getAllMediaItems() = mediaBrowser.getChildren(
         ALL_MUSIC_ID,
         0,
         Int.MAX_VALUE,
@@ -35,7 +121,7 @@ internal class MediaContentRepositoryImpl(
         }
         ?: emptyList()
 
-    override suspend fun getAllAlbums() = mediaBrowser.getChildren(
+    private suspend fun getAllAlbums() = mediaBrowser.getChildren(
         ALBUM_ID,
         0,
         Int.MAX_VALUE,
@@ -46,7 +132,7 @@ internal class MediaContentRepositoryImpl(
         }
         ?: emptyList()
 
-    override suspend fun getAllArtist() = mediaBrowser.getChildren(
+    private suspend fun getAllArtist() = mediaBrowser.getChildren(
         ARTIST_ID,
         0,
         Int.MAX_VALUE,
@@ -58,7 +144,7 @@ internal class MediaContentRepositoryImpl(
         }
         ?: emptyList()
 
-    override suspend fun getAllGenre(): List<GenreItemModel> = mediaBrowser.getChildren(
+    private suspend fun getAllGenre(): List<GenreItemModel> = mediaBrowser.getChildren(
         GENRE_ID,
         0,
         Int.MAX_VALUE,
@@ -125,6 +211,54 @@ internal class MediaContentRepositoryImpl(
             GENRE_PREFIX + genreId,
         ).await().value?.let {
             it.toAppItem() as? GenreItemModel ?: throw IllegalStateException("Invalid $it")
+        }
+    }
+
+    private val allAlbumUri: String
+        get() = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString()
+
+    private val allArtistUri: String
+        get() = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString()
+
+    private val allAudioUri: String
+        get() = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI.toString()
+
+    private val allGenreUri: String
+        get() = MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.toString()
+
+    private fun getAlbumUri(albumId: Long): String {
+        return MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI.toString() + "/" + albumId
+    }
+
+    private fun getArtistUri(artistId: Long): String {
+        return MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI.toString() + "/" + artistId
+    }
+
+    private fun getGenreUri(genreId: Long): String {
+        return MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI.toString() + "/" + genreId
+    }
+
+    private fun contentChangedEventFlow(uri: String): Flow<Unit> {
+        Log.d(TAG, "getContentChangedEventFlow: $uri")
+        return callbackFlow {
+            val observer =
+                object : ContentObserver(null) {
+                    override fun onChange(selfChange: Boolean) {
+                        trySend(Unit)
+                    }
+                }
+
+            contentResolver.registerContentObserver(
+                /* uri = */ Uri.parse(uri),
+                /* notifyForDescendants = */ true,
+                /* observer = */ observer,
+            )
+
+            trySend(Unit)
+
+            awaitClose {
+                contentResolver.unregisterContentObserver(observer)
+            }
         }
     }
 }
