@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
 
-private val DefaultCustomTabs = CurrentCustomTabs(
+val DefaultCustomTabs = CurrentCustomTabs(
     listOf(
         CustomTab.AllMusic,
         CustomTab.AllAlbum,

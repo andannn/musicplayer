@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.andannn.melodify.feature.customtab.navigation.customTabSetting
+import com.andannn.melodify.feature.customtab.navigation.navigateToCustomTabSetting
 import com.andannn.melodify.feature.home.navigation.HOME_ROUTE
 import com.andannn.melodify.feature.home.navigation.homeScreen
 import com.andannn.melodify.feature.playList.navigation.navigateToPlayList
@@ -24,9 +26,13 @@ fun MelodifyNavHost(
             onNavigateToPlayList = { id, source ->
                 navHostController.navigateToPlayList(id = id, source = source)
             },
+            onNavigateCustomTabSetting = navHostController::navigateToCustomTabSetting
         )
         playListScreen(
             onBackPressed = onBackPressed,
+        )
+        customTabSetting(
+            onBackPressed = onBackPressed
         )
     }
 }

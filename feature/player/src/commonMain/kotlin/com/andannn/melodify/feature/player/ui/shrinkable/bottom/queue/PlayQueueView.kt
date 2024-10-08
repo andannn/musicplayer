@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -19,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.andannn.melodify.feature.common.component.ListTileItemView
 import com.andannn.melodify.core.data.model.AudioItemModel
+import com.andannn.melodify.feature.common.util.rememberSwapListState
 import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableCollectionItemScope
@@ -36,14 +36,14 @@ internal fun PlayQueue(
     activeMediaItem: AudioItemModel,
     modifier: Modifier = Modifier
 ) {
-    val playQueueState = rememberPlayQueueState(
-        onSwapFinished = { from, to ->
+    val playQueueState = rememberSwapListState<AudioItemModel>(
+        onSwapFinished = { from, to, _ ->
             Napier.d(tag = TAG) { "PlayQueueView: drag stopped from $from to $to" }
             onSwapFinished(from, to)
         },
-        onDeleteFinished = {
-            Napier.d(tag = TAG) { "onDeleteFinished $it" }
-            onDeleteFinished(it)
+        onDeleteFinished = { index, _ ->
+            Napier.d(tag = TAG) { "onDeleteFinished $index" }
+            onDeleteFinished(index)
         }
     )
 
@@ -57,7 +57,7 @@ internal fun PlayQueue(
         state = playQueueState.lazyListState
     ) {
         items(
-            items = playQueueState.audioItemList,
+            items = playQueueState.itemList,
             key = { it.hashCode() },
         ) { item ->
             ReorderableItem(
@@ -74,7 +74,7 @@ internal fun PlayQueue(
                         playQueueState.onStopDrag()
                     },
                     onDismissFinish = {
-                        playQueueState.onDismissItem(item)
+                        playQueueState.onDeleteItem(item)
                     }
                 )
             }

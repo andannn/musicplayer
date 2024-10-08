@@ -47,34 +47,34 @@ class HomeViewModel(
         _selectedTabIndexFlow,
         _userSettingFlow
     ) { selectedIndex, userSetting ->
+        val customTabs = userSetting.currentCustomTabs.customTabs
         TabStatus(
-            selectedIndex = selectedIndex,
+            selectedIndex = selectedIndex.coerceAtMost(customTabs.size - 1),
             customTabList = userSetting.currentCustomTabs.customTabs
         )
     }
 
-    private val _contentWithCategoryFlow = _tabStatusFlow
+    private val _mediaContentFlow = _tabStatusFlow
+        .map { it.selectedTab }
         .distinctUntilChanged()
-        .flatMapLatest { tabStatus ->
-            val tab = tabStatus.selectedTab ?: return@flatMapLatest flow { }
+        .flatMapLatest { tab ->
+            if (tab == null) {
+                return@flatMapLatest flow { emit(emptyList()) }
+            }
             with(tab) {
-                mediaContentRepository.contentFlow().map {
-                    TabWithContent(
-                        tabStatus = tabStatus,
-                        mediaItems = it,
-                    )
-                }
+                mediaContentRepository.contentFlow()
             }
         }
 
     val state = combine(
-        _contentWithCategoryFlow,
+        _tabStatusFlow,
+        _mediaContentFlow,
         _userSettingFlow,
-    ) { contentWithCategory, userSetting ->
+    ) { tabStatus, mediaContents, userSetting ->
         HomeUiState(
-            selectedIndex = contentWithCategory.tabStatus.selectedIndex,
-            customTabList = contentWithCategory.tabStatus.customTabList,
-            mediaItems = contentWithCategory.mediaItems.toImmutableList(),
+            selectedIndex = tabStatus.selectedIndex,
+            customTabList = tabStatus.customTabList,
+            mediaItems = mediaContents.toImmutableList(),
             previewMode = userSetting.mediaPreviewMode,
         )
     }
@@ -117,11 +117,6 @@ class HomeViewModel(
         }
     }
 }
-
-private data class TabWithContent(
-    val tabStatus: TabStatus,
-    val mediaItems: List<MediaItemModel>
-)
 
 private data class TabStatus(
     val selectedIndex: Int = 0,

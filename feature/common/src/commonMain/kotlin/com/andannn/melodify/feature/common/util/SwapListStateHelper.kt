@@ -1,4 +1,4 @@
-package com.andannn.melodify.feature.player.ui.shrinkable.bottom.queue
+package com.andannn.melodify.feature.common.util
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -8,21 +8,23 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.andannn.melodify.core.data.model.AudioItemModel
+import io.github.aakira.napier.Napier
 import kotlinx.collections.immutable.ImmutableList
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
+private const val TAG = "SwapListState"
+
 @Composable
-fun rememberPlayQueueState(
+fun <T> rememberSwapListState(
     lazyListState: LazyListState = rememberLazyListState(),
-    onSwapFinished: (from: Int, to: Int) -> Unit = { _, _ -> },
-    onDeleteFinished: (index: Int) -> Unit = { },
-): PlayQueueStateHolder {
+    onSwapFinished: (from: Int, to: Int, newList: List<T>) -> Unit = { _, _, _ -> },
+    onDeleteFinished: (index: Int, newList: List<T>) -> Unit = { _, _ -> },
+): SwapListStateHolder<T> {
     val onSwapFinishedState = rememberUpdatedState(onSwapFinished)
     val onDeleteFinishedState = rememberUpdatedState(onDeleteFinished)
     val playQueueState = remember {
-        PlayListStateImpl(
+        SwapListStateImpl(
             onSwapFinishedState = onSwapFinishedState,
             onDeleteFinishedState = onDeleteFinishedState,
         )
@@ -34,43 +36,44 @@ fun rememberPlayQueueState(
         }
 
     return remember {
-        PlayQueueStateHolder(
+        SwapListStateHolder<T>(
             lazyListState = lazyListState,
-            playListState = playQueueState,
+            swapListState = playQueueState,
             reorderableLazyListState = reorderableLazyListState
         )
     }
 }
 
-class PlayQueueStateHolder(
+class SwapListStateHolder<T>(
     val lazyListState: LazyListState,
-    private val playListState: PlayListStateImpl,
+    private val swapListState: SwapListStateImpl<T>,
     val reorderableLazyListState: ReorderableLazyListState,
-) : PlayListState by playListState
+) : SwapListState<T> by swapListState
 
-interface PlayListState {
-    val audioItemList: SnapshotStateList<AudioItemModel>
+interface SwapListState<T>  {
+    val itemList: SnapshotStateList<T>
     fun onStopDrag()
     fun onSwapItem(from: Int, to: Int)
-    fun onApplyNewList(list: ImmutableList<AudioItemModel>)
-    fun onDismissItem(item: AudioItemModel)
+    fun onApplyNewList(list: ImmutableList<T>)
+    fun onDeleteItem(item: T)
 }
 
-class PlayListStateImpl(
-    private val onSwapFinishedState: State<(from: Int, to: Int) -> Unit>,
-    private val onDeleteFinishedState: State<(index: Int) -> Unit>,
-) : PlayListState {
-    override val audioItemList = mutableStateListOf<AudioItemModel>()
+class SwapListStateImpl<T>(
+    private val onSwapFinishedState: State<(from: Int, to: Int, newList: List<T>) -> Unit>,
+    private val onDeleteFinishedState: State<(index: Int, newList: List<T>) -> Unit>,
+) : SwapListState<T> {
+    override val itemList = mutableStateListOf<T>()
 
     private var fromDragIndex: Int? = null
     private var toDragIndex: Int? = null
 
     override fun onStopDrag() {
+        Napier.d(tag = TAG) { "PlayQueueView: drag stopped" }
         val to = toDragIndex
         val from = fromDragIndex
 
         if (to != null && from != null) {
-            onSwapFinishedState.value(from, to)
+            onSwapFinishedState.value(from, to, itemList.toList())
         }
 
         fromDragIndex = null
@@ -78,28 +81,31 @@ class PlayListStateImpl(
     }
 
     override fun onSwapItem(from: Int, to: Int) {
+        Napier.d(tag = TAG) { "PlayQueueView: onSwapItem from $from to $to" }
         toDragIndex = to
         if (fromDragIndex == null) {
             fromDragIndex = from
         }
 
-        with(audioItemList) {
+        with(itemList) {
             add(to, removeAt(from))
         }
     }
 
-    override fun onApplyNewList(list: ImmutableList<AudioItemModel>) {
-        with(audioItemList) {
+    override fun onApplyNewList(list: ImmutableList<T>) {
+        Napier.d(tag = TAG) { "onApplyNewList $list" }
+        with(itemList) {
             clear()
             addAll(list)
         }
     }
 
-    override fun onDismissItem(item: AudioItemModel) {
-        with(audioItemList) {
+    override fun onDeleteItem(item: T) {
+        Napier.d(tag = TAG) { "onDismissItem $item" }
+        with(itemList) {
             val index = indexOf(item)
             removeAt(index)
-            onDeleteFinishedState.value(index)
+            onDeleteFinishedState.value(index, itemList.toList())
         }
     }
 }

@@ -6,6 +6,7 @@ import com.andannn.melodify.core.datastore.di.userPreferencesModule
 import com.andannn.melodify.core.network.di.serviceModule
 import com.andannn.melodify.core.player.di.playerModule
 import com.andannn.melodify.feature.common.di.globalUiControllerModule
+import com.andannn.melodify.feature.customtab.di.customTabSettingModule
 import com.andannn.melodify.feature.home.di.homeFeatureModule
 import com.andannn.melodify.feature.playList.di.playListFeatureModule
 import com.andannn.melodify.feature.player.di.playerFeatureModule
@@ -22,5 +23,6 @@ val modules: List<Module> = listOf(
 
     homeFeatureModule,
     playListFeatureModule,
-    playerFeatureModule
+    playerFeatureModule,
+    customTabSettingModule,
 )
