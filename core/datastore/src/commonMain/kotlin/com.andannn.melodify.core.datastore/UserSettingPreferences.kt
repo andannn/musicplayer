@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.andannn.melodify.core.datastore.model.PlatModeValues
 import com.andannn.melodify.core.datastore.model.PreferencesKeyName
 import com.andannn.melodify.core.datastore.model.PreviewModeValues
@@ -27,26 +28,22 @@ class UserSettingPreferences(
                     mediaPreviewMode =
                     preferences[intPreferencesKey(PreferencesKeyName.MEDIA_PREVIEW_MODE_KEY_NAME)]
                         ?: PreviewModeValues.LIST_PREVIEW_VALUE,
+                    customTabs =
+                    preferences[stringPreferencesKey(PreferencesKeyName.CUSTOM_TABS_KEY_NAME)]
                 )
             }
-
-
-    suspend fun setPlayMode(playMode: Int) {
-        preferences.edit { preferences ->
-            preferences[intPreferencesKey(PreferencesKeyName.PLAY_MODE_KEY_NAME)] = playMode
-        }
-    }
-
-    suspend fun setIsShuffle(isShuffle: Boolean) {
-        preferences.edit { preferences ->
-            preferences[booleanPreferencesKey(PreferencesKeyName.IS_SHUFFLE_KEY_NAME)] = isShuffle
-        }
-    }
 
     suspend fun setMediaPreviewMode(mediaPreviewMode: Int) {
         preferences.edit { preferences ->
             preferences[intPreferencesKey(PreferencesKeyName.MEDIA_PREVIEW_MODE_KEY_NAME)] =
                 mediaPreviewMode
+        }
+    }
+
+    suspend fun setCustomTabs(customTabs: String) {
+        preferences.edit { preferences ->
+            preferences[stringPreferencesKey(PreferencesKeyName.CUSTOM_TABS_KEY_NAME)] =
+                customTabs
         }
     }
 }

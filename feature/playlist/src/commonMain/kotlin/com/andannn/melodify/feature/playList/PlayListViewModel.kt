@@ -9,18 +9,15 @@ import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.core.data.model.MediaListSource
 import com.andannn.melodify.core.data.MediaControllerRepository
 import com.andannn.melodify.core.data.PlayerStateMonitoryRepository
-import com.andannn.melodify.core.data.MediaContentObserverRepository
 import com.andannn.melodify.core.data.MediaContentRepository
 import com.andannn.melodify.feature.common.drawer.SheetModel
 import com.andannn.melodify.feature.playList.navigation.ID
 import com.andannn.melodify.feature.playList.navigation.SOURCE
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -40,10 +37,8 @@ sealed interface PlayListEvent {
     data object OnHeaderOptionClick : PlayListEvent
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PlayListViewModel(
     savedStateHandle: SavedStateHandle,
-    private val contentObserverRepository: MediaContentObserverRepository,
     playerStateMonitoryRepository: PlayerStateMonitoryRepository,
     private val mediaControllerRepository: MediaControllerRepository,
     private val mediaContentRepository: MediaContentRepository,
@@ -56,26 +51,10 @@ class PlayListViewModel(
         MediaListSource.fromString(savedStateHandle.get<String>(SOURCE) ?: "")
             ?: MediaListSource.ALBUM
 
-    private val contentUri
-        get() = with(contentObserverRepository) {
-            when (mediaListSource) {
-                MediaListSource.ALBUM -> getAlbumUri(id.toLong())
-                MediaListSource.ARTIST -> getArtistUri(id.toLong())
-                MediaListSource.GENRE -> getGenreUri(id.toLong())
-            }
-        }
-
-    private val playListContentFlow =
-        contentObserverRepository.getContentChangedEventFlow(contentUri)
-            .distinctUntilChanged()
-            .mapLatest { _ ->
-                getPlayListContent()
-            }
-
     private val playingItemFlow = playerStateMonitoryRepository.playingMediaStateFlow
 
     val state = combine(
-        playListContentFlow,
+        getPlayListContent(),
         playingItemFlow,
     ) { content, playingItem ->
         PlayListUiState(
@@ -85,39 +64,33 @@ class PlayListViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PlayListUiState())
 
-    private suspend fun getPlayListContent(): PlayListContent {
-        return when (mediaListSource) {
+    private fun getPlayListContent() = with(mediaContentRepository) {
+        when (mediaListSource) {
             MediaListSource.ALBUM -> {
-                val albumItem =
-                    mediaContentRepository.getAlbumByAlbumId(id.toLong())
-                val playableItems = mediaContentRepository.getAudiosOfAlbum(id.toLong())
-                    .sortedBy { it.cdTrackNumber }
-                PlayListContent(
-                    headerInfoItem = albumItem,
-                    audioList = playableItems.toImmutableList(),
-                )
+                getAudiosOfAlbumFlow(id.toLong()).map {
+                    PlayListContent(
+                        headerInfoItem = getAlbumByAlbumId(id.toLong()),
+                        audioList = it.toImmutableList(),
+                    )
+                }
             }
 
             MediaListSource.ARTIST -> {
-                val headerItem =
-                    mediaContentRepository.getArtistByArtistId(id.toLong())
-
-                val playableItems = mediaContentRepository.getAudiosOfArtist(id.toLong())
-                PlayListContent(
-                    headerInfoItem = headerItem,
-                    audioList = playableItems.toImmutableList(),
-                )
+                getAudiosOfArtistFlow(id.toLong()).map {
+                    PlayListContent(
+                        headerInfoItem = getArtistByArtistId(id.toLong()),
+                        audioList = it.toImmutableList(),
+                    )
+                }
             }
 
             MediaListSource.GENRE -> {
-                val headerItem = mediaContentRepository.getGenreByGenreId(id.toLong())
-
-                val playableItems = mediaContentRepository.getAudiosOfGenre(id.toLong())
-                PlayListContent(
-                    headerInfoItem = headerItem,
-                    audioList = playableItems.toImmutableList(),
-                )
-
+                getAudiosOfGenreFlow(id.toLong()).map {
+                    PlayListContent(
+                        headerInfoItem = getGenreByGenreId(id.toLong()),
+                        audioList = it.toImmutableList(),
+                    )
+                }
             }
         }
     }

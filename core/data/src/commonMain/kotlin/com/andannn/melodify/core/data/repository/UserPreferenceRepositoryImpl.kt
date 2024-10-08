@@ -7,46 +7,41 @@ import com.andannn.melodify.core.data.model.MediaPreviewMode
 import com.andannn.melodify.core.data.model.PlayMode
 import com.andannn.melodify.core.data.model.UserSetting
 import com.andannn.melodify.core.data.UserPreferenceRepository
+import com.andannn.melodify.core.data.model.CurrentCustomTabs
+import com.andannn.melodify.core.data.model.CustomTab
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+
+private val DefaultCustomTabs = CurrentCustomTabs(
+    listOf(
+        CustomTab.AllMusic,
+        CustomTab.AllAlbum,
+        CustomTab.AllGenre,
+        CustomTab.AllArtist,
+    )
+)
 
 class UserPreferenceRepositoryImpl(
     private val preferences: UserSettingPreferences,
 ) : UserPreferenceRepository {
     override val userSettingFlow: Flow<UserSetting> = preferences.userDate.map {
         UserSetting(
-            playMode = it.playMode.toPlayMode(),
-            isShuffle = it.isShuffle,
-            mediaPreviewMode = it.mediaPreviewMode.toMediaPreviewMode()
+            mediaPreviewMode = it.mediaPreviewMode.toMediaPreviewMode(),
+            currentCustomTabs = it.customTabs?.let { customTabs ->
+                Json.decodeFromString(CurrentCustomTabs.serializer(), customTabs)
+            } ?: DefaultCustomTabs
         )
-    }
-
-    override val playMode: Flow<PlayMode> =
-        userSettingFlow
-            .map { it.playMode }
-            .distinctUntilChanged()
-
-    override val isShuffle: Flow<Boolean> =
-        userSettingFlow
-            .map { it.isShuffle }
-            .distinctUntilChanged()
-
-    override val previewMode: Flow<MediaPreviewMode> =
-        userSettingFlow
-            .map { it.mediaPreviewMode }
-            .distinctUntilChanged()
-
-    override suspend fun setPlayMode(playMode: PlayMode) {
-        preferences.setPlayMode(playMode.toIntValue())
-    }
-
-    override suspend fun setIsShuffle(isShuffle: Boolean) {
-        preferences.setIsShuffle(isShuffle)
     }
 
     override suspend fun setPreviewMode(previewMode: MediaPreviewMode) {
         preferences.setMediaPreviewMode(previewMode.toIntValue())
+    }
+
+    override suspend fun updateCurrentCustomTabs(currentCustomTabs: List<CustomTab>) {
+        val current = CurrentCustomTabs(currentCustomTabs)
+        preferences.setCustomTabs(Json.encodeToString(current))
     }
 }
 

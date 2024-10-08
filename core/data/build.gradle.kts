@@ -1,5 +1,6 @@
 plugins {
     id("melodify.kmp.library")
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -13,6 +14,7 @@ kotlin {
             implementation(project(":core:network"))
             implementation(project(":core:database"))
             implementation(project(":core:player"))
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

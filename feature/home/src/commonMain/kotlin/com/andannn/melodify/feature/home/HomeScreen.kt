@@ -111,10 +111,14 @@ private fun HomeScreen(
     onEvent: (HomeUiEvent) -> Unit = {},
 ) {
     val uiState by rememberUpdatedState(state)
-    val categories = MediaCategory.entries.toTypedArray()
+    val categories by remember {
+        derivedStateOf {
+            uiState.customTabList
+        }
+    }
     val selectedIndex by remember {
         derivedStateOf {
-            categories.indexOf(uiState.currentCategory)
+            uiState.selectedIndex
         }
     }
 
@@ -141,25 +145,27 @@ private fun HomeScreen(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .fillMaxSize(),
         ) {
-            ScrollableTabRow(
-                modifier = Modifier.fillMaxWidth(),
-                selectedTabIndex = selectedIndex,
-            ) {
-                categories.forEachIndexed { index, item ->
-                    Tab(
-                        modifier = Modifier,
-                        selected = index == selectedIndex,
-                        selectedContentColor = MaterialTheme.colorScheme.primary,
-                        unselectedContentColor = MaterialTheme.colorScheme.onSurface,
-                        text = @Composable {
-                            Text(
-                                text = stringResource(ResourceUtil.getCategoryResource(item)),
-                            )
-                        },
-                        onClick = {
-                            onEvent(HomeUiEvent.OnSelectedCategoryChanged(categories[index]))
-                        },
-                    )
+            if (categories.isNotEmpty()) {
+                ScrollableTabRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    selectedTabIndex = selectedIndex,
+                ) {
+                    categories.forEachIndexed { index, item ->
+                        Tab(
+                            modifier = Modifier,
+                            selected = index == selectedIndex,
+                            selectedContentColor = MaterialTheme.colorScheme.primary,
+                            unselectedContentColor = MaterialTheme.colorScheme.onSurface,
+                            text = @Composable {
+                                Text(
+                                    text = stringResource(ResourceUtil.getCategoryResource(item)),
+                                )
+                            },
+                            onClick = {
+                                onEvent(HomeUiEvent.OnSelectedCategoryChanged(index))
+                            },
+                        )
+                    }
                 }
             }
 
@@ -375,7 +381,6 @@ private fun HomeScreenPreview() {
                         trackCount = 10
                     )
                 }.toImmutableList(),
-                currentCategory = MediaCategory.ALBUM,
                 previewMode = MediaPreviewMode.GRID_PREVIEW,
             ),
         )

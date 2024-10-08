@@ -4,21 +4,34 @@ import com.andannn.melodify.core.data.model.AlbumItemModel
 import com.andannn.melodify.core.data.model.ArtistItemModel
 import com.andannn.melodify.core.data.model.AudioItemModel
 import com.andannn.melodify.core.data.model.GenreItemModel
+import kotlinx.coroutines.flow.Flow
 
 interface MediaContentRepository {
-    suspend fun getAllMediaItems(): List<AudioItemModel>
+    fun getAllMediaItemsFlow(): Flow<List<AudioItemModel>>
 
-    suspend fun getAllAlbums(): List<AlbumItemModel>
+    fun getAllAlbumsFlow(): Flow<List<AlbumItemModel>>
 
-    suspend fun getAllArtist(): List<ArtistItemModel>
+    fun getAllArtistFlow(): Flow<List<ArtistItemModel>>
 
-    suspend fun getAllGenre(): List<GenreItemModel>
+    fun getAllGenreFlow(): Flow<List<GenreItemModel>>
+
+    fun getAudiosOfAlbumFlow(albumId: Long): Flow<List<AudioItemModel>>
 
     suspend fun getAudiosOfAlbum(albumId: Long): List<AudioItemModel>
 
+    fun getAudiosOfArtistFlow(artistId: Long): Flow<List<AudioItemModel>>
+
     suspend fun getAudiosOfArtist(artistId: Long): List<AudioItemModel>
 
+    fun getAudiosOfGenreFlow(genreId: Long): Flow<List<AudioItemModel>>
+
     suspend fun getAudiosOfGenre(genreId: Long): List<AudioItemModel>
+
+    fun getAlbumByAlbumIdFlow(albumId: Long): Flow<AlbumItemModel?>
+
+    fun getArtistByArtistIdFlow(artistId: Long): Flow<ArtistItemModel?>
+
+    fun getGenreByGenreIdFlow(genreId: Long): Flow<GenreItemModel?>
 
     suspend fun getAlbumByAlbumId(albumId: Long): AlbumItemModel?
 
