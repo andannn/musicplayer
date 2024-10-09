@@ -16,6 +16,7 @@ kotlin {
             implementation(project(":feature:common"))
             implementation(project(":feature:home"))
             implementation(project(":feature:player"))
+            implementation(project(":feature:customtab"))
             implementation(project(":feature:playlist"))
 
             implementation(compose.runtime)

@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +58,7 @@ import com.andannn.melodify.core.data.model.MediaListSource
 import com.andannn.melodify.core.data.model.MediaPreviewMode
 import com.andannn.melodify.feature.common.component.ExtraPaddingBottom
 import com.andannn.melodify.feature.common.theme.MelodifyTheme
-import com.andannn.melodify.feature.home.util.ResourceUtil
+import com.andannn.melodify.feature.common.util.getCategoryResource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import melodify.feature.common.generated.resources.Res
@@ -71,6 +72,7 @@ fun HomeRoute(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = koinViewModel(),
     onNavigateToPlayList: (id: String, source: MediaListSource) -> Unit,
+    onNavigateCustomTabSetting: () -> Unit,
 ) {
     fun onMediaItemClick(mediaItem: MediaItemModel) {
         when (mediaItem) {
@@ -99,6 +101,7 @@ fun HomeRoute(
         modifier = modifier,
         onEvent = homeViewModel::onEvent,
         onMediaItemClick = ::onMediaItemClick,
+        onSettingButtonClick = onNavigateCustomTabSetting
     )
 }
 
@@ -108,6 +111,7 @@ private fun HomeScreen(
     state: HomeUiState,
     modifier: Modifier = Modifier,
     onMediaItemClick: (MediaItemModel) -> Unit = {},
+    onSettingButtonClick: () -> Unit = {},
     onEvent: (HomeUiEvent) -> Unit = {},
 ) {
     val uiState by rememberUpdatedState(state)
@@ -134,6 +138,14 @@ private fun HomeScreen(
                 title = {
                     Text(text = "Melodify")
                 },
+                actions = {
+                    IconButton(
+                        onClick = onSettingButtonClick,
+                        content = {
+                            Icon(Icons.Rounded.Settings, contentDescription = "")
+                        }
+                    )
+                },
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -158,7 +170,7 @@ private fun HomeScreen(
                             unselectedContentColor = MaterialTheme.colorScheme.onSurface,
                             text = @Composable {
                                 Text(
-                                    text = stringResource(ResourceUtil.getCategoryResource(item)),
+                                    text = getCategoryResource(item),
                                 )
                             },
                             onClick = {
