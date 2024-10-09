@@ -11,6 +11,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.room.runtime)
+        }
+
+        iosMain.dependencies {
             implementation(libs.androidx.sqlite.bundled)
         }
     }
